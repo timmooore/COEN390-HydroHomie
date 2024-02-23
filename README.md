@@ -1,6 +1,6 @@
-# Happy Drivers 🚗😊
+# Hydro Homie 🚗😊
 
-Happy Drivers is a joyful car rental web application that simplifies the process of renting vehicles. Rent your car [Here](http://www.HappyDrivers.com)
+Are you looking to track your water consumption? Here is a designated app connected to our water bottle that helps you monitor your water intake and provides feedback through various notifications.
 
 ## Project Overview
 
