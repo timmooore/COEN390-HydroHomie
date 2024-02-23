@@ -1,4 +1,4 @@
-# Hydro Homie 🚗😊
+# Hydro Homie
 
 Are you looking to track your water consumption? Here is a designated app connected to our water bottle that helps you monitor your water intake and provides feedback through various notifications.
 
