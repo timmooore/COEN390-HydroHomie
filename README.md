@@ -40,7 +40,6 @@ The project follows an adapted Agile methodology, with 10 weeks divided into fou
 - **Timothy 🧑‍💻:** Ensures that the system admin has access to all relevant information.
 - **Ba Nam 🧑‍💻:** Focuses on the frontend of the website to create an appealing appearance and ensure a pleasant user experience.
 
-Concentrates on the design and structure, ensuring clarity and aesthetics throughout the website.
 ## Issues Naming Conventions
 **User stories:**
 User stories issues names will start with US, then followed by the User Storie number, and then the name. 
@@ -94,7 +93,3 @@ This would stand for the second task of the user story 1.
    - Reference relevant issues in commit messages and pull requests.
    - Use issues to discuss and plan new features or bug fixes.
 
-
-## Begin Your Happy Drivers Journey
-
-Join us on Happy Drivers, where every reservation is a step into a joyful adventure.
