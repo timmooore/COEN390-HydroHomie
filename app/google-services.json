@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "941110603238",
+    "firebase_url": "https://hydrohomie-84a97-default-rtdb.firebaseio.com",
+    "project_id": "hydrohomie-84a97",
+    "storage_bucket": "hydrohomie-84a97.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:941110603238:android:b23b7b15ac7c2176f13a27",
+        "android_client_info": {
+          "package_name": "com.example.hydrohomie"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBcn_IG7ZP9Mft93hfMftXT9rtbgY_UGto"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
