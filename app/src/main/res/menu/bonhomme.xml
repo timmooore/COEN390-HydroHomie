@@ -1,0 +1,34 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/action_authenticate"
+        android:icon="@drawable/ic_stat_name1"
+        android:title="@string/authenticate"
+        app:showAsAction="ifRoom|withText">
+
+        <menu>
+            <item
+                android:id="@+id/sub_action_one"
+                android:icon="@drawable/ic_stat_name"
+                android:title=""
+                app:showAsAction="never"
+                android:iconTint="@color/black" />
+
+            <item
+                android:id="@+id/sub_action_two"
+                android:icon="@drawable/ic_stat_name2"
+                android:title="TODO"
+                app:showAsAction="never"
+                android:iconTint="@color/black" />
+
+            <item
+                android:id="@+id/sub_action_third"
+                android:icon="@drawable/signup"
+                android:title="TODO"
+                app:showAsAction="never"
+                android:iconTint="@color/black" />
+
+        </menu>
+    </item>
+
+</menu>
