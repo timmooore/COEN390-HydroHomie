@@ -3,16 +3,41 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".SettingBonhomme">
 
     <RelativeLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <!-- Your fragment UI components go here -->
 
+        <Button
+            android:id="@+id/settingButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Settings"
+            android:layout_centerInParent="true"/>
+
+        <TextView
+            android:id="@+id/buttonDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Click this button to access settings."
+            android:layout_below="@id/settingButton"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="8dp"/>
+
     </RelativeLayout>
 
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="I NEED TO ADD THE SETTING INFORMATION ON WHAT THIS BUTTON DOES EXACTLY"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </FrameLayout>

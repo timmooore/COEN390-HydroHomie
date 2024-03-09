@@ -35,12 +35,16 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     private home firstFragment = new home();
     private details secondFragment = new details();
     private bluetooth thirdFragment = new bluetooth();
+    private goals forthFragment = new goals();
+    private SettingBonhomme fifthFragment = new SettingBonhomme();
+    private int selectedMenuItemId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mAuth = FirebaseAuth.getInstance();
+
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
         bottomNavigationView.setSelectedItemId(R.id.home);
@@ -51,8 +55,45 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         // The home fragment will be defaulted as the first fragment
         // Initial fragment transaction
         loadFragment(firstFragment);
-
+        selectedMenuItemId = R.id.home; // Set the default selected menu item
     }
+
+    // navigation bar setup menu option
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        int itemId = item.getItemId();
+
+
+
+
+        // Menu option based on the icon and which fragment should be reached
+        if (itemId == R.id.home) {
+            selectedMenuItemId = R.id.home;
+            getSupportFragmentManager().beginTransaction().replace(R.id.flFragment, firstFragment).commit();
+            return true;
+        } else if (itemId == R.id.details) {
+            selectedMenuItemId = R.id.details;
+            getSupportFragmentManager().beginTransaction().replace(R.id.flFragment, secondFragment).commit();
+            return true;
+        } else if (itemId == R.id.bluetooth) {
+            selectedMenuItemId = R.id.bluetooth;
+            getSupportFragmentManager().beginTransaction().replace(R.id.flFragment, thirdFragment).commit();
+            return true;
+        } else if (itemId == R.id.goals) {
+            selectedMenuItemId = R.id.goals;
+            getSupportFragmentManager().beginTransaction().replace(R.id.flFragment, forthFragment).commit();
+            return true;
+        } else if (itemId == R.id.setting) {
+            selectedMenuItemId = R.id.setting;
+            getSupportFragmentManager().beginTransaction().replace(R.id.flFragment, fifthFragment).commit();
+            return true;
+        }
+
+        return false;
+    }
+
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -64,18 +105,36 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
 
-        if (itemId == R.id.sub_action_two) {
-            Intent intent = new Intent(this, SettingMenuBonhomme.class);
-            startActivity(intent);
+        // Update the selected menu item and synchronize it with the bottom navigation view
+        selectedMenuItemId = itemId;
+        bottomNavigationView.setSelectedItemId(itemId);
+        if (itemId == R.id.sub_action_one) {
+
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.flFragment, thirdFragment)
+                    .addToBackStack(null)  // Optional: This allows the user to navigate back to the previous fragment
+                    .commit();
+
             return true;
         }
 
-// signup button might also be useless
-        if (itemId == R.id.sub_action_third) {
-            Intent intent = new Intent(this, signup.class);
-            startActivity(intent);
+
+        if (itemId == R.id.sub_action_two) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.flFragment, fifthFragment)
+                    .addToBackStack(null)  // Optional: This allows the user to navigate back to the previous fragment
+                    .commit();
+
             return true;
         }
+
+//// signup button might also be useless
+//        if (itemId == R.id.sub_action_third) {
+//            Intent intent = new Intent(this, signup.class);
+//            startActivity(intent);
+//            return true;
+//        }
 //logout
         if (itemId == R.id.sub_action_forth) {
             mAuth.signOut();
@@ -84,22 +143,22 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             return true;
         }
 
-        //login button might be uselesss
-        if (itemId == R.id.sub_action_fifth) {
-            Intent intent = new Intent(this, signin.class);
-            startActivity(intent);
-            return true;
-        }
+//        //login button might be uselesss
+//        if (itemId == R.id.sub_action_fifth) {
+//            Intent intent = new Intent(this, signin.class);
+//            startActivity(intent);
+//            return true;
+//        }
 
 
         /// goals is a fragment not an activity
         if (itemId == R.id.sub_action_sixth) {
 
-            goals goalsFragment = new goals();
+
 
 
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.flFragment, goalsFragment)
+                    .replace(R.id.flFragment, forthFragment)
                     .addToBackStack(null)
                     .commit();
 
@@ -108,26 +167,11 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         return super.onOptionsItemSelected(item);
     }
-// navigation bar setup menu option
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        int itemId = item.getItemId();
 
-        // Menu option based on the icon and which fragment should be reached
-        if (itemId == R.id.home) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.flFragment, firstFragment).commit();
-            return true;
-        } else if (itemId == R.id.details) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.flFragment, secondFragment).commit();
-            return true;
-        } else if (itemId == R.id.bluetooth) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.flFragment, thirdFragment).commit();
-            return true;
-        }
 
-        return false;
-    }
-//  smth to do with navigation bar bottom
+
+
+    //  smth to do with navigation bar bottom
     private void loadFragment(Fragment fragment) {
         if (fragment != null) {
             getSupportFragmentManager()
@@ -152,6 +196,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             finish(); // Finish the current activity to prevent the user from coming back to it
         }
     }
+
 
 
 

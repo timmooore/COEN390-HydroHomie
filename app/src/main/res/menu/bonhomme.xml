@@ -20,17 +20,23 @@
                 android:title="Setting"
                 app:showAsAction="never"
                 android:iconTint="@color/black" />
-            <item
-                android:id="@+id/sub_action_fifth"
-                android:icon="@drawable/login"
-                android:title="Login"
-                app:showAsAction="never"
-                android:iconTint="@color/black" />
+<!--            <item-->
+<!--                android:id="@+id/sub_action_fifth"-->
+<!--                android:icon="@drawable/login"-->
+<!--                android:title="Login"-->
+<!--                app:showAsAction="never"-->
+<!--                android:iconTint="@color/black" />-->
 
+<!--            <item-->
+<!--                android:id="@+id/sub_action_third"-->
+<!--                android:icon="@drawable/signup"-->
+<!--                android:title="Signup"-->
+<!--                app:showAsAction="never"-->
+<!--                android:iconTint="@color/black" />-->
             <item
-                android:id="@+id/sub_action_third"
-                android:icon="@drawable/signup"
-                android:title="Signup"
+                android:id="@+id/sub_action_sixth"
+                android:icon="@drawable/goals"
+                android:title="Goals"
                 app:showAsAction="never"
                 android:iconTint="@color/black" />
             <item
@@ -39,12 +45,7 @@
                 android:title="Log out"
                 app:showAsAction="never"
                 android:iconTint="@color/black" />
-            <item
-                android:id="@+id/sub_action_sixth"
-                android:icon="@drawable/goals"
-                android:title="Goals"
-                app:showAsAction="never"
-                android:iconTint="@color/black" />
+
 
         </menu>
     </item>
