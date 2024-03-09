@@ -19,12 +19,12 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
 public class home extends Fragment {
-    private Toolbar toolbar;// the toolbar at the top with the icon
-    private SettingBonhomme settingBonhomme = new SettingBonhomme();
+
     protected ProgressBar simpleProgressBar;// the progress bar
     protected Button refreshButton;// the refresh button that shows what we should expect to see from having touched the button
     protected TextView titleNotif;// the notifcation button on what is expected to be seen
     protected int progress;// the progress that is connected to the xml code for the progress bar adding value to it
+
     public home() {
         // require an empty public constructor
     }
@@ -34,19 +34,18 @@ public class home extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        toolbar = view.findViewById(R.id.toolbar);
-        ((AppCompatActivity) requireActivity()).setSupportActionBar(toolbar);
+
         simpleProgressBar = view.findViewById(R.id.pb);
 
         refreshButton = view.findViewById(R.id.refresh);
-        titleNotif=view.findViewById(R.id.titleNotif);
+        titleNotif = view.findViewById(R.id.titleNotif);
         // Enable options menu in the fragment
         setHasOptionsMenu(true);
         updateText();
         refreshButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                progress=progress+10;
+                progress = progress + 10;
                 simpleProgressBar.setProgress(progress);
                 updateText();
             }
@@ -70,31 +69,6 @@ public class home extends Fragment {
     }
 
 
-
-
-
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        inflater.inflate(R.menu.bonhomme, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int itemId = item.getItemId();
-
-        if (itemId == R.id.sub_action_two) {
-            Intent intent = new Intent(requireContext(), SettingMenuBonhomme.class);
-            startActivity(intent);
-            return true;
-        }
-
-        if (itemId == R.id.sub_action_third) {
-            Intent intent = new Intent(requireContext(), signinup.class);
-            startActivity(intent);
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 }
+
+

@@ -15,6 +15,7 @@
         <activity
             android:name=".signin"
             android:exported="false" />
+        <activity android:name=".goals" />
         <activity
             android:name=".signinup"
             android:exported="false" />

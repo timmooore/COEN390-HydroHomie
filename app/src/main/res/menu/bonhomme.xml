@@ -10,21 +10,39 @@
             <item
                 android:id="@+id/sub_action_one"
                 android:icon="@drawable/ic_stat_name"
-                android:title=""
+                android:title="Connect"
                 app:showAsAction="never"
                 android:iconTint="@color/black" />
 
             <item
                 android:id="@+id/sub_action_two"
                 android:icon="@drawable/ic_stat_name2"
-                android:title="TODO"
+                android:title="Setting"
+                app:showAsAction="never"
+                android:iconTint="@color/black" />
+            <item
+                android:id="@+id/sub_action_fifth"
+                android:icon="@drawable/login"
+                android:title="Login"
                 app:showAsAction="never"
                 android:iconTint="@color/black" />
 
             <item
                 android:id="@+id/sub_action_third"
                 android:icon="@drawable/signup"
-                android:title="TODO"
+                android:title="Signup"
+                app:showAsAction="never"
+                android:iconTint="@color/black" />
+            <item
+                android:id="@+id/sub_action_forth"
+                android:icon="@drawable/logout"
+                android:title="Log out"
+                app:showAsAction="never"
+                android:iconTint="@color/black" />
+            <item
+                android:id="@+id/sub_action_sixth"
+                android:icon="@drawable/goals"
+                android:title="Goals"
                 app:showAsAction="never"
                 android:iconTint="@color/black" />
 
