@@ -3,6 +3,7 @@ package com.example.hydrohomie;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -10,6 +11,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -19,6 +21,7 @@ import com.google.firebase.auth.FirebaseAuth;
 public class signin extends AppCompatActivity {
     private EditText emailsignin, passwordsignin;
     private Button signin;
+    protected Toolbar toolbar;
     //private ProgressBar progressbar;
 
     private FirebaseAuth mAuth;
@@ -27,7 +30,7 @@ public class signin extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signin);
-
+        toolbar = findViewById(R.id.toolbar4);
         mAuth = FirebaseAuth.getInstance();
 
         // initialising all views through id defined above
@@ -35,7 +38,7 @@ public class signin extends AppCompatActivity {
         passwordsignin = findViewById(R.id.Passwordsignin);
         signin = findViewById(R.id.Signin);
         //progressbar = findViewById(R.id.progressBar);
-
+ToolbarSetup();
         // Set on Click Listener on Sign-in button
         signin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,6 +100,28 @@ public class signin extends AppCompatActivity {
                                 }
                             }
                         });
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                // Respond to the action bar's Up button
+                // Navigate back to SignInUp activity
+                Intent intent = new Intent(this, signinup.class);
+                startActivity(intent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+    private void ToolbarSetup(){
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
+
     }
 }
 

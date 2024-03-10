@@ -3,6 +3,7 @@ package com.example.hydrohomie;
 import static androidx.core.content.ContentProviderCompat.requireContext;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,15 +12,17 @@ import android.widget.Button;
 
 public class signinup extends AppCompatActivity {
     protected Button signup;
+    protected Toolbar toolbar;
     protected Button signin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signinup);
-
+        toolbar = findViewById(R.id.toolbar);
         signup=findViewById(R.id.UpButton);
         signin=findViewById(R.id.InButton);
+      //  ToolbarSetup();
         signup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -34,6 +37,15 @@ public class signinup extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+    }
+
+    private void ToolbarSetup(){
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
 
     }
 }
