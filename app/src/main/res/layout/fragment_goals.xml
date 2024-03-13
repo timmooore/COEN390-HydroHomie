@@ -9,6 +9,7 @@
 
     <!-- FrameLayout for Fragment -->
 
+
     <FrameLayout
         android:id="@+id/flFragment2"
         android:layout_width="406dp"
@@ -21,6 +22,22 @@
         app:layout_constraintVertical_bias="0.0">
 
         <!-- Your fragment content goes here -->
+        <Spinner
+            android:id="@+id/genderSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Spinner
+            android:id="@+id/birthdaySpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <EditText
+            android:id="@+id/waterRecommendation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Water Recommendation"
+            android:inputType="numberDecimal" />
 
     </FrameLayout>
 
