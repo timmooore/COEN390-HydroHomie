@@ -1,9 +1,13 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.HydroHomie" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base.Theme.HydroHomie" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+       <item name="colorPrimary">#1da2d8</item>
+
     </style>
 
-    <style name="Theme.HydroHomie" parent="Base.Theme.HydroHomie" />
+    <!-- Theme used for your activities. -->
+    <style name="Theme.HydroHomie" parent="Base.Theme.HydroHomie">
+        <!-- Customize specific attributes for Theme.HydroHomie if needed. -->
+    </style>
 </resources>

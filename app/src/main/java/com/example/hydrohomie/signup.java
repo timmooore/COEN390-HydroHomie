@@ -3,6 +3,7 @@ package com.example.hydrohomie;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -10,6 +11,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -20,6 +22,8 @@ public class signup extends AppCompatActivity {
     private EditText emailsignup, passwordsignup;
     private Button register;
     //private ProgressBar progressbar;
+
+    protected Toolbar toolbar;
     private FirebaseAuth mAuth;
 
     @Override
@@ -28,7 +32,8 @@ public class signup extends AppCompatActivity {
         setContentView(R.layout.activity_signup);
         // taking FirebaseAuth instance
         mAuth = FirebaseAuth.getInstance();
-
+        toolbar = findViewById(R.id.toolbar5);
+        ToolbarSetup();
         // initialising all views through id defined above
         emailsignup = findViewById(R.id.emailSignup);
         passwordsignup = findViewById(R.id.Passwordsignup);
@@ -92,6 +97,30 @@ public class signup extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    private void ToolbarSetup(){
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                // Respond to the action bar's Up button
+                // Navigate back to SignInUp activity
+                Intent intent = new Intent(this, signinup.class);
+                startActivity(intent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }
 

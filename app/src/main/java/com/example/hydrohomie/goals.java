@@ -4,13 +4,13 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -21,13 +21,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class goals extends Fragment {
 
-    protected EditText info1, info2, info3;
+    protected EditText info1, info2, info3, waterRecommendation;
     protected TextView infO1, infO2, infO3;
-    protected Button save,edit;
-    protected Toolbar toolbar;
-    protected boolean toggle = false;
+    protected Button save, edit;
+    protected Spinner genderSpinner, birthdaySpinner;
     private FirebaseAuth mAuth;
 
     public goals() {
@@ -39,7 +41,6 @@ public class goals extends Fragment {
         View view = inflater.inflate(R.layout.fragment_goals, container, false);
 
         mAuth = FirebaseAuth.getInstance();
-      //  toolbar = view.findViewById(R.id.toolbar);
 
         info1 = view.findViewById(R.id.info1);
         info2 = view.findViewById(R.id.info2);
@@ -49,10 +50,26 @@ public class goals extends Fragment {
         infO3 = view.findViewById(R.id.infO3);
         save = view.findViewById(R.id.Save);
         edit = view.findViewById(R.id.edit);
+        genderSpinner = view.findViewById(R.id.genderSpinner);
+        birthdaySpinner = view.findViewById(R.id.birthdaySpinner);
+        waterRecommendation = view.findViewById(R.id.waterRecommendation);
 
-        // Set up the toolbar for the fragment
+        // Populate gender spinner
+        ArrayAdapter<CharSequence> genderAdapter = ArrayAdapter.createFromResource(getContext(),
+                R.array.gender_array, android.R.layout.simple_spinner_item);
+        genderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        genderSpinner.setAdapter(genderAdapter);
 
-        //enableText();
+        // Populate birthday spinner (you need to define the list of birthdays)
+        List<String> birthdayList = new ArrayList<>();
+        // Add birthday options to the list
+        ArrayAdapter<String> birthdayAdapter = new ArrayAdapter<>(getContext(),
+                android.R.layout.simple_spinner_item, birthdayList);
+        birthdayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        birthdaySpinner.setAdapter(birthdayAdapter);
+
+        // Set default water recommendation
+        waterRecommendation.setText("2.5");
 
         // Retrieve and display data when the fragment is created
         retrieveAndDisplayData();
@@ -114,8 +131,6 @@ public class goals extends Fragment {
         }
     }
 
-
-
     private void saveInformation() {
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
@@ -125,6 +140,9 @@ public class goals extends Fragment {
             String value1 = info1.getText().toString();
             String value2 = info2.getText().toString();
             String value3 = info3.getText().toString();
+            String waterRec = waterRecommendation.getText().toString();
+            String selectedGender = genderSpinner.getSelectedItem().toString();
+            String selectedBirthday = birthdaySpinner.getSelectedItem().toString();
 
             // Create a reference to the user's goals in the database
             DatabaseReference userGoalsRef = FirebaseDatabase.getInstance().getReference("user_goals").child(userId);
@@ -133,6 +151,9 @@ public class goals extends Fragment {
             userGoalsRef.child("info1").setValue(value1);
             userGoalsRef.child("info2").setValue(value2);
             userGoalsRef.child("info3").setValue(value3);
+            userGoalsRef.child("water_recommendation").setValue(waterRec);
+            userGoalsRef.child("gender").setValue(selectedGender);
+            userGoalsRef.child("birthday").setValue(selectedBirthday);
 
             // Retrieve data from userGoalsRef and update TextViews
             userGoalsRef.addValueEventListener(new ValueEventListener() {
@@ -157,28 +178,25 @@ public class goals extends Fragment {
         }
     }
 
-
-
-
-    private void disableText(){
+    private void disableText() {
         info1.setEnabled(false);
         info2.setEnabled(false);
         info3.setEnabled(false);
+        waterRecommendation.setEnabled(false);
+        genderSpinner.setEnabled(false);
+        birthdaySpinner.setEnabled(false);
         save.setVisibility(View.GONE);
         edit.setVisibility(View.VISIBLE);
     }
-    private void enableText(){
+
+    private void enableText() {
         info1.setEnabled(true);
         info2.setEnabled(true);
         info3.setEnabled(true);
+        waterRecommendation.setEnabled(true);
+        genderSpinner.setEnabled(true);
+        birthdaySpinner.setEnabled(true);
         save.setVisibility(View.VISIBLE);
         edit.setVisibility(View.GONE);
     }
-
-
-
-
-
-
-
 }
