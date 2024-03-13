@@ -2,6 +2,6 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.HydroHomie" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+<!--        <item name="colorPrimary">#1da2d8</item>-->
     </style>
 </resources>
