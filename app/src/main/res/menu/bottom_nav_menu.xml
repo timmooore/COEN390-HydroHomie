@@ -3,25 +3,30 @@
     <item
         android:id="@+id/home"
         android:title="Home"
+
         android:icon="@drawable/home"/>
     <item
         android:id="@+id/details"
         android:title="Details"
+
         android:icon="@drawable/details"/>
     <item
         android:id="@+id/bluetooth"
         android:title="Bluetooth"
+
         android:icon="@drawable/ic_stat_name"/>
 
     <item
         android:id="@+id/goals"
         android:title="Goals"
+
         android:icon="@drawable/goals"/>
 
 
     <item
         android:id="@+id/setting"
         android:title="Setting"
+
         android:icon="@drawable/ic_stat_name2"/>
 
 </menu>
