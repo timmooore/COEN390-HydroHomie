@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
     private home firstFragment = new home();
     private details secondFragment = new details();
-    private bluetooth thirdFragment = new bluetooth();
+    private BluetoothActivity thirdFragment = new BluetoothActivity();
     private goals forthFragment = new goals();
     private SettingBonhomme fifthFragment = new SettingBonhomme();
     private int selectedMenuItemId;
