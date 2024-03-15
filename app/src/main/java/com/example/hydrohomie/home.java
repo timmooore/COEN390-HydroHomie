@@ -1,5 +1,7 @@
 package com.example.hydrohomie;
 
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,10 +18,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 
 public class home extends Fragment {
 
+    private NotificationCompat.Builder mBuilder;
     protected ProgressBar simpleProgressBar;// the progress bar
     protected Button refreshButton;// the refresh button that shows what we should expect to see from having touched the button
     protected TextView titleNotif;// the notifcation button on what is expected to be seen
@@ -42,6 +46,12 @@ public class home extends Fragment {
         // Enable options menu in the fragment
         setHasOptionsMenu(true);
         updateText();
+        Context context = getActivity();
+
+        if (context != null) {
+            mBuilder = new NotificationCompat.Builder(context);
+            // configure your notification here
+        }
         refreshButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -54,10 +64,21 @@ public class home extends Fragment {
 
         return view;
     }
-
+//    private void showNotification() {
+//        if (mBuilder != null) {
+//            NotificationManager notificationManager =
+//                    (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+//            if (notificationManager != null) {
+//                notificationManager.notify(notificationId, mBuilder.build());
+//            }
+//        }
+//    }
     private void updateText() {
         if (progress >= 0 && progress < 50) {
             titleNotif.setText("LOW CONSUMPTION, DRINK WATER :(");
+//            mBuilder.setSmallIcon(R.drawable.notification);
+//            mBuilder.setContentTitle("Notification Alert, Click Me!");
+//            mBuilder.setContentText("Hi, This is Android Notification Detail!");
         } else if (progress >= 50 && progress < 75) {
             titleNotif.setText("MODERATE CONSUMPTION, KEEP HYDRATING :/");
         } else if (progress >= 75 && progress <= 100) {

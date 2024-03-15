@@ -3,6 +3,8 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="mybuttonColor">#064273</color>
+    <color name="mybuttonSecondColor">#7fcdff</color>
+
 
     <color name="myBackgroundColor">#76b6c4</color>
 

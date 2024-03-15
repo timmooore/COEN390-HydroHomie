@@ -1,12 +1,19 @@
 package com.example.hydrohomie;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -14,6 +21,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -22,8 +30,8 @@ public class signin extends AppCompatActivity {
     private EditText emailsignin, passwordsignin;
     private Button signin;
     protected Toolbar toolbar;
-    //private ProgressBar progressbar;
-
+    private ProgressBar progressbar;
+    protected Button forgetpass;
     private FirebaseAuth mAuth;
 
     @Override
@@ -37,8 +45,9 @@ public class signin extends AppCompatActivity {
         emailsignin = findViewById(R.id.emailSignin);
         passwordsignin = findViewById(R.id.Passwordsignin);
         signin = findViewById(R.id.Signin);
-        //progressbar = findViewById(R.id.progressBar);
-ToolbarSetup();
+        progressbar = findViewById(R.id.progressbar);
+        forgetpass = findViewById(R.id.forgetpass);
+        ToolbarSetup();
         // Set on Click Listener on Sign-in button
         signin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -47,12 +56,93 @@ ToolbarSetup();
                 loginUserAccount();
             }
         });
+
+
+
+        forgetpass.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showRecoverPasswordDialog();
+            }
+        });
+
+
+
+
+
+    }
+
+
+    ProgressDialog loadingBar;
+
+    private void showRecoverPasswordDialog() {
+        AlertDialog.Builder builder=new AlertDialog.Builder(this);
+        builder.setTitle("Recover Password");
+        LinearLayout linearLayout=new LinearLayout(this);
+        final EditText emailet= new EditText(this);
+
+        // write the email using which you registered
+        emailet.setText("Email");
+        emailet.setMinEms(16);
+        emailet.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+        linearLayout.addView(emailet);
+        linearLayout.setPadding(10,10,10,10);
+        builder.setView(linearLayout);
+
+        // Click on Recover and a email will be sent to your registered email id
+        builder.setPositiveButton("Recover", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String email=emailet.getText().toString().trim();
+                beginRecovery(email);
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.create().show();
+    }
+
+    private void beginRecovery(String email) {
+        loadingBar=new ProgressDialog(this);
+        loadingBar.setMessage("Sending Email....");
+        loadingBar.setCanceledOnTouchOutside(false);
+        loadingBar.show();
+
+        // calling sendPasswordResetEmail
+        // open your email and write the new
+        // password and then you can login
+        mAuth.sendPasswordResetEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                loadingBar.dismiss();
+                if(task.isSuccessful())
+                {
+                    // if isSuccessful then done message will be shown
+                    // and you can change the password
+                    Toast.makeText(signin.this,"Done sent",Toast.LENGTH_LONG).show();
+                }
+                else {
+                    Toast.makeText(signin.this,"Error Occurred",Toast.LENGTH_LONG).show();
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                loadingBar.dismiss();
+                Toast.makeText(signin.this,"Error Failed",Toast.LENGTH_LONG).show();
+            }
+        });
     }
     private void loginUserAccount()
     {
 
         // show the visibility of progress bar to show loading
-     //   progressbar.setVisibility(View.VISIBLE);
+        progressbar.setVisibility(View.VISIBLE);
 
         // Take the value of two edit texts in Strings
         String email, password;
@@ -96,7 +186,7 @@ ToolbarSetup();
                                     Toast.makeText(getApplicationContext(), "Login failed!!", Toast.LENGTH_LONG).show();
 
                                     // hide the progress bar
-    //                                progressbar.setVisibility(View.GONE);
+                                  progressbar.setVisibility(View.GONE);
                                 }
                             }
                         });

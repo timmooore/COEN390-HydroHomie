@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -57,6 +58,10 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         loadFragment(firstFragment);
         selectedMenuItemId = R.id.home; // Set the default selected menu item
     }
+
+
+
+
 
     // navigation bar setup menu option
     @Override
