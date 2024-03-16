@@ -39,10 +39,10 @@ public class home extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
 
-        simpleProgressBar = view.findViewById(R.id.pb);
+        simpleProgressBar = view.findViewById(R.id.pb2);
 
-        refreshButton = view.findViewById(R.id.refresh);
-        titleNotif = view.findViewById(R.id.titleNotif);
+        refreshButton = view.findViewById(R.id.refresh2);
+        titleNotif = view.findViewById(R.id.titleMessage);
         // Enable options menu in the fragment
         setHasOptionsMenu(true);
         updateText();

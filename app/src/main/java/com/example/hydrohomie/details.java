@@ -5,20 +5,56 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.io.*;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.hydrohomie.R;
+//import com.harrywhewell.scrolldatepicker.DayScrollDatePicker;
+//import com.harrywhewell.scrolldatepicker.OnDateSelectedListener;
+
+import java.util.Calendar;
+import java.util.Date;
 
 public class details extends Fragment {
 
-    public details(){
-        // require a empty public constructor
+//    DayScrollDatePicker dayDatePicker;
+
+    public details() {
+        // Required empty public constructor
     }
 
+    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_details, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_details, container, false);
+//
+//        dayDatePicker = rootView.findViewById(R.id.dayDatePicker);
+//        dayDatePicker.setStartDate(19, 7, 2021);
+
+//        dayDatePicker.setOnDateSelectedListener(new OnDateSelectedListener() {
+//            @Override
+//            public void onDateSelected(@Nullable Date date) {
+//                if (date != null) {
+//                    // Handle the selected date
+//                    Calendar calendar = Calendar.getInstance();
+//                    calendar.setTime(date);
+//
+//                    int year = calendar.get(Calendar.YEAR);
+//                    int month = calendar.get(Calendar.MONTH) + 1; // Note: Month starts from 0
+//                    int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+//
+//                    // Print or log the selected date
+//                    String selectedDate = "Selected Date: " + year + "-" + month + "-" + dayOfMonth;
+//                    System.out.println(selectedDate);
+//
+//                    // Now, you can perform any actions or update UI elements based on the selected date
+//                }
+//            }
+//        });
+
+
+        return rootView;
     }
 }

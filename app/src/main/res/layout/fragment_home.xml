@@ -9,10 +9,10 @@
 
     <!-- FrameLayout for Fragment -->
     <FrameLayout
-        android:id="@+id/flFragment1"
+        android:id="@+id/flFragment2"
         android:layout_width="362dp"
         android:layout_height="113dp"
-        app:layout_constraintBottom_toTopOf="@+id/titleNotif"
+        app:layout_constraintBottom_toTopOf="@+id/titleMessage"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -23,24 +23,24 @@
 
     <!-- Title TextView -->
     <TextView
-        android:id="@+id/titleNotif"
+        android:id="@+id/titleMessage"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:gravity="center"
         android:padding="16dp"
-        android:text="Stay Hydrated!"
+        android:text="Important Message"
         android:textColor="#FF03DAC5"
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/flFragment1" />
+        app:layout_constraintTop_toBottomOf="@+id/flFragment2" />
 
     <!-- ProgressBar -->
     <ProgressBar
-        android:id="@+id/pb"
+        android:id="@+id/pb2"
         style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -52,11 +52,11 @@
         android:progressDrawable="@drawable/customable_progress"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/titleNotif" />
+        app:layout_constraintTop_toBottomOf="@+id/titleMessage" />
 
     <!-- Refresh Button -->
     <Button
-        android:id="@+id/refresh"
+        android:id="@+id/refresh2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Refresh"
@@ -64,6 +64,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pb" />
+        app:layout_constraintTop_toBottomOf="@+id/pb2" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
