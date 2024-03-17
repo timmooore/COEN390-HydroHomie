@@ -29,7 +29,7 @@ public class goals extends Fragment {
     protected EditText info1, info2, info3, waterRecommendation;
     protected TextView infO1, infO2, infO3;
     protected Button save, edit;
-    protected Spinner genderSpinner, birthdaySpinner;
+    protected Spinner genderSpinner, daySpinner, monthSpinner;
     private FirebaseAuth mAuth;
 
     public goals() {
@@ -51,7 +51,8 @@ public class goals extends Fragment {
         save = view.findViewById(R.id.Save);
         edit = view.findViewById(R.id.edit);
         genderSpinner = view.findViewById(R.id.genderSpinner);
-        birthdaySpinner = view.findViewById(R.id.birthdaySpinner);
+        daySpinner = view.findViewById(R.id.daySpinner);
+        monthSpinner = view.findViewById(R.id.monthSpinner);
         waterRecommendation = view.findViewById(R.id.waterRecommendation);
 
         // Populate gender spinner
@@ -59,14 +60,20 @@ public class goals extends Fragment {
                 R.array.gender_array, android.R.layout.simple_spinner_item);
         genderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         genderSpinner.setAdapter(genderAdapter);
+        // Set the first item as "Gender"
+        genderSpinner.setSelection(0);
 
-        // Populate birthday spinner (you need to define the list of birthdays)
-        List<String> birthdayList = new ArrayList<>();
-        // Add birthday options to the list
-        ArrayAdapter<String> birthdayAdapter = new ArrayAdapter<>(getContext(),
-                android.R.layout.simple_spinner_item, birthdayList);
-        birthdayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        birthdaySpinner.setAdapter(birthdayAdapter);
+        // Populate day spinner
+        ArrayAdapter<CharSequence> dayAdapter = ArrayAdapter.createFromResource(getContext(),
+                R.array.day_array, android.R.layout.simple_spinner_item);
+        dayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        daySpinner.setAdapter(dayAdapter);
+
+        // Populate month spinner
+        ArrayAdapter<CharSequence> monthAdapter = ArrayAdapter.createFromResource(getContext(),
+                R.array.month_array, android.R.layout.simple_spinner_item);
+        monthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        monthSpinner.setAdapter(monthAdapter);
 
         // Set default water recommendation
         waterRecommendation.setText("2.5");
@@ -140,9 +147,33 @@ public class goals extends Fragment {
             String value1 = info1.getText().toString();
             String value2 = info2.getText().toString();
             String value3 = info3.getText().toString();
-            String waterRec = waterRecommendation.getText().toString();
-            String selectedGender = genderSpinner.getSelectedItem().toString();
-            String selectedBirthday = birthdaySpinner.getSelectedItem().toString();
+
+            // Check if a gender is selected
+            String selectedGender = "";
+            if (genderSpinner.getSelectedItem() != null) {
+                selectedGender = genderSpinner.getSelectedItem().toString();
+            }
+
+            // Check if a birthday is selected
+            String selectedDay = "";
+            if (daySpinner.getSelectedItem() != null) {
+                selectedDay = daySpinner.getSelectedItem().toString();
+            }
+
+            String selectedMonth = "";
+            if (monthSpinner.getSelectedItem() != null) {
+                selectedMonth = monthSpinner.getSelectedItem().toString();
+            }
+
+            // Combine selected day, month, and year into a single string for birthday
+            String selectedBirthday = selectedDay + "/" + selectedMonth;
+
+            double userWeight = Double.parseDouble(value1); // Assuming value1 contains the user's weight in kilograms
+            boolean isPhysicallyActive = false; // You need to determine the user's activity level
+
+            // Calculate recommended water intake using the WaterIntakeCalculator
+            double recommendedWaterIntake = WaterIntakeCalculator.calculateRecommendedWaterIntake(userWeight, selectedGender, isPhysicallyActive);
+            String waterRec = String.valueOf(recommendedWaterIntake);
 
             // Create a reference to the user's goals in the database
             DatabaseReference userGoalsRef = FirebaseDatabase.getInstance().getReference("user_goals").child(userId);
@@ -184,7 +215,8 @@ public class goals extends Fragment {
         info3.setEnabled(false);
         waterRecommendation.setEnabled(false);
         genderSpinner.setEnabled(false);
-        birthdaySpinner.setEnabled(false);
+        daySpinner.setEnabled(false);
+        monthSpinner.setEnabled(false);
         save.setVisibility(View.GONE);
         edit.setVisibility(View.VISIBLE);
     }
@@ -195,8 +227,27 @@ public class goals extends Fragment {
         info3.setEnabled(true);
         waterRecommendation.setEnabled(true);
         genderSpinner.setEnabled(true);
-        birthdaySpinner.setEnabled(true);
+        daySpinner.setEnabled(true);
+        monthSpinner.setEnabled(true);
         save.setVisibility(View.VISIBLE);
         edit.setVisibility(View.GONE);
+    }
+
+    public static class WaterIntakeCalculator {
+
+        // Calculate the recommended daily water intake in milliliters based on user's characteristics
+        public static double calculateRecommendedWaterIntake(double weight, String gender, boolean isPhysicallyActive) {
+            // Baseline water intake in milliliters
+            double baselineIntake = (gender.equalsIgnoreCase("male")) ? 3700 : 2700;
+
+            // Activity adjustment in milliliters
+            double activityAdjustment = (isPhysicallyActive) ? 500 : 0; // Additional 500 mL if physically active
+
+            // Weight adjustment in milliliters
+            double weightAdjustment = weight * 32.5; // Average of 30-35 mL/kg
+
+            // Calculate total recommended water intake
+            return baselineIntake + activityAdjustment + weightAdjustment;
+        }
     }
 }

@@ -7,39 +7,75 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <!-- Spinners for gender and birthday -->
+
     <!-- FrameLayout for Fragment -->
 
+
+    <Spinner
+        android:id="@+id/genderSpinner"
+        android:layout_width="162dp"
+        android:layout_height="29dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="264dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.599"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <FrameLayout
         android:id="@+id/flFragment2"
         android:layout_width="406dp"
         android:layout_height="69dp"
-        app:layout_constraintBottom_toTopOf="@+id/info1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.673"
+
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/info1"
+        app:layout_constraintHorizontal_bias="0.673"
         app:layout_constraintVertical_bias="0.0">
 
         <!-- Your fragment content goes here -->
-        <Spinner
-            android:id="@+id/genderSpinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <Spinner
-            android:id="@+id/birthdaySpinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <EditText
-            android:id="@+id/waterRecommendation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Water Recommendation"
-            android:inputType="numberDecimal" />
 
     </FrameLayout>
+
+    <!-- Spinners for day, month, and year selection -->
+
+
+    <TextView
+        android:id="@+id/birthdayTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Birthday: "
+        android:textSize="18sp"
+        android:textStyle="bold"
+        tools:layout_editor_absoluteX="162dp"
+        tools:layout_editor_absoluteY="318dp" />
+
+    <Spinner
+        android:id="@+id/daySpinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/birthdayTitle"
+        tools:layout_editor_absoluteX="44dp"
+        tools:layout_editor_absoluteY="352dp" />
+
+    <Spinner
+        android:id="@+id/monthSpinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/birthdayTitle"
+        android:layout_toEndOf="@id/daySpinner"
+        tools:layout_editor_absoluteX="162dp"
+        tools:layout_editor_absoluteY="353dp" />
+
+    <Spinner
+        android:id="@+id/yearSpinner"
+        android:layout_width="112dp"
+        android:layout_height="26dp"
+        android:layout_below="@id/birthdayTitle"
+        android:layout_toEndOf="@id/monthSpinner"
+        tools:layout_editor_absoluteX="280dp"
+        tools:layout_editor_absoluteY="353dp" />
 
     <EditText
         android:id="@+id/info1"
@@ -56,15 +92,15 @@
 
     <EditText
         android:id="@+id/info2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="69dp"
+        android:layout_height="54dp"
         android:layout_marginBottom="428dp"
         android:ems="10"
         android:hint="gender"
         android:inputType="text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintHorizontal_bias="0.236"
         app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
@@ -84,13 +120,12 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="272dp"
         android:text="Save"
-        android:background="@color/mybuttonColor"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.73"
+        app:layout_constraintHorizontal_bias="0.724"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/info2"
-        app:layout_constraintVertical_bias="0.99" />
+        app:layout_constraintVertical_bias="1.0" />
 
     <TextView
         android:id="@+id/infO1"
@@ -126,13 +161,20 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="152dp"
         android:text="Edit"
-        android:background="@color/mybuttonColor"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.272"
+        app:layout_constraintHorizontal_bias="0.309"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/info2"
-        app:layout_constraintVertical_bias="0.469" />
+        app:layout_constraintVertical_bias="0.473" />
 
+    <EditText
+        android:id="@+id/waterRecommendation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Water Recommendation"
+        android:inputType="numberDecimal"
+        tools:layout_editor_absoluteX="-16dp"
+        tools:layout_editor_absoluteY="522dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
