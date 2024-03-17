@@ -17,11 +17,11 @@
         android:layout_width="162dp"
         android:layout_height="29dp"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="264dp"
+        android:layout_marginTop="15dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.599"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/info3" />
 
     <FrameLayout
         android:id="@+id/flFragment2"
@@ -48,16 +48,23 @@
         android:text="Birthday: "
         android:textSize="18sp"
         android:textStyle="bold"
-        tools:layout_editor_absoluteX="162dp"
-        tools:layout_editor_absoluteY="318dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.445" />
 
     <Spinner
         android:id="@+id/daySpinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/birthdayTitle"
-        tools:layout_editor_absoluteX="44dp"
-        tools:layout_editor_absoluteY="352dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/monthSpinner"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.499" />
 
     <Spinner
         android:id="@+id/monthSpinner"
@@ -65,8 +72,12 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/birthdayTitle"
         android:layout_toEndOf="@id/daySpinner"
-        tools:layout_editor_absoluteX="162dp"
-        tools:layout_editor_absoluteY="353dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.552"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.502" />
 
     <Spinner
         android:id="@+id/yearSpinner"
@@ -74,8 +85,11 @@
         android:layout_height="26dp"
         android:layout_below="@id/birthdayTitle"
         android:layout_toEndOf="@id/monthSpinner"
-        tools:layout_editor_absoluteX="280dp"
-        tools:layout_editor_absoluteY="353dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/monthSpinner"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/info1"
