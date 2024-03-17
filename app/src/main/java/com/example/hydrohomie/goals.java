@@ -22,6 +22,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class goals extends Fragment {
@@ -29,7 +30,7 @@ public class goals extends Fragment {
     protected EditText info1, info2, info3, waterRecommendation;
     protected TextView infO1, infO2, infO3;
     protected Button save, edit;
-    protected Spinner genderSpinner, daySpinner, monthSpinner;
+    protected Spinner genderSpinner, daySpinner, monthSpinner, yearSpinner;
     private FirebaseAuth mAuth;
 
     public goals() {
@@ -53,6 +54,7 @@ public class goals extends Fragment {
         genderSpinner = view.findViewById(R.id.genderSpinner);
         daySpinner = view.findViewById(R.id.daySpinner);
         monthSpinner = view.findViewById(R.id.monthSpinner);
+        yearSpinner = view.findViewById(R.id.yearSpinner);
         waterRecommendation = view.findViewById(R.id.waterRecommendation);
 
         // Populate gender spinner
@@ -74,6 +76,11 @@ public class goals extends Fragment {
                 R.array.month_array, android.R.layout.simple_spinner_item);
         monthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         monthSpinner.setAdapter(monthAdapter);
+
+        // Populate year spinner
+        ArrayAdapter<String> yearAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, generateYears());
+        yearAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        yearSpinner.setAdapter(yearAdapter);
 
         // Set default water recommendation
         waterRecommendation.setText("2.5");
@@ -97,6 +104,15 @@ public class goals extends Fragment {
         });
 
         return view;
+    }
+
+    private List<String> generateYears() {
+        List<String> years = new ArrayList<>();
+        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+        for (int i = currentYear; i >= currentYear - 100; i--) {
+            years.add(String.valueOf(i));
+        }
+        return years;
     }
 
     private void retrieveAndDisplayData() {
@@ -165,8 +181,13 @@ public class goals extends Fragment {
                 selectedMonth = monthSpinner.getSelectedItem().toString();
             }
 
+            String selectedYear = "";
+            if (yearSpinner.getSelectedItem() != null) {
+                selectedYear = yearSpinner.getSelectedItem().toString();
+            }
+
             // Combine selected day, month, and year into a single string for birthday
-            String selectedBirthday = selectedDay + "/" + selectedMonth;
+            String selectedBirthday = selectedDay + "/" + selectedMonth + "/" + selectedYear;
 
             double userWeight = Double.parseDouble(value1); // Assuming value1 contains the user's weight in kilograms
             boolean isPhysicallyActive = false; // You need to determine the user's activity level
@@ -217,6 +238,7 @@ public class goals extends Fragment {
         genderSpinner.setEnabled(false);
         daySpinner.setEnabled(false);
         monthSpinner.setEnabled(false);
+        yearSpinner.setEnabled(false);
         save.setVisibility(View.GONE);
         edit.setVisibility(View.VISIBLE);
     }
@@ -229,6 +251,7 @@ public class goals extends Fragment {
         genderSpinner.setEnabled(true);
         daySpinner.setEnabled(true);
         monthSpinner.setEnabled(true);
+        yearSpinner.setEnabled(true);
         save.setVisibility(View.VISIBLE);
         edit.setVisibility(View.GONE);
     }

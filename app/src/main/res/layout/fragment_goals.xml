@@ -110,7 +110,7 @@
         android:layout_height="54dp"
         android:layout_marginBottom="428dp"
         android:ems="10"
-        android:hint="gender"
+        android:text="Gender"
         android:inputType="text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -132,14 +132,13 @@
         android:id="@+id/Save"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="272dp"
         android:text="Save"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.724"
+        app:layout_constraintHorizontal_bias="0.755"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/info2"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="0.505" />
 
     <TextView
         android:id="@+id/infO1"
@@ -180,15 +179,18 @@
         app:layout_constraintHorizontal_bias="0.309"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/info2"
-        app:layout_constraintVertical_bias="0.473" />
+        app:layout_constraintVertical_bias="0.842" />
 
     <EditText
         android:id="@+id/waterRecommendation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Water Recommendation"
+        android:layout_width="268dp"
+        android:layout_height="49dp"
+        android:hint="Recommended Water"
         android:inputType="numberDecimal"
-        tools:layout_editor_absoluteX="-16dp"
-        tools:layout_editor_absoluteY="522dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/monthSpinner"
+        app:layout_constraintVertical_bias="0.108" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
