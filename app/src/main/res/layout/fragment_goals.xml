@@ -10,7 +10,7 @@
     <!-- Spinners for gender and birthday -->
 
     <!-- FrameLayout for Fragment -->
-
+    <!-- FrameLayout for Fragment -->
 
     <Spinner
         android:id="@+id/genderSpinner"
