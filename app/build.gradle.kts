@@ -46,5 +46,4 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:32.7.4"))
     implementation("com.github.badoualy:datepicker-timeline:c6dcd05737")
 
-
 }
