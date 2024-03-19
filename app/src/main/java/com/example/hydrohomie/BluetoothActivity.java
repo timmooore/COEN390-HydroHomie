@@ -3,6 +3,7 @@ package com.example.hydrohomie;
 import static androidx.core.app.ActivityCompat.startActivityForResult;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -16,6 +17,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -32,6 +35,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -47,6 +51,8 @@ public class BluetoothActivity extends Fragment {
             PERIMSSION_FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
 
     private Set<BluetoothDevice> pairedDevices;
+    private ArrayList<String> devicesList = new ArrayList<>();
+    private ArrayAdapter<String> adapter;
 
     Button b1, b2, b3, b4;
 
@@ -64,6 +70,7 @@ public class BluetoothActivity extends Fragment {
                     Toast.makeText(getContext(), "We have permissions", Toast.LENGTH_SHORT).show();
                 }
             });
+
     // Create a BroadcastReceiver for ACTION_FOUND.
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
@@ -74,6 +81,7 @@ public class BluetoothActivity extends Fragment {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 
                 assert device != null;
+                discoveredDevicesList.add(device);
                 if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
                     // TODO: Consider calling
                     //    ActivityCompat#requestPermissions
@@ -90,10 +98,17 @@ public class BluetoothActivity extends Fragment {
                 String deviceHardwareAddress = device.getAddress(); // MAC address
                 if (deviceName != null) {
                     Toast.makeText(getContext(), deviceName, Toast.LENGTH_LONG).show();
+                    devicesList.add(deviceName);
+                    // Notify the adapter that the dataset has changed
+                    // This should be a member variable of your Activity/Fragment
+                    // Adapter initialization and setting to the list view should be done elsewhere
+                    adapter.notifyDataSetChanged();
                 }
             }
         }
     };
+    private ArrayList<BluetoothDevice> discoveredDevicesList = new ArrayList<>();
+
     public BluetoothActivity() {
         // require a empty public constructor
     }
@@ -246,6 +261,38 @@ public class BluetoothActivity extends Fragment {
         b2 = rootView.findViewById(R.id.button2);
         b3 = rootView.findViewById(R.id.button3);
         b4 = rootView.findViewById(R.id.button4);
+        // Initialize the adapter and set it to your list view;
+        adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, devicesList);
+        ListView listView = new ListView(getContext());
+        listView.setAdapter(adapter);
+
+        // Create a dialog and set the list view
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Select a device to pair");
+        builder.setView(listView);
+
+        // Create dialog
+        AlertDialog dialog = builder.create();
+
+        // Set a click listener for list items to handle pairing
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // Retrieve the selected device from the list
+                String selectedDeviceName = devicesList.get(position);
+                // Find the device object using its name
+                BluetoothDevice selectedDevice = findDeviceByName(selectedDeviceName);
+                try {
+                    Toast.makeText(requireContext(), "You selected: " + selectedDevice.getName(), Toast.LENGTH_LONG).show();
+                } catch (SecurityException e) {
+                    e.printStackTrace();
+                }
+                dialog.hide();
+                // Now you can initiate pairing with this device
+                // For example:
+                // initiatePairing(selectedDevice);
+            }
+        });
 
         b2.setOnClickListener(v -> {
             BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -264,6 +311,8 @@ public class BluetoothActivity extends Fragment {
             }
             Toast.makeText(getContext(), "Scanning for Bluetooth", Toast.LENGTH_LONG).show();
             bluetoothAdapter.startDiscovery();
+
+            dialog.show();
         });
         return rootView;
     }
@@ -315,5 +364,19 @@ public class BluetoothActivity extends Fragment {
 
             }
         }
+    }
+
+    private BluetoothDevice findDeviceByName(String deviceName) {
+        try {
+            for (BluetoothDevice device : discoveredDevicesList) {
+                if (device.getName() != null && device.getName().equals(deviceName)) {
+                    return device;
+                }
+            }
+        } catch (SecurityException e) {
+            // Handle the SecurityException, such as requesting permission or logging an error
+            e.printStackTrace(); // This is just an example; you may want to handle it differently
+        }
+        return null; // Device not found or permission not granted
     }
 }
