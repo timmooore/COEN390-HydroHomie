@@ -94,15 +94,16 @@ public class goals extends Fragment {
                 double recommendedWaterIntake;
 
                 // Calculate recommended water intake based on selected activity level
+                String gender = "male";
                 switch (selectedActivityLevel) {
                     case "Not Active (0 to 14 min per day)":
                         recommendedWaterIntake = 2.5; // Default consumption for not active
                         break;
                     case "Moderate (15 to 45 min per day)":
-                        recommendedWaterIntake = calculateWaterIntakeForModerate();
+                        recommendedWaterIntake = calculateWaterIntakeForModerate(gender);
                         break;
                     case "Active (46 min to 3 hours per day)":
-                        recommendedWaterIntake = calculateWaterIntakeForActive();
+                        recommendedWaterIntake = calculateWaterIntakeForActive(gender);
                         break;
                     default:
                         recommendedWaterIntake = 2.5; // Default consumption
@@ -227,15 +228,16 @@ public class goals extends Fragment {
 
             // Calculate recommended water intake based on selected activity level
             double recommendedWaterIntake;
+            String gender = "male";
             switch (selectedActivityLevel) {
                 case "Not Active (0 to 14 min per day)":
                     recommendedWaterIntake = 2.5; // Default consumption for not active
                     break;
                 case "Moderate (15 to 45 min per day)":
-                    recommendedWaterIntake = calculateWaterIntakeForModerate();
+                    recommendedWaterIntake = calculateWaterIntakeForModerate(gender);
                     break;
                 case "Active (46 min to 3 hours per day)":
-                    recommendedWaterIntake = calculateWaterIntakeForActive();
+                    recommendedWaterIntake = calculateWaterIntakeForActive(gender);
                     break;
                 default:
                     recommendedWaterIntake = 2.5; // Default consumption
@@ -299,13 +301,26 @@ public class goals extends Fragment {
         edit.setVisibility(View.GONE);
     }
 
-    private double calculateWaterIntakeForModerate() {
-        // Implement your logic for calculating water intake for moderate activity level
-        return 0; // Placeholder, replace with your calculation
+    private double calculateWaterIntakeForModerate(String gender) {
+        // Baseline water intake in liters
+        double baselineIntake = gender.equalsIgnoreCase("male") ? 3.7 : 2.7;
+
+        //Additional water intake per 30 minutes of moderate activity in liters
+        double additionalWaterIntakePer30Min = 0.35;
+
+        //Return total water intake
+        return baselineIntake + additionalWaterIntakePer30Min;
     }
 
-    private double calculateWaterIntakeForActive() {
-        // Implement your logic for calculating water intake for active activity level
-        return 0; // Placeholder, replace with your calculation
+    private double calculateWaterIntakeForActive(String gender) {
+
+        //Baseline water intake in liters
+        double baselineIntake = gender.equalsIgnoreCase("male") ? 3.7 : 2.7;
+
+        //Taking the average between 45 mins and 4 hours of activity
+        double additionalIntakeForActive = (0.35/30.0) * 142.5;
+
+        //Total water intake plus the additional intake for active
+        return baselineIntake + additionalIntakeForActive;
     }
 }
