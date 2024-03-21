@@ -1,5 +1,15 @@
 package com.example.hydrohomie;
 
+import static android.content.Context.NOTIFICATION_SERVICE;
+
+import static androidx.core.content.ContextCompat.getSystemService;
+
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
+import android.media.RingtoneManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,14 +18,21 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
+import com.example.hydrohomie.SensorReaderData;
 
 public class home extends Fragment implements SensorReaderData.DataUpdateListener {
+    private static final String CHANNEL_ID = "my_channel_id";
 
     private ProgressBar simpleProgressBar;
     private TextView titleNotif;
+    private TextView firstReadingTextView; // Added TextView for displaying the first reading
+    private TextView lastReadingTextView; // Added TextView for displaying the last reading
     private Button refreshButton;
-    private int waterLevel = 50; // Initial water level in percentage
+    private float waterLevel = 0; // Initial water level in percentage
+    private float firstReading = -1; // Variable to hold the first reading
+    private float lastReading = -1; // Variable to hold the last reading
 
     public home() {
         // require an empty public constructor
@@ -28,13 +45,12 @@ public class home extends Fragment implements SensorReaderData.DataUpdateListene
 
         simpleProgressBar = view.findViewById(R.id.pb2);
         titleNotif = view.findViewById(R.id.titleMessage);
+        firstReadingTextView = view.findViewById(R.id.firstReadingTextView); // Initialize first reading TextView
+        lastReadingTextView = view.findViewById(R.id.lastReadingTextView); // Initialize last reading TextView
         refreshButton = view.findViewById(R.id.refresh2);
 
         // Enable options menu in the fragment
         setHasOptionsMenu(true);
-
-        // Update UI with initial water level
-        updateUI();
 
         // Set onClickListener for the refreshButton
         refreshButton.setOnClickListener(new View.OnClickListener() {
@@ -45,12 +61,16 @@ public class home extends Fragment implements SensorReaderData.DataUpdateListene
             }
         });
 
+        // Initialize UI with initial water level and readings
+        updateUI();
+
         return view;
     }
 
+
     // Method to update UI based on water level
     private void updateUI() {
-        simpleProgressBar.setProgress(waterLevel);
+        simpleProgressBar.setProgress((int) waterLevel);
         updateNotification();
     }
 
@@ -60,19 +80,73 @@ public class home extends Fragment implements SensorReaderData.DataUpdateListene
         String notificationMessage;
         if (waterLevel < 25) {
             notificationMessage = "LOW WATER LEVEL! REFILL THE BOTTLE!";
+            notification();
         } else if (waterLevel < 75) {
             notificationMessage = "MODERATE WATER LEVEL. KEEP HYDRATING!";
+            notification();
         } else {
             notificationMessage = "GOOD WATER LEVEL. STAY HYDRATED!";
+            notification();
         }
         titleNotif.setText(notificationMessage);
+
+        // Update first and last reading TextViews
+        firstReadingTextView.setText("First Reading: " + firstReading);
+        lastReadingTextView.setText("Last Reading: " + lastReading);
     }
 
     // Implementation of DataUpdateListener interface method
     @Override
-    public void onDataUpdate(int waterLevel) {
+    public void onDataUpdate(float waterLevel, float first, float last) {
         // Update water level and UI when new data is received
         this.waterLevel = waterLevel;
         updateUI();
+
+        // Check if it's the first reading
+        if (firstReading == -1) {
+            setFirstReading(first);
+        }
+
+        // Always update the last reading
+        setLastReading(last);
+    }
+
+    public void notification() {
+        // Define notification sound and vibration
+        Uri notificationSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        long[] vibrationPattern = {0, 100, 200, 300}; // Vibrate for 100ms, then pause for 200ms, then vibrate for 300ms
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getContext(), CHANNEL_ID)
+                .setSmallIcon(R.drawable.notification) // Set small icon
+                .setSound(notificationSound) // Set notification sound
+                .setVibrate(vibrationPattern) // Set vibration pattern
+                .setContentTitle("Notification") // Set notification title
+                .setContentText("This is a notification for you"); // Set notification content
+
+        // Define notification channel
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Channel Name", NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationManager notificationManager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        // Display notification
+        NotificationManager notificationManager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        if (notificationManager != null) {
+            notificationManager.notify(0, builder.build());
+        }
+    }
+
+
+
+    // Method to set first reading
+    public void setFirstReading(float firstReading) {
+        this.firstReading = firstReading;
+    }
+
+    // Method to set last reading
+
+    public void setLastReading(float lastReading) {
+        this.lastReading = lastReading;
     }
 }

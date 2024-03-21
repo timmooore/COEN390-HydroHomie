@@ -20,7 +20,7 @@
         android:id="@+id/UpButton"
         android:layout_width="276dp"
         android:layout_height="49dp"
-        android:layout_marginTop="172dp"
+        android:layout_marginTop="368dp"
         android:background="@drawable/round"
         android:text="Sign Up"
         android:textColor="@android:color/white"
@@ -41,6 +41,17 @@
         app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/UpButton"
-        app:layout_constraintVertical_bias="0.158" />
+        app:layout_constraintVertical_bias="0.257" />
+
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="341dp"
+        android:layout_height="521dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@drawable/logo" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
