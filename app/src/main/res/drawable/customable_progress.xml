@@ -1,15 +1,22 @@
-<?xml version="1.0" encoding="utf-8"?>
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
+<!-- custom_progress_background.xml -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item>
-        <shape>
-            <gradient
-                android:endColor="#fff"
-                android:startColor="#1f1"
-                android:useLevel="true" />
-
+    <!-- Background for the progress -->
+    <item android:id="@android:id/background">
+        <shape android:shape="rectangle">
+            <solid android:color="#E0E0E0" />
+            <corners android:radius="8dp" />
         </shape>
     </item>
 
+    <!-- Progress bar -->
+    <item android:id="@android:id/progress">
+        <clip>
+            <shape android:shape="rectangle">
+                <solid android:color="#03DAC5" />
+                <corners android:radius="8dp" />
+            </shape>
+        </clip>
+    </item>
 
 </layer-list>

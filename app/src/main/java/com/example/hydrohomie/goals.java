@@ -1,5 +1,6 @@
 package com.example.hydrohomie;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,8 +28,8 @@ import java.util.List;
 
 public class goals extends Fragment {
 
-    protected EditText info1, info2, info3, waterRecommendation;
-    protected TextView infO1, infO2, infO3;
+    protected EditText info3  ;
+protected TextView waterRecommendation;
     protected Button save, edit;
     protected Spinner genderSpinner, daySpinner, monthSpinner, yearSpinner;
     private FirebaseAuth mAuth;
@@ -37,18 +38,13 @@ public class goals extends Fragment {
         // Required empty public constructor
     }
 
+    @SuppressLint("WrongViewCast")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_goals, container, false);
 
         mAuth = FirebaseAuth.getInstance();
 
-        info1 = view.findViewById(R.id.info1);
-        info2 = view.findViewById(R.id.info2);
-        info3 = view.findViewById(R.id.info3);
-        infO1 = view.findViewById(R.id.infO1);
-        infO2 = view.findViewById(R.id.infO2);
-        infO3 = view.findViewById(R.id.infO3);
         save = view.findViewById(R.id.Save);
         edit = view.findViewById(R.id.edit);
         genderSpinner = view.findViewById(R.id.genderSpinner);
@@ -56,6 +52,8 @@ public class goals extends Fragment {
         monthSpinner = view.findViewById(R.id.monthSpinner);
         yearSpinner = view.findViewById(R.id.yearSpinner);
         waterRecommendation = view.findViewById(R.id.waterRecommendation);
+        info3 = view.findViewById(R.id.info3);
+
 
         // Populate gender spinner
         ArrayAdapter<CharSequence> genderAdapter = ArrayAdapter.createFromResource(getContext(),
@@ -129,16 +127,14 @@ public class goals extends Fragment {
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
                         // Retrieve data from the database
-                        String dbValue1 = dataSnapshot.child("info1").getValue(String.class);
-                        String dbValue2 = dataSnapshot.child("info2").getValue(String.class);
+
                         String dbValue3 = dataSnapshot.child("info3").getValue(String.class);
 
-                        info1.setText(dbValue1);
-                        info2.setText(dbValue2);
+
                         info3.setText(dbValue3);
 
                         // Disable or enable text based on data presence
-                        if (dbValue1 != null && dbValue2 != null && dbValue3 != null) {
+                        if ( dbValue3 != null) {
                             disableText();
                         } else {
                             enableText();
@@ -160,8 +156,7 @@ public class goals extends Fragment {
         if (currentUser != null) {
             String userId = currentUser.getUid();
 
-            String value1 = info1.getText().toString();
-            String value2 = info2.getText().toString();
+
             String value3 = info3.getText().toString();
 
             // Check if a gender is selected
@@ -189,7 +184,8 @@ public class goals extends Fragment {
             // Combine selected day, month, and year into a single string for birthday
             String selectedBirthday = selectedDay + "/" + selectedMonth + "/" + selectedYear;
 
-            double userWeight = Double.parseDouble(value1); // Assuming value1 contains the user's weight in kilograms
+            double userWeight = Double.parseDouble(value3); // Assuming value1 contains the user's weight in kilograms
+            // Assuming value1 contains the user's weight in kilograms
             boolean isPhysicallyActive = false; // You need to determine the user's activity level
 
             // Calculate recommended water intake using the WaterIntakeCalculator
@@ -200,8 +196,7 @@ public class goals extends Fragment {
             DatabaseReference userGoalsRef = FirebaseDatabase.getInstance().getReference("user_goals").child(userId);
 
             // Save the information to the user's goals
-            userGoalsRef.child("info1").setValue(value1);
-            userGoalsRef.child("info2").setValue(value2);
+
             userGoalsRef.child("info3").setValue(value3);
             userGoalsRef.child("water_recommendation").setValue(waterRec);
             userGoalsRef.child("gender").setValue(selectedGender);
@@ -213,11 +208,9 @@ public class goals extends Fragment {
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
                         // Retrieve data from the database
-                        String dbValue1 = dataSnapshot.child("info1").getValue(String.class);
-                        String dbValue2 = dataSnapshot.child("info2").getValue(String.class);
+
                         String dbValue3 = dataSnapshot.child("info3").getValue(String.class);
-                        info1.setText(dbValue1);
-                        info2.setText(dbValue2);
+
                         info3.setText(dbValue3);
                     }
                 }
@@ -231,8 +224,8 @@ public class goals extends Fragment {
     }
 
     private void disableText() {
-        info1.setEnabled(false);
-        info2.setEnabled(false);
+
+
         info3.setEnabled(false);
         waterRecommendation.setEnabled(false);
         genderSpinner.setEnabled(false);
@@ -244,8 +237,8 @@ public class goals extends Fragment {
     }
 
     private void enableText() {
-        info1.setEnabled(true);
-        info2.setEnabled(true);
+    ;
+
         info3.setEnabled(true);
         waterRecommendation.setEnabled(true);
         genderSpinner.setEnabled(true);
