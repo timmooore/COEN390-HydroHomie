@@ -74,30 +74,20 @@ public class signup extends AppCompatActivity {
         // create new user or register new user
         mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
 
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task)
-                    {
-                        if (task.isSuccessful()) {
-                            Toast.makeText(getApplicationContext(), "Registration successful!", Toast.LENGTH_LONG).show();
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+                    Toast.makeText(getApplicationContext(), "Registration successful!", Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(signup.this, MainActivity.class);
+                    startActivity(intent); // Navigate to MainActivity (home activity) after registration
+                    finish();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Registration failed!! Please try again later", Toast.LENGTH_LONG).show();
 
-                            // hide the progress bar
-                            //progressBar.setVisibility(View.GONE);
+                }
+            }
 
-                            // if the user created intent to login activity
-                            Intent intent = new Intent(signup.this, MainActivity.class);
-                            startActivity(intent);
-                        }
-                        else {
-
-                            // Registration failed
-                            Toast.makeText(getApplicationContext(), "Registration failed!!" + " Please try again later", Toast.LENGTH_LONG).show();
-
-                            // hide the progress bar
-                            //progressBar.setVisibility(View.GONE);
-                        }
-                    }
-                });
-    }
+        });}
 
     private void ToolbarSetup(){
         setSupportActionBar(toolbar);
