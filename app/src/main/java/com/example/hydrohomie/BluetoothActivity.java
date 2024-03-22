@@ -58,19 +58,6 @@ public class BluetoothActivity extends Fragment {
 
     ListView lv;
 
-    private final ActivityResultLauncher<String[]> requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(),
-            result -> {
-                Log.e("activityResultLauncher", result.toString());
-                boolean areAllGranted = true;
-                for (Boolean b : result.values()) {
-                    areAllGranted = areAllGranted && b;
-                }
-                if (areAllGranted) {
-                    // TODO:
-                    Toast.makeText(getContext(), "We have permissions", Toast.LENGTH_SHORT).show();
-                }
-            });
-
     // Create a BroadcastReceiver for ACTION_FOUND.
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
@@ -82,17 +69,6 @@ public class BluetoothActivity extends Fragment {
 
                 assert device != null;
                 discoveredDevicesList.add(device);
-                if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
-                    ActivityCompat.requestPermissions(requireActivity(), new String[]{PERMISSION_BLUETOOTH_CONNECT}, PERMISSION_CODE);
-                    return;
-                }
 
                 String deviceName = device.getName();
                 String deviceHardwareAddress = device.getAddress(); // MAC address
@@ -113,37 +89,33 @@ public class BluetoothActivity extends Fragment {
         // require a empty public constructor
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.S)
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
-        // TODO:
-
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             // Check location permissions required for Bluetooth, prompt for permissions from user
-            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED ||
-                    ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
                     ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED ||
                     ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.BLUETOOTH_ADMIN) != PackageManager.PERMISSION_GRANTED ||
                     ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED ||
                     ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
-//                ActivityResultLauncher<String[]> requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(),
-//                        result -> {
-//                            Log.e("activityResultLauncher", result.toString());
-//                            boolean areAllGranted = true;
-//                            for (Boolean b : result.values()) {
-//                                areAllGranted = areAllGranted && b;
-//                            }
-//                            if (areAllGranted) {
-//                                // TODO:
-//                                Toast.makeText(getContext(), "We have permissions", Toast.LENGTH_SHORT).show();
-//                            }
-//                        });
+                ActivityResultLauncher<String[]> requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(),
+                        result -> {
+                            Log.i("activityResultLauncher", result.toString());
+                            boolean areAllGranted = true;
+                            for (Boolean b : result.values()) {
+                                areAllGranted = areAllGranted && b;
+                                beginBluetoothPairing();
+                            }
+                            if (areAllGranted) {
+                                // TODO:
+                                Toast.makeText(getContext(), "We have permissions", Toast.LENGTH_SHORT).show();
+                            }
+                        });
                 String[] appPerms;
                 appPerms = new String[]{
-                        Manifest.permission.ACCESS_BACKGROUND_LOCATION,
                         Manifest.permission.ACCESS_FINE_LOCATION,
                         Manifest.permission.BLUETOOTH,
                         Manifest.permission.BLUETOOTH_ADMIN,
@@ -153,36 +125,36 @@ public class BluetoothActivity extends Fragment {
                 Toast.makeText(getContext(), "This got exec", Toast.LENGTH_SHORT).show();
                 requestPermissionLauncher.launch(appPerms);
             }
-            if (ContextCompat.checkSelfPermission(requireContext(),
-                    Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(requireContext(), "This got exec2", Toast.LENGTH_SHORT).show();
-                if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
-                    // Show an explanation to the user, e.g., using a dialog or Snackbar
-                    // Explain to the user why this permission is needed
-                    Toast.makeText(requireContext(), "This is why we need location services", Toast.LENGTH_SHORT).show();
-                }
-                Activity activity = requireActivity();
-                String activityClassName = activity.getClass().getName();
-                Log.d("ActivityDebug", "Activity class name: " + activityClassName);
-                requestPermissions(
-                        new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION},
-                        PERMISSION_CODE);
-            }
-            if (ContextCompat.checkSelfPermission(requireContext(),
-                    Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(requireContext(), "This got exec2", Toast.LENGTH_SHORT).show();
-                if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
-                    // Show an explanation to the user, e.g., using a dialog or Snackbar
-                    // Explain to the user why this permission is needed
-                    Toast.makeText(requireContext(), "This is why we need location services", Toast.LENGTH_SHORT).show();
-                }
-                Activity activity = requireActivity();
-                String activityClassName = activity.getClass().getName();
-                Log.d("ActivityDebug", "Activity class name: " + activityClassName);
-                requestPermissions(
-                        new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION},
-                        PERMISSION_CODE);
-            }
+//            if (ContextCompat.checkSelfPermission(requireContext(),
+//                    Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//                Toast.makeText(requireContext(), "This got exec2", Toast.LENGTH_SHORT).show();
+//                if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
+//                    // Show an explanation to the user, e.g., using a dialog or Snackbar
+//                    // Explain to the user why this permission is needed
+//                    Toast.makeText(requireContext(), "This is why we need location services", Toast.LENGTH_SHORT).show();
+//                }
+//                Activity activity = requireActivity();
+//                String activityClassName = activity.getClass().getName();
+//                Log.d("ActivityDebug", "Activity class name: " + activityClassName);
+//                requestPermissions(
+//                        new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION},
+//                        PERMISSION_CODE);
+//            }
+//            if (ContextCompat.checkSelfPermission(requireContext(),
+//                    Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//                Toast.makeText(requireContext(), "This got exec2", Toast.LENGTH_SHORT).show();
+//                if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
+//                    // Show an explanation to the user, e.g., using a dialog or Snackbar
+//                    // Explain to the user why this permission is needed
+//                    Toast.makeText(requireContext(), "This is why we need location services", Toast.LENGTH_SHORT).show();
+//                }
+//                Activity activity = requireActivity();
+//                String activityClassName = activity.getClass().getName();
+//                Log.d("ActivityDebug", "Activity class name: " + activityClassName);
+//                requestPermissions(
+//                        new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION},
+//                        PERMISSION_CODE);
+//            }
 
 //            if (ContextCompat.checkSelfPermission(requireContext(),
 //                    Manifest.permission.ACCESS_BACKGROUND_LOCATION)
@@ -208,7 +180,9 @@ public class BluetoothActivity extends Fragment {
 //                requestPermissionLauncher.launch(Manifest.permission.BLUETOOTH_CONNECT);
 //            }
         }
+    }
 
+    private void beginBluetoothPairing() {
         // Setup Bluetooth adapter and check that Bluetooth is enabled
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (bluetoothAdapter == null) {
@@ -246,12 +220,12 @@ public class BluetoothActivity extends Fragment {
                 String deviceHardwareAddress = device.getAddress(); // MAC address
                 // TODO: Setup processing of deviceName so that it remembers the device
             }
+        } else {
+            // Discover new Bluetooth devices
+            // Register for broadcasts when a device is discovered.
+            IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+            requireActivity().registerReceiver(receiver, filter);
         }
-
-        // Discover new Bluetooth devices
-        // Register for broadcasts when a device is discovered.
-        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-        requireActivity().registerReceiver(receiver, filter);
     }
 
     @Override
