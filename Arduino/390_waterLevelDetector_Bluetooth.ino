@@ -9,6 +9,8 @@
 #define WH_OFFSET 2 // Define the distance between sensor and 100% water level (ignored height)
 #define WC_TOT 700 // Define the total capacity of water (in L) of the bottle
 
+const int WINDOW_SIZE = 7; // define window size for median filtering
+
 #include <Wire.h>
 #include "BluetoothSerial.h"
 
@@ -23,8 +25,11 @@ BluetoothSerial SerialBT; // bluetooth serial object
 long duration, distance;
 double waterHeight, waterLevel, bottleCapacity, waterConsumption;
 
+long distanceReadings[WINDOW_SIZE]; // Array to store sensor readings
+size_t static idx = 0; // index to keep track of current position in the array
+
 // Timer: auxiliar variables
-unsigned long previousMillis = 0;    // Stores last time temperature was published
+unsigned long previousMillis = 0;    // Stores last time reading was published
 const long interval = 1000;         // interval at which to publish sensor readings
 
 void setup() {
@@ -38,7 +43,7 @@ void setup() {
   pinMode(MID_LED, OUTPUT);
   pinMode(HIGH_LED, OUTPUT);
 
-  // Set LED pins to high voltage level
+  // Set LED pins to low voltage level
   digitalWrite(LOW_LED, LOW);
   digitalWrite(MID_LED, LOW);
   digitalWrite(HIGH_LED, LOW);
@@ -46,11 +51,8 @@ void setup() {
   // Specify input/output pins of US sensor
   pinMode(PIN_TRIG, OUTPUT);
   pinMode(PIN_ECHO, INPUT);
-}
 
-void loop() {
   // Start a new measurement:
-  
   // Sensor is triggered by a HIGH pulse of 10 us or more
   // Provide a short LOW pulse first to ensure a clean HIGH pulse
   digitalWrite(PIN_TRIG, LOW);
@@ -59,10 +61,29 @@ void loop() {
   delayMicroseconds(10);
   digitalWrite(PIN_TRIG, LOW);
 
-  // Read the result:
-  duration = pulseIn(PIN_ECHO, HIGH);
-  distance = (duration/2) / 29.1; // convert time into a distance
-  waterHeight = (WH_MAX+WH_OFFSET) - distance; // get the water height in cm
+  // get initial distance readings to populate the array
+  while ( (sizeof(distanceReadings)) / (sizeof(distanceReadings[0])) != WINDOW_SIZE) {
+    getDistanceReading();
+  }
+
+}
+
+void loop() {
+  // Start a new measurement:
+  // Sensor is triggered by a HIGH pulse of 10 us or more
+  // Provide a short LOW pulse first to ensure a clean HIGH pulse
+  digitalWrite(PIN_TRIG, LOW);
+  delayMicroseconds(5);
+  digitalWrite(PIN_TRIG, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(PIN_TRIG, LOW);
+
+  getDistanceReading();
+
+  long medianDistance = medianFilter();
+  
+  // get water level measurements
+  waterHeight = (WH_MAX+WH_OFFSET) - medianDistance; // get the water height in cm
   waterLevel = waterHeight / WH_MAX * 100; // percentage of water height in the bottle
   bottleCapacity = waterLevel/100 * WC_TOT; // Real-time capacity of the bottle
   waterConsumption = WC_TOT - bottleCapacity;
@@ -74,8 +95,7 @@ void loop() {
   Serial.print("Amount of water in bottle: " + String(bottleCapacity) + " mL\n");
   Serial.print("You have consumed : " + String(waterConsumption) + "mL\n");
 
-
-  // Send readings to bluetooth serial terminal every
+  // Send readings to bluetooth serial terminal every second
   unsigned long currentMillis = millis(); 
   if (currentMillis - previousMillis >= interval){
     previousMillis = currentMillis;
@@ -111,5 +131,57 @@ void loop() {
 
   delay(1000);
 }
+
+void getDistanceReading() {
+  // Read the result from sensor
+  duration = pulseIn(PIN_ECHO, HIGH);
+  distance = (duration/2) / 29.1; // convert time into a distance
+
+  distanceReadings[idx] = distance; // add distance reading to array
+  idx = (idx+1) % WINDOW_SIZE; // update array index and wrap back to zero if necessary
+}
+
+void insertionSort(long arr[], int n) {
+    int i, j;
+    long key;
+    for (i = 1; i < n; i++) {
+        key = arr[i];
+        j = i - 1;
+
+        // Move elements of array up to i-1 that are greater than key, to one position ahead of their current position
+        while (j >= 0 && arr[j] > key) {
+            arr[j + 1] = arr[j];
+            j = j - 1;
+        }
+        arr[j + 1] = key;
+    }
+}
+
+long calculateMedianValue(long arr[]) {
+  // calculate the median value
+  long median;
+  if (WINDOW_SIZE % 2 == 0) { // Window size is even
+    median = (arr[WINDOW_SIZE / 2 - 1] + arr[WINDOW_SIZE / 2]) / 2;
+  } 
+  else { // Window size is odd
+    median = arr[WINDOW_SIZE / 2]; // get middle value
+  }
+
+  return median;
+}
+
+long medianFilter() {
+  // return the filtered distance
+
+  // sort the array of distance readings
+  long sortedDistanceReadings[WINDOW_SIZE]; 
+  memcpy(sortedDistanceReadings, distanceReadings, sizeof(distanceReadings)); // create a copy of array to be sorted
+  insertionSort(sortedDistanceReadings, WINDOW_SIZE);
+
+  // calculate the median value
+  return calculateMedianValue(sortedDistanceReadings);
+
+}
+
 
 
