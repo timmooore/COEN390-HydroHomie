@@ -82,7 +82,7 @@
         tools:layout_editor_absoluteX="24dp" />
 
     <ListView
-        android:id="@+id/listView"
+        android:id="@+id/pairedDevicesListView"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_below="@+id/textView2"
@@ -99,8 +99,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/button4"
-        android:layout_alignStart="@+id/listView"
-        android:layout_alignLeft="@+id/listView"
+        android:layout_alignStart="@+id/pairedDevicesListView"
+        android:layout_alignLeft="@+id/pairedDevicesListView"
         android:text="Paired devices:"
         android:textColor="#ff34ff06"
         android:textSize="25dp"

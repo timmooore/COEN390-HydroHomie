@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +12,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,7 +20,9 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.Manifest;
 
@@ -30,26 +34,32 @@ import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Set;
+import java.util.UUID;
 
 public class BluetoothFragment extends Fragment {
-    // TODO: Delete this
-//    private static final int PERMISSION_CODE = 1001,
-//            SCAN_PERMISSION_CODE = 1003,
-//            REQUEST_ENABLE_BT = 1002;
-//    private static final String PERMISSION_BLUETOOTH = Manifest.permission.BLUETOOTH,
-//            PERMISSION_BLUETOOTH_ADMIN = Manifest.permission.BLUETOOTH_ADMIN,
-//            PERMISSION_BLUETOOTH_CONNECT = Manifest.permission.BLUETOOTH_CONNECT,
-//            PERIMSSION_BACKGROUND_LOCATION = Manifest.permission.ACCESS_BACKGROUND_LOCATION,
-//            PERIMSSION_FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
-
     private final ArrayList<BluetoothDevice> discoveredDevicesList = new ArrayList<>();
-    private final ArrayList<String> devicesList = new ArrayList<>();
-    Button b1, b2, b3, b4;
-    ListView lv;
+    private final ArrayList<String> devicesList = new ArrayList<>(),
+                                    pairedDevicesList = new ArrayList<>();
+    private ListView pairedDevicesListView, lv;
+    private ArrayAdapter<String> devicesListAdapter;
+    private Button b1, b2, b3, b4;
+    private TextView textView;
     private Set<BluetoothDevice> pairedDevices;
     private ArrayAdapter<String> adapter;
+    OutputStream mmOutputStream;
+    InputStream mmInputStream;
+    Thread workerThread;
+    byte[] readBuffer;
+    int readBufferPosition;
+    int counter;
+    volatile boolean stopWorker;
+    
     // Create a BroadcastReceiver for ACTION_FOUND.
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
@@ -136,16 +146,21 @@ public class BluetoothFragment extends Fragment {
         b2 = rootView.findViewById(R.id.button2);
         b3 = rootView.findViewById(R.id.button3);
         b4 = rootView.findViewById(R.id.button4);
-
+        textView = rootView.findViewById(R.id.thirdFragment);
         // Initialize the adapter and set it to your list view;
         adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, devicesList);
         ListView listView = new ListView(getContext());
         listView.setAdapter(adapter);
-
         // Create a dialog and set the list view
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Select a device to pair");
         builder.setView(listView);
+
+        // Get a reference to the ListView
+        pairedDevicesListView = rootView.findViewById(R.id.pairedDevicesListView);
+        // Create an adapter for the ListView
+        devicesListAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, pairedDevicesList);
+        pairedDevicesListView.setAdapter(devicesListAdapter);
 
         // Create dialog
         AlertDialog dialog = builder.create();
@@ -172,6 +187,19 @@ public class BluetoothFragment extends Fragment {
             }
         });
 
+        // Set item click listener to the ListView
+        pairedDevicesListView.setOnItemClickListener((parent, view1, position, id) -> {
+            // Get the selected device name
+            String deviceName = (String) parent.getItemAtPosition(position);
+
+            // Call the function to connect to the selected Bluetooth device
+            try {
+                connectToDevice(deviceName);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
         b2.setOnClickListener(v -> {
             BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
@@ -185,6 +213,8 @@ public class BluetoothFragment extends Fragment {
         });
         return rootView;
     }
+
+
 
     @Override
     public void onDestroy() {
@@ -237,6 +267,7 @@ public class BluetoothFragment extends Fragment {
                     String deviceName = device.getName();
                     String deviceHardwareAddress = device.getAddress(); // MAC address
                     // TODO: Setup processing of deviceName so that it remembers the device
+                    pairedDevicesList.add(deviceName);
                 }
             }
             // Discover new Bluetooth devices
@@ -248,6 +279,78 @@ public class BluetoothFragment extends Fragment {
         }
     }
 
+    private void connectToDevice(String deviceName) throws IOException {
+        Toast.makeText(getContext(), "Trying to connect to " + deviceName, Toast.LENGTH_SHORT).show();
+        BluetoothDevice selectedDevice = null;
+        try {
+            BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            pairedDevices = bluetoothAdapter.getBondedDevices();
+
+            if (!pairedDevices.isEmpty()) {
+                Toast.makeText(getContext(), "pairedDevices is not empty", Toast.LENGTH_SHORT).show();
+                for (BluetoothDevice device : pairedDevices) {
+                    if (device.getName().equals(deviceName)) {
+                        selectedDevice = device;
+                        break;
+                    }
+                }
+                UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); //Standard SerialPortService ID\
+                assert selectedDevice != null;
+                BluetoothSocket socket = selectedDevice.createRfcommSocketToServiceRecord(uuid);
+                Toast.makeText(getContext(), "Selected device" + selectedDevice.getName(), Toast.LENGTH_SHORT).show();
+                socket.connect();
+
+                mmOutputStream = socket.getOutputStream();
+                mmInputStream = socket.getInputStream();
+
+                beginListenForData();
+            }
+        } catch (SecurityException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    void beginListenForData() {
+        final Handler handler = new Handler();
+        final byte delimiter = 10; //This is the ASCII code for a newline character
+
+        stopWorker = false;
+        readBufferPosition = 0;
+        readBuffer = new byte[1024];
+        workerThread = new Thread(new Runnable() {
+            public void run() {
+                while (!Thread.currentThread().isInterrupted() && !stopWorker) {
+                    try {
+                        int bytesAvailable = mmInputStream.available();
+                        if (bytesAvailable > 0) {
+                            byte[] packetBytes = new byte[bytesAvailable];
+                            mmInputStream.read(packetBytes);
+                            for (int i = 0; i < bytesAvailable; i++) {
+                                byte b = packetBytes[i];
+                                if (b == delimiter) {
+                                    byte[] encodedBytes = new byte[readBufferPosition];
+                                    System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length);
+                                    final String data = new String(encodedBytes, StandardCharsets.US_ASCII);
+                                    readBufferPosition = 0;
+
+                                    handler.post(new Runnable() {
+                                        public void run() {
+                                            textView.setText(data);
+                                        }
+                                    });
+                                } else {
+                                    readBuffer[readBufferPosition++] = b;
+                                }
+                            }
+                        }
+                    } catch (IOException ex) {
+                        stopWorker = true;
+                    }
+                }
+            }
+        });
+        workerThread.start();
+    }
     private BluetoothDevice findDeviceByName(String deviceName) {
         try {
             for (BluetoothDevice device : discoveredDevicesList) {
