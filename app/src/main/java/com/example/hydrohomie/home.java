@@ -11,6 +11,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +34,7 @@ public class home extends Fragment implements SensorReaderData.DataUpdateListene
     private float waterLevel = 0; // Initial water level in percentage
     private float firstReading = -1; // Variable to hold the first reading
     private float lastReading = -1; // Variable to hold the last reading
-
+   private final Handler handler = new Handler();
     public home() {
         // require an empty public constructor
     }
@@ -47,24 +48,44 @@ public class home extends Fragment implements SensorReaderData.DataUpdateListene
         titleNotif = view.findViewById(R.id.titleMessage);
         firstReadingTextView = view.findViewById(R.id.firstReadingTextView); // Initialize first reading TextView
         lastReadingTextView = view.findViewById(R.id.lastReadingTextView); // Initialize last reading TextView
-        refreshButton = view.findViewById(R.id.refresh2);
 
         // Enable options menu in the fragment
         setHasOptionsMenu(true);
 
-        // Set onClickListener for the refreshButton
-        refreshButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Call method to read sensor data and send updates
-                SensorReaderData.readSensorDataAndSendUpdates(home.this);
-            }
-        });
-
         // Initialize UI with initial water level and readings
         updateUI();
 
+        // Start the timer to periodically update sensor data
+        startTimer();
+
         return view;
+    }
+    // Method to start the timer for periodic updates
+    private void startTimer() {
+
+        final int delay = 30000; // 30 seconds in milliseconds
+
+
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                // Call method to read sensor data and send updates
+                SensorReaderData.readSensorDataAndSendUpdates(home.this);
+
+                // Repeat this runnable task after the specified delay
+                handler.postDelayed(this, delay);
+            }
+        }, delay);
+    }
+
+    // Method to stop the timer for periodic updates
+    private void stopTimer() {
+        handler.removeCallbacksAndMessages(null);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        stopTimer();
     }
 
 

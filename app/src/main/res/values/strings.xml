@@ -3,15 +3,18 @@
     <string name="authenticate" />
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="activity_level_array_prompt" />
 
     <!-- Other string resources -->
 
-    <string-array name="gender_array">
+    <string-array name="gender_array">Gender
+        <item>Select Gender</item>
         <item>Male</item>
         <item>Female</item>
+        <item>Other</item>
     </string-array>
 
-    <string-array name="day_array">
+    <string-array name="day_array">Day
         <item>1</item>
         <item>2</item>
         <item>3</item>
@@ -45,7 +48,7 @@
         <item>31</item>
     </string-array>
 
-    <string-array name="month_array">
+    <string-array name="month_array">Month
         <item>1</item>
         <item>2</item>
         <item>3</item>
@@ -60,8 +63,15 @@
         <item>12</item>
     </string-array>
 
-    <string-array name="year_array">
+    <string-array name="year_array">Year
 
+    </string-array>
+
+    <string-array name="activity_level_array_prompt">Activity Level
+        <item>Activity Level</item>
+        <item>Not Active (0 to 14 min per day)</item>
+        <item>Moderate (15 to 45 min per day)</item>
+        <item>Active (46 min to 3 hours per day)</item>
     </string-array>
 
 </resources>
