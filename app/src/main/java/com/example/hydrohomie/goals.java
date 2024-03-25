@@ -1,10 +1,10 @@
 package com.example.hydrohomie;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -28,32 +28,32 @@ import java.util.List;
 
 public class goals extends Fragment {
 
-    protected EditText info3  ;
-protected TextView waterRecommendation;
+    protected EditText info1, info3;
+    protected TextView infO1, infO3;
     protected Button save, edit;
-    protected Spinner genderSpinner, daySpinner, monthSpinner, yearSpinner;
+    protected Spinner genderSpinner, daySpinner, monthSpinner, yearSpinner, activityLevelSpinner; // Added activityLevelSpinner
     private FirebaseAuth mAuth;
 
     public goals() {
         // Required empty public constructor
     }
 
-    @SuppressLint("WrongViewCast")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_goals, container, false);
 
         mAuth = FirebaseAuth.getInstance();
-
+        info1 = view.findViewById(R.id.info1);
+        info3 = view.findViewById(R.id.info3);
+        infO1 = view.findViewById(R.id.infO1);
+        infO3 = view.findViewById(R.id.infO3);
         save = view.findViewById(R.id.Save);
         edit = view.findViewById(R.id.edit);
         genderSpinner = view.findViewById(R.id.genderSpinner);
         daySpinner = view.findViewById(R.id.daySpinner);
         monthSpinner = view.findViewById(R.id.monthSpinner);
         yearSpinner = view.findViewById(R.id.yearSpinner);
-        waterRecommendation = view.findViewById(R.id.waterRecommendation);
-        info3 = view.findViewById(R.id.info3);
-
+        activityLevelSpinner = view.findViewById(R.id.activityLevelSpinner); // Initialize activityLevelSpinner
 
         // Populate gender spinner
         ArrayAdapter<CharSequence> genderAdapter = ArrayAdapter.createFromResource(getContext(),
@@ -80,8 +80,45 @@ protected TextView waterRecommendation;
         yearAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         yearSpinner.setAdapter(yearAdapter);
 
-        // Set default water recommendation
-        waterRecommendation.setText("2.5");
+        // Populate activity level spinner
+        ArrayAdapter<CharSequence> activityLevelAdapter = ArrayAdapter.createFromResource(getContext(),
+                R.array.activity_level_array_prompt, android.R.layout.simple_spinner_item);
+        activityLevelAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        activityLevelSpinner.setAdapter(activityLevelAdapter);
+
+        // Set a listener for activity level spinner
+        activityLevelSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selectedActivityLevel = parent.getItemAtPosition(position).toString();
+                double recommendedWaterIntake;
+
+                // Calculate recommended water intake based on selected activity level
+                String gender = "male";
+                switch (selectedActivityLevel) {
+                    case "Not Active (0 to 14 min per day)":
+                        recommendedWaterIntake = 2.5; // Default consumption for not active
+                        break;
+                    case "Moderate (15 to 45 min per day)":
+                        recommendedWaterIntake = calculateWaterIntakeForModerate(gender);
+                        break;
+                    case "Active (46 min to 3 hours per day)":
+                        recommendedWaterIntake = calculateWaterIntakeForActive(gender);
+                        break;
+                    default:
+                        recommendedWaterIntake = 2.5; // Default consumption
+                        break;
+                }
+
+                // Set the recommended water intake value in the UI (You may remove this if not needed)
+                // waterRecommendation.setText(String.valueOf(recommendedWaterIntake));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Handle situation when nothing is selected
+            }
+        });
 
         // Retrieve and display data when the fragment is created
         retrieveAndDisplayData();
@@ -127,14 +164,15 @@ protected TextView waterRecommendation;
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
                         // Retrieve data from the database
-
+                        String dbValue1 = dataSnapshot.child("info1").getValue(String.class);
+                        String dbValue2 = dataSnapshot.child("info2").getValue(String.class);
                         String dbValue3 = dataSnapshot.child("info3").getValue(String.class);
 
-
+                        info1.setText(dbValue1);
                         info3.setText(dbValue3);
 
                         // Disable or enable text based on data presence
-                        if ( dbValue3 != null) {
+                        if (dbValue1 != null && dbValue2 != null && dbValue3 != null) {
                             disableText();
                         } else {
                             enableText();
@@ -156,7 +194,7 @@ protected TextView waterRecommendation;
         if (currentUser != null) {
             String userId = currentUser.getUid();
 
-
+            String value1 = info1.getText().toString();
             String value3 = info3.getText().toString();
 
             // Check if a gender is selected
@@ -177,6 +215,7 @@ protected TextView waterRecommendation;
             }
 
             String selectedYear = "";
+
             if (yearSpinner.getSelectedItem() != null) {
                 selectedYear = yearSpinner.getSelectedItem().toString();
             }
@@ -184,23 +223,37 @@ protected TextView waterRecommendation;
             // Combine selected day, month, and year into a single string for birthday
             String selectedBirthday = selectedDay + "/" + selectedMonth + "/" + selectedYear;
 
-            double userWeight = Double.parseDouble(value3); // Assuming value1 contains the user's weight in kilograms
-            // Assuming value1 contains the user's weight in kilograms
-            boolean isPhysicallyActive = false; // You need to determine the user's activity level
+            // Get selected activity level
+            String selectedActivityLevel = activityLevelSpinner.getSelectedItem().toString();
 
-            // Calculate recommended water intake using the WaterIntakeCalculator
-            double recommendedWaterIntake = WaterIntakeCalculator.calculateRecommendedWaterIntake(userWeight, selectedGender, isPhysicallyActive);
-            String waterRec = String.valueOf(recommendedWaterIntake);
+            // Calculate recommended water intake based on selected activity level
+            double recommendedWaterIntake;
+            String gender = "male";
+            switch (selectedActivityLevel) {
+                case "Not Active (0 to 14 min per day)":
+                    recommendedWaterIntake = 2.5; // Default consumption for not active
+                    break;
+                case "Moderate (15 to 45 min per day)":
+                    recommendedWaterIntake = calculateWaterIntakeForModerate(gender);
+                    break;
+                case "Active (46 min to 3 hours per day)":
+                    recommendedWaterIntake = calculateWaterIntakeForActive(gender);
+                    break;
+                default:
+                    recommendedWaterIntake = 2.5; // Default consumption
+                    break;
+            }
 
             // Create a reference to the user's goals in the database
             DatabaseReference userGoalsRef = FirebaseDatabase.getInstance().getReference("user_goals").child(userId);
 
             // Save the information to the user's goals
-
+            userGoalsRef.child("info1").setValue(value1);
             userGoalsRef.child("info3").setValue(value3);
-            userGoalsRef.child("water_recommendation").setValue(waterRec);
+            userGoalsRef.child("water_recommendation").setValue(String.valueOf(recommendedWaterIntake));
             userGoalsRef.child("gender").setValue(selectedGender);
             userGoalsRef.child("birthday").setValue(selectedBirthday);
+            userGoalsRef.child("activity_level").setValue(selectedActivityLevel);
 
             // Retrieve data from userGoalsRef and update TextViews
             userGoalsRef.addValueEventListener(new ValueEventListener() {
@@ -208,9 +261,10 @@ protected TextView waterRecommendation;
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
                         // Retrieve data from the database
-
+                        String dbValue1 = dataSnapshot.child("info1").getValue(String.class);
+                        String dbValue2 = dataSnapshot.child("info2").getValue(String.class);
                         String dbValue3 = dataSnapshot.child("info3").getValue(String.class);
-
+                        info1.setText(dbValue1);
                         info3.setText(dbValue3);
                     }
                 }
@@ -224,46 +278,49 @@ protected TextView waterRecommendation;
     }
 
     private void disableText() {
-
-
+        info1.setEnabled(false);
         info3.setEnabled(false);
-        waterRecommendation.setEnabled(false);
         genderSpinner.setEnabled(false);
         daySpinner.setEnabled(false);
         monthSpinner.setEnabled(false);
         yearSpinner.setEnabled(false);
+        activityLevelSpinner.setEnabled(false);
         save.setVisibility(View.GONE);
         edit.setVisibility(View.VISIBLE);
     }
 
     private void enableText() {
-    ;
-
+        info1.setEnabled(true);
         info3.setEnabled(true);
-        waterRecommendation.setEnabled(true);
         genderSpinner.setEnabled(true);
         daySpinner.setEnabled(true);
         monthSpinner.setEnabled(true);
         yearSpinner.setEnabled(true);
+        activityLevelSpinner.setEnabled(true);
         save.setVisibility(View.VISIBLE);
         edit.setVisibility(View.GONE);
     }
 
-    public static class WaterIntakeCalculator {
+    private double calculateWaterIntakeForModerate(String gender) {
+        // Baseline water intake in liters
+        double baselineIntake = gender.equalsIgnoreCase("male") ? 3.7 : 2.7;
 
-        // Calculate the recommended daily water intake in milliliters based on user's characteristics
-        public static double calculateRecommendedWaterIntake(double weight, String gender, boolean isPhysicallyActive) {
-            // Baseline water intake in milliliters
-            double baselineIntake = (gender.equalsIgnoreCase("male")) ? 3700 : 2700;
+        //Additional water intake per 30 minutes of moderate activity in liters
+        double additionalWaterIntakePer30Min = 0.35;
 
-            // Activity adjustment in milliliters
-            double activityAdjustment = (isPhysicallyActive) ? 500 : 0; // Additional 500 mL if physically active
+        //Return total water intake
+        return baselineIntake + additionalWaterIntakePer30Min;
+    }
 
-            // Weight adjustment in milliliters
-            double weightAdjustment = weight * 32.5; // Average of 30-35 mL/kg
+    private double calculateWaterIntakeForActive(String gender) {
 
-            // Calculate total recommended water intake
-            return baselineIntake + activityAdjustment + weightAdjustment;
-        }
+        //Baseline water intake in liters
+        double baselineIntake = gender.equalsIgnoreCase("male") ? 3.7 : 2.7;
+
+        //Taking the average between 45 mins and 4 hours of activity
+        double additionalIntakeForActive = (0.35/30.0) * 142.5;
+
+        //Total water intake plus the additional intake for active
+        return baselineIntake + additionalIntakeForActive;
     }
 }
