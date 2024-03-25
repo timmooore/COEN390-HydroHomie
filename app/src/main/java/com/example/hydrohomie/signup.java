@@ -50,12 +50,7 @@ public class signup extends AppCompatActivity {
         });
     }
 
-    private void registerNewUser()
-    {
-
-        // show the visibility of progress bar to show loading
-       // progressbar.setVisibility(View.VISIBLE);
-
+    private void registerNewUser() {
         // Take the value of two edit texts in Strings
         String email, password;
         email = emailsignup.getText().toString();
@@ -66,12 +61,16 @@ public class signup extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Please enter email!!", Toast.LENGTH_LONG).show();
             return;
         }
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            Toast.makeText(getApplicationContext(), "Please enter a valid email address!!", Toast.LENGTH_LONG).show();
+            return;
+        }
         if (TextUtils.isEmpty(password)) {
             Toast.makeText(getApplicationContext(), "Please enter password!!", Toast.LENGTH_LONG).show();
             return;
         }
 
-        // create new user or register new user
+        // Proceed with user registration
         mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
 
             @Override
@@ -83,11 +82,11 @@ public class signup extends AppCompatActivity {
                     finish();
                 } else {
                     Toast.makeText(getApplicationContext(), "Registration failed!! Please try again later", Toast.LENGTH_LONG).show();
-
                 }
             }
+        });
+    }
 
-        });}
 
     private void ToolbarSetup(){
         setSupportActionBar(toolbar);
