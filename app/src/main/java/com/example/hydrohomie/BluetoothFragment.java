@@ -20,7 +20,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -160,8 +159,8 @@ public class BluetoothFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_bluetooth, container, false);
 
         b1 = rootView.findViewById(R.id.button);
-        b2 = rootView.findViewById(R.id.button2);
-        b3 = rootView.findViewById(R.id.button3);
+        b2 = rootView.findViewById(R.id.scanButton);
+        b3 = rootView.findViewById(R.id.refreshButton);
         b4 = rootView.findViewById(R.id.button4);
         textView = rootView.findViewById(R.id.thirdFragment);
 
