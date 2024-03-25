@@ -43,6 +43,7 @@ import java.util.Set;
 import java.util.UUID;
 
 public class BluetoothFragment extends Fragment {
+    private static final String TAG = "MY_BLUETOOTH_FRAGMENT_DEBUG_TAG";
     private final ArrayList<BluetoothDevice> discoveredDevicesList = new ArrayList<>();
     private final ArrayList<String> devicesList = new ArrayList<>(),
                                     pairedDevicesList = new ArrayList<>();
@@ -87,6 +88,22 @@ public class BluetoothFragment extends Fragment {
                     // This should be a member variable of your Activity/Fragment
                     // Adapter initialization and setting to the list view should be done elsewhere
                     adapter.notifyDataSetChanged();
+                }
+            } else if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                try {
+                    assert device != null;
+                    if (device.getBondState() == BluetoothDevice.BOND_BONDED) {
+                        Log.d(TAG, "BroadcastReceiver: BOND_BONDED");
+                    }
+                    if (device.getBondState() == BluetoothDevice.BOND_BONDING) {
+                        Log.d(TAG, "BroadcastReceiver: BOND_BONDING");
+                    }
+                    if (device.getBondState() == BluetoothDevice.BOND_NONE) {
+                        Log.d(TAG, "BroadcastReceiver: BOND_NONE");
+                    }
+                } catch (SecurityException e) {
+                    throw new RuntimeException(e);
                 }
             }
         }
@@ -147,6 +164,9 @@ public class BluetoothFragment extends Fragment {
         b3 = rootView.findViewById(R.id.button3);
         b4 = rootView.findViewById(R.id.button4);
         textView = rootView.findViewById(R.id.thirdFragment);
+
+        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
         // Initialize the adapter and set it to your list view;
         adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, devicesList);
         ListView listView = new ListView(getContext());
@@ -177,13 +197,12 @@ public class BluetoothFragment extends Fragment {
                 try {
                     // TODO: Pairing handshake
                     Toast.makeText(requireContext(), "You selected: " + selectedDevice.getName(), Toast.LENGTH_LONG).show();
+                    bluetoothAdapter.cancelDiscovery();
+                    initiatePairing(selectedDevice);
                 } catch (SecurityException e) {
                     throw new RuntimeException(e);
                 }
                 dialog.hide();
-                // Now you can initiate pairing with this device
-                // For example:
-                initiatePairing(selectedDevice);
             }
         });
 
@@ -201,10 +220,8 @@ public class BluetoothFragment extends Fragment {
         });
 
         b2.setOnClickListener(v -> {
-            BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-
             try {
-                bluetoothAdapter.startDiscovery();
+                boolean b = bluetoothAdapter.startDiscovery();
             } catch (SecurityException e) {
                 throw new RuntimeException(e);
             }
@@ -366,6 +383,12 @@ public class BluetoothFragment extends Fragment {
     }
 
     private void initiatePairing(BluetoothDevice selectedDevice) {
-
+        try {
+            Log.d(TAG, "initiatePairing: deviceName: " + selectedDevice.getName());
+            Log.d(TAG, "initiatePairing: deviceAddress: " + selectedDevice.getAddress());
+            selectedDevice.createBond();
+        } catch (SecurityException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
