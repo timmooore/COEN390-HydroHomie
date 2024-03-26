@@ -360,8 +360,10 @@ public class goals extends Fragment {
         double baselineIntake = gender.equalsIgnoreCase("male") ? 3.7 : 2.7;
 
         //Additional water intake per 30 minutes of moderate activity in liters
+        double additionalIntake = 0.35;
+
         //Return total water intake
-        return 0.35;
+        return baselineIntake + additionalIntake;
     }
 
     private double calculateWaterIntakeForActive(String gender) {
@@ -370,8 +372,9 @@ public class goals extends Fragment {
         double baselineIntake = gender.equalsIgnoreCase("male") ? 3.7 : 2.7;
 
         //Taking the average between 45 mins and 4 hours of activity
+        double additionalIntake = (0.35/30.0) * 142.5;
         //Total water intake plus the additional intake for active
-        return (0.35/30.0) * 142.5;
+        return baselineIntake + additionalIntake;
     }
 
     private double calculateWaterIntakeForWeight() {
@@ -434,19 +437,23 @@ public class goals extends Fragment {
 
         switch (selectedGender) {
             case "female":
-                recommendedWaterIntakeGender = 2; //defualt for female
+                recommendedWaterIntakeGender = 2; //default for female
                 break;
             case "male":
                 recommendedWaterIntakeGender = 2.6; //default for male
                 break;
         }
 
-        if (selectedWeight.equals("weight")) {
+        switch (selectedWeight) {
+            case "weight":
             recommendedWaterIntakeWeight = calculateWaterIntakeForWeight();
+            break;
         }
 
-        if (selectedBirthday.equals("birthday")) {
+        switch (selectedBirthday) {
+            case "birthday":
             recommendedWaterIntakeAge = calculateWaterIntakeForAge(Integer.parseInt(selectedYear), selectedGender);
+            break;
         }
 
         calculatedRecommendedWaterIntake = recommendedWaterIntakeActivityLevel + recommendedWaterIntakeGender + recommendedWaterIntakeWeight + recommendedWaterIntakeAge;
