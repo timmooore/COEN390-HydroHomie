@@ -385,7 +385,7 @@ public class goals extends Fragment {
 
         //calculate different values of water intake based on weight
         double weight = info1.getText().toString().isEmpty() ? 0 : Double.parseDouble(info1.getText().toString());
-
+        Log.d("WEIGHT_DEBUG", String.valueOf(weight));
         return weight * 0.035;
     }
 
@@ -450,11 +450,7 @@ public class goals extends Fragment {
             break;
         }
 
-        switch (selectedBirthday) {
-            case "birthday":
-            recommendedWaterIntakeAge = calculateWaterIntakeForAge(Integer.parseInt(selectedYear), selectedGender);
-            break;
-        }
+        recommendedWaterIntakeAge = calculateWaterIntakeForAge(Integer.parseInt(selectedYear), selectedGender);
 
         calculatedRecommendedWaterIntake = recommendedWaterIntakeActivityLevel + recommendedWaterIntakeGender + recommendedWaterIntakeWeight + recommendedWaterIntakeAge;
 
