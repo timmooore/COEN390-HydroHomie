@@ -1,6 +1,7 @@
 package com.example.hydrohomie;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -125,6 +127,23 @@ public class goals extends Fragment {
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                //Get selected values from spinners
+                String selectedActivityLevel = activityLevelSpinner.getSelectedItem().toString();
+                String selectedGender = genderSpinner.getSelectedItem().toString();
+                String selectedWeight = info1.getText().toString();
+                String selectedBirthday = daySpinner.getSelectedItem().toString() + "/" + monthSpinner.getSelectedItem().toString() + "/" + yearSpinner.getSelectedItem().toString();
+                String selectedYear = yearSpinner.getSelectedItem().toString();
+
+                // Calculate recommendedWaterIntake
+                double recommendedWaterIntake = calculatedRecommendedWaterIntake(selectedActivityLevel, selectedGender, selectedWeight, selectedBirthday, selectedYear);
+
+                Log.d("Recommended Water Intake", String.valueOf(recommendedWaterIntake));
+
+                // Set recommendedWaterIntake to info3 EditText field
+                info3.setText(String.valueOf(recommendedWaterIntake));
+
+
                 saveInformation();
                 disableText();
             }
@@ -237,12 +256,9 @@ public class goals extends Fragment {
             double recommendedWaterIntakeWeight = 0;
             double recommendedWaterIntakeAge = 0;
             double recommendedWaterIntakeGender = 0;
-            double recommendedWaterIntake;
+            double calculatedRecommendedWaterIntake;
             String gender = "male";
             switch (selectedActivityLevel) {
-                case "Not Active (0 to 14 min per day)":
-                    recommendedWaterIntakeActivityLevel = 2.5; // Default consumption for not active
-                    break;
                 case "Moderate (15 to 45 min per day)":
                     recommendedWaterIntakeActivityLevel = calculateWaterIntakeForModerate(gender);
                     break;
@@ -250,7 +266,7 @@ public class goals extends Fragment {
                     recommendedWaterIntakeActivityLevel = calculateWaterIntakeForActive(gender);
                     break;
                 default:
-                    recommendedWaterIntakeActivityLevel = 2.5; // Default consumption
+                    recommendedWaterIntakeActivityLevel = 0; // Default consumption
                     break;
             }
 
@@ -273,10 +289,10 @@ public class goals extends Fragment {
                     break;
             }
 
-            recommendedWaterIntake = recommendedWaterIntakeActivityLevel + recommendedWaterIntakeGender + recommendedWaterIntakeWeight + recommendedWaterIntakeAge;
+            calculatedRecommendedWaterIntake = recommendedWaterIntakeActivityLevel + recommendedWaterIntakeGender + recommendedWaterIntakeWeight + recommendedWaterIntakeAge;
 
             //Set the recommended water intake value in the UI
-            info3.setText(String.valueOf(recommendedWaterIntake));
+            info3.setText(String.valueOf(calculatedRecommendedWaterIntake));
 
             //Save the value in the database
             DatabaseReference userGoalsRef;
@@ -287,11 +303,11 @@ public class goals extends Fragment {
             // Save the information to the user's goals
             userGoalsRef.child("info1").setValue(value1);
             userGoalsRef.child("info3").setValue(value3);
-            userGoalsRef.child("water_recommendation").setValue(String.valueOf(recommendedWaterIntake));
+            userGoalsRef.child("water_recommendation").setValue(String.valueOf(calculatedRecommendedWaterIntake));
             userGoalsRef.child("gender").setValue(selectedGender);
             userGoalsRef.child("birthday").setValue(selectedBirthday);
             userGoalsRef.child("activity_level").setValue(selectedActivityLevel);
-            userGoalsRef.child("recommendedWaterIntake").setValue(recommendedWaterIntake);
+            userGoalsRef.child("recommendedWaterIntake").setValue(calculatedRecommendedWaterIntake);
 
             // Retrieve data from userGoalsRef and update TextViews
             userGoalsRef.addValueEventListener(new ValueEventListener() {
@@ -344,10 +360,8 @@ public class goals extends Fragment {
         double baselineIntake = gender.equalsIgnoreCase("male") ? 3.7 : 2.7;
 
         //Additional water intake per 30 minutes of moderate activity in liters
-        double additionalWaterIntakePer30Min = 0.35;
-
         //Return total water intake
-        return additionalWaterIntakePer30Min;
+        return 0.35;
     }
 
     private double calculateWaterIntakeForActive(String gender) {
@@ -356,10 +370,8 @@ public class goals extends Fragment {
         double baselineIntake = gender.equalsIgnoreCase("male") ? 3.7 : 2.7;
 
         //Taking the average between 45 mins and 4 hours of activity
-        double additionalIntakeForActive = (0.35/30.0) * 142.5;
-
         //Total water intake plus the additional intake for active
-        return additionalIntakeForActive;
+        return (0.35/30.0) * 142.5;
     }
 
     private double calculateWaterIntakeForWeight() {
@@ -370,9 +382,8 @@ public class goals extends Fragment {
 
         //calculate different values of water intake based on weight
         double weight = info1.getText().toString().isEmpty() ? 0 : Double.parseDouble(info1.getText().toString());
-        double waterIntake = weight * 0.035;
 
-        return waterIntake;
+        return weight * 0.035;
     }
 
     private double calculateWaterIntakeForAge(int age, String gender) {
@@ -399,4 +410,48 @@ public class goals extends Fragment {
         }
 
     }
-}
+
+    private double calculatedRecommendedWaterIntake(String selectedActivityLevel, String selectedGender, String selectedWeight, String selectedBirthday, String selectedYear) {
+        // Calculate recommended water intake based on all different factors
+        double recommendedWaterIntakeActivityLevel;
+        double recommendedWaterIntakeWeight = 0;
+        double recommendedWaterIntakeAge = 0;
+        double recommendedWaterIntakeGender = 0;
+        double calculatedRecommendedWaterIntake;
+        String gender = "male";
+        switch (selectedActivityLevel) {
+
+            case "Moderate (15 to 45 min per day)":
+                recommendedWaterIntakeActivityLevel = calculateWaterIntakeForModerate(gender);
+                break;
+            case "Active (46 min to 3 hours per day)":
+                recommendedWaterIntakeActivityLevel = calculateWaterIntakeForActive(gender);
+                break;
+            default:
+                recommendedWaterIntakeActivityLevel = 0; // Default consumption
+                break;
+        }
+
+        switch (selectedGender) {
+            case "female":
+                recommendedWaterIntakeGender = 2; //defualt for female
+                break;
+            case "male":
+                recommendedWaterIntakeGender = 2.6; //default for male
+                break;
+        }
+
+        if (selectedWeight.equals("weight")) {
+            recommendedWaterIntakeWeight = calculateWaterIntakeForWeight();
+        }
+
+        if (selectedBirthday.equals("birthday")) {
+            recommendedWaterIntakeAge = calculateWaterIntakeForAge(Integer.parseInt(selectedYear), selectedGender);
+        }
+
+        calculatedRecommendedWaterIntake = recommendedWaterIntakeActivityLevel + recommendedWaterIntakeGender + recommendedWaterIntakeWeight + recommendedWaterIntakeAge;
+
+        return calculatedRecommendedWaterIntake;
+    }
+
+    }
