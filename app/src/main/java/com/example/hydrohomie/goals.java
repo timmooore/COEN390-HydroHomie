@@ -45,7 +45,6 @@ public class goals extends Fragment {
         mAuth = FirebaseAuth.getInstance();
         info1 = view.findViewById(R.id.info1);
         info3 = view.findViewById(R.id.info3);
-        infO1 = view.findViewById(R.id.infO1);
         infO3 = view.findViewById(R.id.infO3);
         save = view.findViewById(R.id.Save);
         edit = view.findViewById(R.id.edit);
@@ -203,6 +202,12 @@ public class goals extends Fragment {
                 selectedGender = genderSpinner.getSelectedItem().toString();
             }
 
+            //Check if a weight is selected
+            String selectedWeight = "";
+            if (info3 != null) {
+                selectedWeight = info3.toString();
+            }
+
             // Check if a birthday is selected
             String selectedDay = "";
             if (daySpinner.getSelectedItem() != null) {
@@ -226,26 +231,58 @@ public class goals extends Fragment {
             // Get selected activity level
             String selectedActivityLevel = activityLevelSpinner.getSelectedItem().toString();
 
-            // Calculate recommended water intake based on selected activity level
+            // Calculate recommended water intake based on all different factors
+            double recommendedWaterIntakeActivityLevel;
+            double recommendedWaterIntakeWeight = 0;
+            double recommendedWaterIntakeAge = 0;
+            double recommendedWaterIntakeGender = 0;
             double recommendedWaterIntake;
             String gender = "male";
             switch (selectedActivityLevel) {
                 case "Not Active (0 to 14 min per day)":
-                    recommendedWaterIntake = 2.5; // Default consumption for not active
+                    recommendedWaterIntakeActivityLevel = 2.5; // Default consumption for not active
                     break;
                 case "Moderate (15 to 45 min per day)":
-                    recommendedWaterIntake = calculateWaterIntakeForModerate(gender);
+                    recommendedWaterIntakeActivityLevel = calculateWaterIntakeForModerate(gender);
                     break;
                 case "Active (46 min to 3 hours per day)":
-                    recommendedWaterIntake = calculateWaterIntakeForActive(gender);
+                    recommendedWaterIntakeActivityLevel = calculateWaterIntakeForActive(gender);
                     break;
                 default:
-                    recommendedWaterIntake = 2.5; // Default consumption
+                    recommendedWaterIntakeActivityLevel = 2.5; // Default consumption
                     break;
             }
 
+            switch (selectedGender) {
+                case "female":
+                    recommendedWaterIntakeGender = 2;
+                    break;
+                case "male":
+                    recommendedWaterIntakeGender = 2.6;
+                    break;
+            }
+
+            if (selectedWeight.equals("weight")) {
+                recommendedWaterIntakeWeight = calculateWaterIntakeForWeight();
+            }
+
+            switch (selectedBirthday) {
+                case "birthday":
+                    recommendedWaterIntakeAge = calculateWaterIntakeForAge(Integer.parseInt(selectedYear), selectedGender);
+                    break;
+            }
+
+            recommendedWaterIntake = recommendedWaterIntakeActivityLevel + recommendedWaterIntakeGender + recommendedWaterIntakeWeight + recommendedWaterIntakeAge;
+
+            //Set the recommended water intake value in the UI
+            info3.setText(String.valueOf(recommendedWaterIntake));
+
+            //Save the value in the database
+            DatabaseReference userGoalsRef = null;
+            userGoalsRef.child("recommendedWaterIntake").setValue(recommendedWaterIntake);
+
             // Create a reference to the user's goals in the database
-            DatabaseReference userGoalsRef = FirebaseDatabase.getInstance().getReference("user_goals").child(userId);
+            userGoalsRef = FirebaseDatabase.getInstance().getReference("user_goals").child(userId);
 
             // Save the information to the user's goals
             userGoalsRef.child("info1").setValue(value1);
@@ -309,7 +346,7 @@ public class goals extends Fragment {
         double additionalWaterIntakePer30Min = 0.35;
 
         //Return total water intake
-        return baselineIntake + additionalWaterIntakePer30Min;
+        return additionalWaterIntakePer30Min;
     }
 
     private double calculateWaterIntakeForActive(String gender) {
@@ -321,6 +358,44 @@ public class goals extends Fragment {
         double additionalIntakeForActive = (0.35/30.0) * 142.5;
 
         //Total water intake plus the additional intake for active
-        return baselineIntake + additionalIntakeForActive;
+        return additionalIntakeForActive;
+    }
+
+    private double calculateWaterIntakeForWeight() {
+        // Baseline water intake in liters
+        String gender;
+        gender = null;
+        double baselineIntake = gender.equalsIgnoreCase("male") ? 3.7 : 2.7;
+
+        //calculate different values of water intake based on weight
+        double weight = info1.getText().toString().isEmpty() ? 0 : Double.parseDouble(info1.getText().toString());
+        double waterIntake = weight * 0.035;
+
+        return waterIntake;
+    }
+
+    private double calculateWaterIntakeForAge(int age, String gender) {
+        // Baseline water intake in liters
+        double baselineIntake = gender.equalsIgnoreCase("male") ? 3.7 : 2.7;
+
+        //calculate different values of water intake based on age in liters
+        if (age >= 1 && age <= 3) {
+             return 1.3;
+        } else if (age >= 4 && age <= 8) {
+            return 1.7;
+        } else if (age >= 9 && age <= 13) {
+            return 2.4;
+        } else if (age >= 14 && age <= 18) {
+            return 3.3;
+        } else if (age >= 19 && age <= 30) {
+            return 3.7;
+        } else if (age >= 31 && age <= 50) {
+            return 3.7;
+        } else if (age >= 51 && age <= 70) {
+            return 3.7;
+        } else {
+            return 3.7;
+        }
+
     }
 }
