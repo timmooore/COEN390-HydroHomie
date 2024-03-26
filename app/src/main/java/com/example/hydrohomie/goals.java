@@ -158,6 +158,7 @@ public class goals extends Fragment {
             // Create a reference to the user's goals in the database
             DatabaseReference userGoalsRef = FirebaseDatabase.getInstance().getReference("user_goals").child(userId);
 
+
             userGoalsRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -205,7 +206,7 @@ public class goals extends Fragment {
             //Check if a weight is selected
             String selectedWeight = "";
             if (info3 != null) {
-                selectedWeight = info3.toString();
+                selectedWeight = info3.getText().toString();
             }
 
             // Check if a birthday is selected
@@ -278,8 +279,7 @@ public class goals extends Fragment {
             info3.setText(String.valueOf(recommendedWaterIntake));
 
             //Save the value in the database
-            DatabaseReference userGoalsRef = null;
-            userGoalsRef.child("recommendedWaterIntake").setValue(recommendedWaterIntake);
+            DatabaseReference userGoalsRef;
 
             // Create a reference to the user's goals in the database
             userGoalsRef = FirebaseDatabase.getInstance().getReference("user_goals").child(userId);
@@ -291,6 +291,7 @@ public class goals extends Fragment {
             userGoalsRef.child("gender").setValue(selectedGender);
             userGoalsRef.child("birthday").setValue(selectedBirthday);
             userGoalsRef.child("activity_level").setValue(selectedActivityLevel);
+            userGoalsRef.child("recommendedWaterIntake").setValue(recommendedWaterIntake);
 
             // Retrieve data from userGoalsRef and update TextViews
             userGoalsRef.addValueEventListener(new ValueEventListener() {
