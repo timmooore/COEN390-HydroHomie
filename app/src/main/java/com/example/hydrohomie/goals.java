@@ -45,7 +45,6 @@ public class goals extends Fragment {
         mAuth = FirebaseAuth.getInstance();
         info1 = view.findViewById(R.id.info1);
         info3 = view.findViewById(R.id.info3);
-        infO1 = view.findViewById(R.id.infO1);
         infO3 = view.findViewById(R.id.infO3);
         save = view.findViewById(R.id.Save);
         edit = view.findViewById(R.id.edit);
