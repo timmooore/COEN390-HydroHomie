@@ -420,6 +420,7 @@ public class goals extends Fragment {
         }
     }
 
+    // TODO: Update the selectedYear/selectedAge to be the user's age
     private double calculatedRecommendedWaterIntake(String selectedActivityLevel, String selectedGender, String selectedWeight, String selectedBirthday, String selectedYear) {
         // Calculate recommended water intake based on all different factors
         double recommendedWaterIntakeActivityLevel;
@@ -449,7 +450,7 @@ public class goals extends Fragment {
         Log.d("WEIGHT_DEBUG", String.valueOf(weight));
 
         calculatedRecommendedWaterIntake = baseRecommendedWaterIntake
-                + 0.035 * weight
+                + 0.015 * weight
                 + recommendedWaterIntakeActivityLevel;
 
         return calculatedRecommendedWaterIntake;
