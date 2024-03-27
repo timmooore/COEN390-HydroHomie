@@ -1,144 +1,240 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:backgroundTint="@color/myBackgroundColor"
     tools:context=".MainActivity">
 
+    <!-- Spinners for gender and birthday -->
+
+    <Spinner
+        android:id="@+id/activityLevelSpinner"
+        android:layout_width="248dp"
+        android:layout_height="53dp"
+        android:prompt="@string/activity_level_array_prompt"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.503"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.582" />
+
     <TextView
-        android:id="@+id/textViewGender"
+        android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="176dp"
-        android:layout_marginTop="36dp"
-        android:text="Gender:"
+        android:text="Date"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/textView4"
+        app:layout_constraintHorizontal_bias="0.535"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.721" />
+
+    <Spinner
+        android:id="@+id/daySpinner"
+        android:layout_width="133dp"
+        android:layout_height="57dp"
+        android:layout_below="@id/birthdayTitle"
+        android:layout_marginTop="80dp"
+        app:layout_constraintEnd_toStartOf="@+id/monthSpinner"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/birthdayTitle" />
+
+    <Button
+        android:id="@+id/Save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/mybuttonSecondColor"
+        android:text="Save"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.832"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.931" />
+
+    <TextView
+        android:id="@+id/birthdayTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Birthday: "
         android:textSize="18sp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.656" />
+
+    <TextView
+        android:id="@+id/textView10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="52dp"
+        android:text="Consumption Recommendation (L)"
+        app:layout_constraintBottom_toTopOf="@+id/info3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.481"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.684" />
+
+    <Spinner
+        android:id="@+id/genderSpinner"
+        android:layout_width="246dp"
+        android:layout_height="57dp"
+        android:layout_marginStart="32dp"
+        app:layout_constraintBottom_toTopOf="@+id/textView7"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.375"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView6"
+        app:layout_constraintVertical_bias="0.516" />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Year"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.459"
+        app:layout_constraintStart_toEndOf="@+id/textView4"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.721" />
+
+    <TextView
+        android:id="@+id/textView9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Weight kg"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.478"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/info3" />
+
+    <EditText
+        android:id="@+id/info1"
+        android:layout_width="218dp"
+        android:layout_height="57dp"
+        android:layout_marginTop="216dp"
+        android:ems="10"
+        android:hint="Weight (kg)"
+        android:inputType="numberDecimal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.481"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Spinner
-        android:id="@+id/genderSpinner"
-        android:layout_width="81dp"
-        android:layout_height="24dp"
-        android:layout_marginEnd="164dp"
+        android:id="@+id/monthSpinner"
+        android:layout_width="135dp"
+        android:layout_height="57dp"
+        android:layout_below="@id/birthdayTitle"
+        android:layout_marginTop="80dp"
+        android:layout_toEndOf="@id/daySpinner"
         app:layout_constraintEnd_toEndOf="parent"
-        tools:layout_editor_absoluteY="94dp" />
+        app:layout_constraintHorizontal_bias="0.484"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/birthdayTitle" />
 
     <TextView
-        android:id="@+id/textViewBirthday"
+        android:id="@+id/textView7"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="168dp"
-        android:layout_marginTop="32dp"
-        android:text="Birthday:"
-        android:textSize="18sp"
-        android:textStyle="bold"
+        android:text="Activity Level"
+        app:layout_constraintBottom_toTopOf="@+id/activityLevelSpinner"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.49"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/genderSpinner" />
+        app:layout_constraintTop_toBottomOf="@+id/textView6"
+        app:layout_constraintVertical_bias="0.91" />
 
-    <!-- Adjusted margin to overlap with Save button -->
-
-    <Spinner
-        android:id="@+id/daySpinner"
-        android:layout_width="66dp"
-        android:layout_height="22dp"
-        android:layout_marginTop="28dp"
-        app:layout_constraintEnd_toStartOf="@+id/monthSpinner"
-        app:layout_constraintHorizontal_bias="0.381"
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Month"
+        app:layout_constraintBottom_toTopOf="@+id/monthSpinner"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.49"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewBirthday" />
-
-    <Spinner
-        android:id="@+id/monthSpinner"
-        android:layout_width="71dp"
-        android:layout_height="23dp"
-        android:layout_marginTop="28dp"
-        android:layout_marginEnd="48dp"
-        app:layout_constraintEnd_toStartOf="@+id/yearSpinner"
-        app:layout_constraintTop_toBottomOf="@+id/textViewBirthday" />
-
-    <Spinner
-        android:id="@+id/yearSpinner"
-        android:layout_width="85dp"
-        android:layout_height="22dp"
-        android:layout_marginTop="28dp"
-        app:layout_constraintTop_toBottomOf="@+id/textViewBirthday"
-        tools:layout_editor_absoluteX="291dp" />
+        app:layout_constraintTop_toBottomOf="@+id/birthdayTitle"
+        app:layout_constraintVertical_bias="0.426" />
 
     <EditText
         android:id="@+id/info3"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="204dp"
-        android:hint="Consumption Goals"
+        android:layout_width="248dp"
+        android:layout_height="63dp"
+        android:layout_marginBottom="48dp"
+        android:ems="10"
+        android:hint="Consumption Goals (Litres)"
         android:inputType="numberDecimal"
-        android:textSize="18sp"
-        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.476"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.171" />
+
+    <Spinner
+        android:id="@+id/yearSpinner"
+        android:layout_width="140dp"
+        android:layout_height="57dp"
+        android:layout_below="@id/birthdayTitle"
+        android:layout_marginTop="80dp"
+        android:layout_toEndOf="@id/monthSpinner"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/yearSpinner" />
+        app:layout_constraintStart_toEndOf="@+id/monthSpinner"
+        app:layout_constraintTop_toBottomOf="@+id/birthdayTitle" />
 
-    <Button
-        android:id="@+id/Save"
-        android:layout_width="0dp"
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:background="@drawable/round"
-        android:text="Save"
+        android:layout_marginTop="76dp"
+        android:text="Gender"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.483"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/info3" />
+        app:layout_constraintTop_toBottomOf="@+id/textView9" />
 
     <Button
         android:id="@+id/edit"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="112dp"
-        android:background="@drawable/round"
+        android:backgroundTint="@color/mybuttonSecondColor"
         android:text="Edit"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.142"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/info3" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.931" />
 
     <TextView
-        android:id="@+id/waterRecommendation"
-        android:layout_width="0dp"
+        android:id="@+id/infO2"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="Recommended Water"
-        android:textSize="18sp"
-        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/infO3"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit" />
-
-    <Spinner
-        android:id="@+id/activityLevelSpinner"
-        android:layout_width="260dp"
-        android:layout_height="29dp"
-        android:layout_marginTop="44dp"
-        android:layout_marginEnd="76dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewActivityLevel" />
+        app:layout_constraintHorizontal_bias="0.118"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/textViewActivityLevel"
-        android:layout_width="150dp"
-        android:layout_height="25dp"
-        android:layout_marginTop="72dp"
-        android:layout_marginEnd="128dp"
-        android:text="Activity Level:"
-        android:textAlignment="center"
-        android:textSize="18sp"
-        android:textStyle="bold"
+        android:id="@+id/infO3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="492dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/monthSpinner" />
+        app:layout_constraintHorizontal_bias="0.118"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
