@@ -76,7 +76,6 @@
 
 
     <string-array name="notification_array">Notification
-        <item>Select Frequency</item>
         <item>Once a Day</item>
         <item>Once every 4 hours</item>
         <item>Once every hour</item>
