@@ -23,7 +23,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 import com.example.hydrohomie.SensorReaderData;
 
-public class home extends Fragment implements SensorReaderData.DataUpdateListener {
+public class home extends Fragment  {
     private static final String CHANNEL_ID = "my_channel_id";
 
     private ProgressBar simpleProgressBar;
@@ -34,7 +34,7 @@ public class home extends Fragment implements SensorReaderData.DataUpdateListene
     private float waterLevel = 0; // Initial water level in percentage
     private float firstReading = -1; // Variable to hold the first reading
     private float lastReading = -1; // Variable to hold the last reading
-   private final Handler handler = new Handler();
+    private final Handler handler = new Handler();
     public home() {
         // require an empty public constructor
     }
@@ -69,7 +69,7 @@ public class home extends Fragment implements SensorReaderData.DataUpdateListene
         handler.postDelayed(new Runnable() {
             public void run() {
                 // Call method to read sensor data and send updates
-                SensorReaderData.readSensorDataAndSendUpdates(home.this);
+                //SensorReaderData.readSensorDataAndSendUpdates(home.this);
 
                 // Repeat this runnable task after the specified delay
                 handler.postDelayed(this, delay);
@@ -116,21 +116,21 @@ public class home extends Fragment implements SensorReaderData.DataUpdateListene
         lastReadingTextView.setText("Last Reading: " + lastReading);
     }
 
-    // Implementation of DataUpdateListener interface method
-    @Override
-    public void onDataUpdate(float waterLevel, float first, float last) {
-        // Update water level and UI when new data is received
-        this.waterLevel = waterLevel;
-        updateUI();
-
-        // Check if it's the first reading
-        if (firstReading == -1) {
-            setFirstReading(first);
-        }
-
-        // Always update the last reading
-        setLastReading(last);
-    }
+//    // Implementation of DataUpdateListener interface method
+//    @Override
+//    public void onDataUpdate(float waterLevel, float first, float last) {
+//        // Update water level and UI when new data is received
+//        this.waterLevel = waterLevel;
+//        updateUI();
+//
+//        // Check if it's the first reading
+//        if (firstReading == -1) {
+//            setFirstReading(first);
+//        }
+//
+//        // Always update the last reading
+//        setLastReading(last);
+//    }
 
     public void notification() {
         // Define notification sound and vibration
@@ -160,14 +160,4 @@ public class home extends Fragment implements SensorReaderData.DataUpdateListene
 
 
 
-    // Method to set first reading
-    public void setFirstReading(float firstReading) {
-        this.firstReading = firstReading;
-    }
-
-    // Method to set last reading
-
-    public void setLastReading(float lastReading) {
-        this.lastReading = lastReading;
-    }
 }
