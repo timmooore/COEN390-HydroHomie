@@ -2,8 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.hydrohomie">
-
-    <!--Permissions required for Bluetooth-->
+    <!-- Permissions required for Bluetooth -->
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
@@ -11,8 +10,8 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
-
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
         android:allowBackup="true"
@@ -27,7 +26,10 @@
         android:theme="@style/Theme.HydroHomie"
         tools:targetApi="31">
         <activity
-            android:name=".Notification"
+            android:name=".WaterConsumptionHistoryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Notifications"
             android:exported="false" />
         <activity
             android:name=".signin"
@@ -39,7 +41,6 @@
         <activity
             android:name=".signup"
             android:exported="false" />
-
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -49,6 +50,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>
