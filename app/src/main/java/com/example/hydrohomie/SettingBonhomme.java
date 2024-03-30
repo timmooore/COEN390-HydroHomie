@@ -97,7 +97,7 @@ public class SettingBonhomme extends Fragment {
         }
 
         // Schedule or reschedule notifications using AlarmManager
-        Intent notificationIntent = new Intent(requireContext(), Notification.class);
+        Intent notificationIntent = new Intent(requireContext(), NotificationHelper.class);
         notificationIntent.putExtra("title", "Your Notification Title");
         notificationIntent.putExtra("message", "Your Notification Message");
         PendingIntent pendingIntent = PendingIntent.getActivity(requireContext(), 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE); // Specify FLAG_IMMUTABLE here
