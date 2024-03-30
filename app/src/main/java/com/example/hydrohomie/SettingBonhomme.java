@@ -1,7 +1,6 @@
 package com.example.hydrohomie;
 
 import android.app.AlarmManager;
-import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -10,12 +9,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
@@ -25,7 +22,9 @@ public class SettingBonhomme extends Fragment {
 
     private SharedPreferences sharedPreferences;
     private Spinner notificationIntervalSpinner;
-    private AlarmManager alarmManager;
+    private Button editButton;
+    private Button saveButton;
+    private boolean isEditModeEnabled = false;
 
     public SettingBonhomme() {
         // Required empty public constructor
@@ -34,7 +33,7 @@ public class SettingBonhomme extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        alarmManager = (AlarmManager) requireContext().getSystemService(Context.ALARM_SERVICE);
+        AlarmManager alarmManager = (AlarmManager) requireContext().getSystemService(Context.ALARM_SERVICE);
     }
 
     @Override
@@ -46,24 +45,49 @@ public class SettingBonhomme extends Fragment {
 
         // Retrieve UI elements
         notificationIntervalSpinner = view.findViewById(R.id.notificationIntervalSpinner);
+        editButton = view.findViewById(R.id.editnotification);
+        saveButton = view.findViewById(R.id.savenotification);
 
-        // Define options for the notification interval
-        String[] intervals = {"Once a day", "Once every 4 hours", "Once every hour"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_dropdown_item, intervals);
+        // Define options for the notification interval from string array
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(requireContext(),
+                R.array.notification_array, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         notificationIntervalSpinner.setAdapter(adapter);
 
-        // Set listener for the notification interval selection
-        notificationIntervalSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
-                // Save the selected interval to SharedPreferences
-                saveNotificationInterval(position);
-            }
+        // Initially disable the spinner and hide the Save button
+        notificationIntervalSpinner.setEnabled(false);
+        saveButton.setVisibility(View.GONE);
 
+        // Set listener for the Edit button
+        editButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
+            public void onClick(View v) {
+                // Enable edit mode
+                isEditModeEnabled = true;
+                // Enable the spinner and show the Save button
+                notificationIntervalSpinner.setEnabled(true);
+                saveButton.setVisibility(View.VISIBLE);
             }
         });
+
+        // Set listener for the Save button
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Save the selected interval
+                int selectedPosition = notificationIntervalSpinner.getSelectedItemPosition();
+                saveNotificationInterval(selectedPosition);
+                // Disable edit mode
+                isEditModeEnabled = false;
+                // Disable the spinner and hide the Save button
+                notificationIntervalSpinner.setEnabled(false);
+                saveButton.setVisibility(View.GONE);
+            }
+        });
+
+        // Retrieve the saved interval position and set it as the selected option
+        int savedIntervalPosition = sharedPreferences.getInt("notification_interval", 0);
+        notificationIntervalSpinner.setSelection(savedIntervalPosition);
 
         return view;
     }
@@ -90,6 +114,9 @@ public class SettingBonhomme extends Fragment {
                 break;
             case 2: // Once every hour
                 intervalMillis = TimeUnit.HOURS.toMillis(1);
+                break;
+            case 3: // Once every minute to test the notification.
+                intervalMillis = TimeUnit.MINUTES.toMillis(1);
                 break;
             default:
                 // Default to once a day if interval position is invalid

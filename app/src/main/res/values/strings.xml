@@ -79,6 +79,7 @@
         <item>Once a Day</item>
         <item>Once every 4 hours</item>
         <item>Once every hour</item>
+        <item>Once every minute</item>
     </string-array>
 
 </resources>
