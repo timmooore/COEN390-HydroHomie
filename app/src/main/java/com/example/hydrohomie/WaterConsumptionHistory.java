@@ -1,16 +1,17 @@
 package com.example.hydrohomie;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -25,24 +26,23 @@ import java.util.Locale;
 
 import antonkozyriatskyi.circularprogressindicator.CircularProgressIndicator;
 
-public class WaterConsumptionHistoryActivity extends AppCompatActivity {
 
+public class WaterConsumptionHistory extends Fragment {
     private DatabaseReference databaseReference;
     private TextView historyTextView;
     private Button selectDateButton;
     private CircularProgressIndicator circularProgress;
 
-    @SuppressLint("MissingInflatedId")
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_water_consumption_history);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_water_consumption_history, container, false);
 
-        historyTextView = findViewById(R.id.historyTextView);
-        selectDateButton = findViewById(R.id.selectDateButton);
-        circularProgress = findViewById(R.id.circular_progress);
+        historyTextView = view.findViewById(R.id.historyTextView);
+        selectDateButton = view.findViewById(R.id.selectDateButton);
+        circularProgress = view.findViewById(R.id.circular_progress);
 
-        SensorReaderData.pushDummyDataToFirebase();
         // Set click listener for the select date button
         selectDateButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,6 +59,8 @@ public class WaterConsumptionHistoryActivity extends AppCompatActivity {
 
         // Display water consumption history for the current date initially
         displayWaterConsumptionHistory();
+
+        return view;
     }
 
     private void showCustomDatePickerDialog() {
@@ -68,7 +70,7 @@ public class WaterConsumptionHistoryActivity extends AppCompatActivity {
             // Fetch data from Firebase based on the selected date
             fetchDataFromFirebase(year, month, dayOfMonth);
         });
-        datePickerDialogFragment.show(getSupportFragmentManager(), "datePicker");
+        datePickerDialogFragment.show(getFragmentManager(), "datePicker");
     }
 
     private void displayWaterConsumptionHistory() {
@@ -84,8 +86,6 @@ public class WaterConsumptionHistoryActivity extends AppCompatActivity {
             fetchDataFromFirebase(year, month, dayOfMonth);
         }
     }
-
-
 
     private void fetchDataFromFirebase(int year, int month, int dayOfMonth) {
         // Construct the date string in the format "YYYY-MM-DD"
@@ -110,7 +110,7 @@ public class WaterConsumptionHistoryActivity extends AppCompatActivity {
                         Long waterConsumptionLong = (Long) value;
                         int waterConsumption = waterConsumptionLong != null ? waterConsumptionLong.intValue() : 0;
                         totalWaterConsumption += waterConsumption;
-                      //  historyTextView.setText("1000");
+                        //  historyTextView.setText("1000");
 
                     } else {
                         Log.d("DataSnapshot", "Found null value");
@@ -133,9 +133,8 @@ public class WaterConsumptionHistoryActivity extends AppCompatActivity {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 // Handle errors
-                Toast.makeText(WaterConsumptionHistoryActivity.this, "Failed to fetch data: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Failed to fetch data: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
-
 }
