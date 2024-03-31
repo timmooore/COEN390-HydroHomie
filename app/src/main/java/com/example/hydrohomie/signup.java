@@ -72,13 +72,13 @@ public class signup extends AppCompatActivity {
 
         // Proceed with user registration
         mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     Toast.makeText(getApplicationContext(), "Registration successful!", Toast.LENGTH_LONG).show();
-                    Intent intent = new Intent(signup.this, MainActivity.class);
-                    startActivity(intent); // Navigate to MainActivity (home activity) after registration
+                    Intent intent; // Navigate to GoalsSignup Activity
+                    intent = new Intent(signup.this, GoalsSignup.class);
+                    startActivity(intent);
                     finish();
                 } else {
                     Toast.makeText(getApplicationContext(), "Registration failed!! Please try again later", Toast.LENGTH_LONG).show();
@@ -88,7 +88,7 @@ public class signup extends AppCompatActivity {
     }
 
 
-    private void ToolbarSetup(){
+        private void ToolbarSetup(){
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
