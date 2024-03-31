@@ -29,9 +29,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     private Toolbar toolbar;
     private SettingBonhomme settingBonhomme = new SettingBonhomme();
     private BottomNavigationView bottomNavigationView;
-
     private home firstFragment = new home();
-
+    private WaterConsumptionHistory waterConsumption = new WaterConsumptionHistory();
     private BluetoothFragment thirdFragment = new BluetoothFragment();
     private goals forthFragment = new goals();
     private SettingBonhomme fifthFragment = new SettingBonhomme();
@@ -73,11 +72,12 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             getSupportFragmentManager().beginTransaction().replace(R.id.flFragment, firstFragment).commit();
             return true;
         } else if (itemId == R.id.details) {
-//            selectedMenuItemId = R.id.details;
-//            getSupportFragmentManager().beginTransaction().replace(R.id.flFragment, secondFragment).commit();
-            startActivity(new Intent(this, WaterConsumptionHistoryActivity.class));
 
+            selectedMenuItemId = R.id.details;
+            getSupportFragmentManager().beginTransaction().replace(R.id.flFragment,waterConsumption).commit();
             return true;
+
+
         } else if (itemId == R.id.bluetooth) {
             selectedMenuItemId = R.id.bluetooth;
             getSupportFragmentManager().beginTransaction().replace(R.id.flFragment, thirdFragment).commit();
