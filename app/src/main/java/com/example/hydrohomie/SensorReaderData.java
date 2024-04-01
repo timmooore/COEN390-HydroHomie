@@ -40,7 +40,7 @@ public class SensorReaderData {
     private static int generateDummyConsumption() {
         // Generate dummy consumption value (e.g., randomly or using predefined values)
         // For demonstration, returning a hardcoded value
-        return 200; // Example: 2000 milliliters
+        return 1; // Example: 2000 milliliters
     }
 
 }
