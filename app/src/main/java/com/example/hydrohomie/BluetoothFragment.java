@@ -327,16 +327,20 @@ public class BluetoothFragment extends Fragment {
     }
 
     void beginListenForData() {
+        // TODO: Test if this runs in the background
         final Handler handler = new Handler();
         final byte delimiter = 10; //This is the ASCII code for a newline character
 
         stopWorker = false;
         readBufferPosition = 0;
         readBuffer = new byte[1024];
+
+        // TODO: Test
         workerThread = new Thread(new Runnable() {
             public void run() {
                 while (!Thread.currentThread().isInterrupted() && !stopWorker) {
                     try {
+                        // TODO: Help Anto modify Arduino code with compact format
                         int bytesAvailable = mmInputStream.available();
                         if (bytesAvailable > 0) {
                             byte[] packetBytes = new byte[bytesAvailable];
@@ -349,11 +353,7 @@ public class BluetoothFragment extends Fragment {
                                     final String data = new String(encodedBytes, StandardCharsets.US_ASCII);
                                     readBufferPosition = 0;
 
-                                    handler.post(new Runnable() {
-                                        public void run() {
-                                            textView.setText(data);
-                                        }
-                                    });
+                                    handler.post(() -> textView.setText(data));
                                 } else {
                                     readBuffer[readBufferPosition++] = b;
                                 }
