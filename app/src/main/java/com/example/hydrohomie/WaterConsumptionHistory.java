@@ -28,10 +28,11 @@ import antonkozyriatskyi.circularprogressindicator.CircularProgressIndicator;
 
 
 public class WaterConsumptionHistory extends Fragment {
-    private DatabaseReference databaseReference;
+    private DatabaseReference databaseReference,databaseReference1;
     private TextView historyTextView;
     private Button selectDateButton;
     private CircularProgressIndicator circularProgress;
+    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -42,7 +43,7 @@ public class WaterConsumptionHistory extends Fragment {
         historyTextView = view.findViewById(R.id.historyTextView);
         selectDateButton = view.findViewById(R.id.selectDateButton);
         circularProgress = view.findViewById(R.id.circular_progress);
-
+SensorReaderData.pushDummyDataToFirebase();
         // Set click listener for the select date button
         selectDateButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,9 +53,11 @@ public class WaterConsumptionHistory extends Fragment {
         });
 
         // Initialize Firebase database reference
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
         if (user != null) {
             databaseReference = FirebaseDatabase.getInstance().getReference("user_goals").child(user.getUid()).child("water_consumption_history");
+
+            databaseReference1 = FirebaseDatabase.getInstance().getReference("user_goals").child(user.getUid()).child("water_recommendation");
         }
 
         // Display water consumption history for the current date initially
@@ -87,6 +90,9 @@ public class WaterConsumptionHistory extends Fragment {
         }
     }
 
+
+
+
     private void fetchDataFromFirebase(int year, int month, int dayOfMonth) {
         // Construct the date string in the format "YYYY-MM-DD"
         String dateString = String.format(Locale.getDefault(), "%04d-%02d-%02d", year, month + 1, dayOfMonth); // Note: Month starts from 0 in Java Calendar API
@@ -117,18 +123,15 @@ public class WaterConsumptionHistory extends Fragment {
                     }
 
 
-                    // Update the progress bar with the calculated percentage
-                    double currentValue = totalWaterConsumption;
-                    double maxValue = 2500; // Maximum value representing 2500ml
-                    double percentage = (currentValue / maxValue) * 100;
-                    circularProgress.setProgress(percentage, 100);
+                    getRecommendedWaterIntake(totalWaterConsumption);
                 } else {
                     // If no data exists for the selected date
                     historyTextView.setText("No data found for the selected date");
-                    double percentage=0;
+                    double percentage = 0;
                     circularProgress.setProgress(percentage, 100);
                 }
             }
+
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -137,4 +140,32 @@ public class WaterConsumptionHistory extends Fragment {
             }
         });
     }
+    private void getRecommendedWaterIntake(int totalWaterConsumption) {
+        // Fetch the recommended water intake value from Firebase
+        databaseReference1.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot1) {
+                if (snapshot1.exists()) {
+                    // Get the recommended water intake value
+                    String recommendedWaterIntakeString = snapshot1.getValue(String.class);
+                    if (recommendedWaterIntakeString != null) {
+                        // Convert the String value to long
+                        double recommendedWaterIntake = Double.parseDouble(recommendedWaterIntakeString);
+                        double currentValue = totalWaterConsumption;
+
+                        double percentage = (currentValue / recommendedWaterIntake) * 100;
+                        circularProgress.setProgress(percentage, 100);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle errors
+                Toast.makeText(getContext(), "Failed to fetch recommended water intake: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
 }
