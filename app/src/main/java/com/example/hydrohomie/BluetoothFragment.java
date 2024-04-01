@@ -46,6 +46,7 @@ public class BluetoothFragment extends Fragment {
     private final ArrayList<BluetoothDevice> discoveredDevicesList = new ArrayList<>();
     private final ArrayList<String> devicesList = new ArrayList<>(),
                                     pairedDevicesList = new ArrayList<>();
+    private final String selectedBluetoothAddress = "00-11-22-33";
     private ListView pairedDevicesListView, lv;
     private ArrayAdapter<String> devicesListAdapter;
     private Button b1, b2, b3, b4;
@@ -158,10 +159,10 @@ public class BluetoothFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_bluetooth, container, false);
 
-        b1 = rootView.findViewById(R.id.button);
+        b1 = rootView.findViewById(R.id.schedule);
         b2 = rootView.findViewById(R.id.scanButton);
         b3 = rootView.findViewById(R.id.refreshButton);
-        b4 = rootView.findViewById(R.id.button4);
+
         textView = rootView.findViewById(R.id.thirdFragment);
 
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -226,6 +227,11 @@ public class BluetoothFragment extends Fragment {
             }
 
             dialog.show();
+        });
+
+        b1.setOnClickListener(v -> {
+            Toast.makeText(getContext(), "Schedule button clicked", Toast.LENGTH_SHORT).show();
+            SensorDataScheduler.scheduleSensorDataReading(requireContext(), selectedBluetoothAddress);
         });
         return rootView;
     }

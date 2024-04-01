@@ -55,17 +55,24 @@
             </intent-filter>
         </activity>
 
-        <!-- Declaration of the BroadcastReceiver to listen for BOOT_COMPLETED -->
-        <receiver
-            android:name=".BootReceiver"
-            android:enabled="true"
-            android:exported="false">
+        <receiver android:name=".AlarmReceiver"
+            android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
-                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="com.example.hydrohomie.ACTION_TRIGGER_ALARM" />
             </intent-filter>
         </receiver>
+
+        <!-- Declaration of the BroadcastReceiver to listen for BOOT_COMPLETED -->
+<!--        <receiver-->
+<!--            android:name=".BootReceiver"-->
+<!--            android:enabled="true"-->
+<!--            android:exported="false">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.BOOT_COMPLETED" />-->
+<!--                <action android:name="android.intent.action.QUICKBOOT_POWERON" />-->
+<!--                <category android:name="android.intent.category.DEFAULT" />-->
+<!--            </intent-filter>-->
+<!--        </receiver>-->
 
         <!-- Declaration of the BluetoothService -->
         <service android:name=".BluetoothService" />

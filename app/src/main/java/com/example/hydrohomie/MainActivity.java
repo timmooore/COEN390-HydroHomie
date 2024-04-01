@@ -54,12 +54,12 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         selectedMenuItemId = R.id.home; // Set the default selected menu item
 
 
-        // Check if BluetoothService is running and run it if not
-        if (!isServiceRunning()) {
-            // If not running, start the service
-            Intent serviceIntent = new Intent(this, BluetoothService.class);
-            startService(serviceIntent);
-        }
+//        // Check if BluetoothService is running and run it if not
+//        if (!isServiceRunning()) {
+//            // If not running, start the service
+//            Intent serviceIntent = new Intent(this, BluetoothService.class);
+//            startService(serviceIntent);
+//        }
     }
 
     // navigation bar setup menu option

@@ -52,13 +52,15 @@ public class BluetoothService extends Service {
             return START_NOT_STICKY;
         }
 
+        tester(deviceAddress);
+
+
         // Connect to the Bluetooth device
-        try {
-            tester(deviceAddress);
-            // connectToDevice(deviceAddress);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//            connectToDevice(deviceAddress);
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
 
         // Return START_NOT_STICKY, no need to restart if service is killed
         return START_NOT_STICKY;
