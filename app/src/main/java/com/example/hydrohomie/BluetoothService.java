@@ -146,7 +146,7 @@ public class BluetoothService extends Service {
                                     System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length);
                                     final String data = new String(encodedBytes, StandardCharsets.US_ASCII);
                                     readBufferPosition = 0;
-
+                                    // TODO: Send data to Firebase
                                     // handler.post(() -> textView.setText(data));
                                 } else {
                                     readBuffer[readBufferPosition++] = b;

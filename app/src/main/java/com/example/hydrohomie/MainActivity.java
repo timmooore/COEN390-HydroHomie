@@ -2,7 +2,14 @@ package com.example.hydrohomie;
 
 import android.app.ActivityManager;
 import android.content.Context;
+import static androidx.core.content.ContextCompat.startForegroundService;
+
+import android.app.ActivityManager;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -27,9 +34,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     private Toolbar toolbar;
     private SettingBonhomme settingBonhomme = new SettingBonhomme();
     private BottomNavigationView bottomNavigationView;
-
     private home firstFragment = new home();
-    private details secondFragment = new details();
+    private WaterConsumptionHistory waterConsumption = new WaterConsumptionHistory();
     private BluetoothFragment thirdFragment = new BluetoothFragment();
     private goals forthFragment = new goals();
     private SettingBonhomme fifthFragment = new SettingBonhomme();
@@ -52,6 +58,9 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         // Initial fragment transaction
         loadFragment(firstFragment);
         selectedMenuItemId = R.id.home; // Set the default selected menu item
+     //   SensorReaderData.pushDummyDataToFirebase();
+
+
 
 
 //        // Check if BluetoothService is running and run it if not
@@ -67,18 +76,18 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int itemId = item.getItemId();
 
-
-
-
         // Menu option based on the icon and which fragment should be reached
         if (itemId == R.id.home) {
             selectedMenuItemId = R.id.home;
             getSupportFragmentManager().beginTransaction().replace(R.id.flFragment, firstFragment).commit();
             return true;
         } else if (itemId == R.id.details) {
+
             selectedMenuItemId = R.id.details;
-            getSupportFragmentManager().beginTransaction().replace(R.id.flFragment, secondFragment).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.flFragment,waterConsumption).commit();
             return true;
+
+
         } else if (itemId == R.id.bluetooth) {
             selectedMenuItemId = R.id.bluetooth;
             getSupportFragmentManager().beginTransaction().replace(R.id.flFragment, thirdFragment).commit();
@@ -157,9 +166,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         /// goals is a fragment not an activity
         if (itemId == R.id.sub_action_sixth) {
-
-
-
 
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.flFragment, forthFragment)

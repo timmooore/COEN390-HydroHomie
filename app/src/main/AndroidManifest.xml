@@ -17,6 +17,7 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
         android:allowBackup="true"
@@ -42,9 +43,6 @@
             android:exported="false" />
         <activity
             android:name=".signup"
-            android:exported="false" />
-        <activity
-            android:name=".SettingMenuBonhomme"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
@@ -76,7 +74,6 @@
 
         <!-- Declaration of the BluetoothService -->
         <service android:name=".BluetoothService" />
-
 
     </application>
 
