@@ -106,13 +106,13 @@ SensorReaderData.pushDummyDataToFirebase();
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     // Clear previous data
-                    historyTextView.setText("");
+                    historyTextView.setText("Water Consummed:");
                     int totalWaterConsumption = 0;
                     // Iterate through child nodes (if any)
                     Object value = dataSnapshot.getValue();
                     if (value != null) {
                         // Append the data to the historyTextView
-                        historyTextView.append(value.toString() + "\n");
+                        historyTextView.append(value.toString() +" L" +"\n");
                         Long waterConsumptionLong = (Long) value;
                         int waterConsumption = waterConsumptionLong != null ? waterConsumptionLong.intValue() : 0;
                         totalWaterConsumption += waterConsumption;
@@ -126,7 +126,7 @@ SensorReaderData.pushDummyDataToFirebase();
                     getRecommendedWaterIntake(totalWaterConsumption);
                 } else {
                     // If no data exists for the selected date
-                    historyTextView.setText("No data found for the selected date");
+                    historyTextView.setText("No water consummed that day");
                     double percentage = 0;
                     circularProgress.setProgress(percentage, 100);
                 }
