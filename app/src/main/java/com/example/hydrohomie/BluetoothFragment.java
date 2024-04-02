@@ -46,7 +46,7 @@ public class BluetoothFragment extends Fragment {
     private final ArrayList<BluetoothDevice> discoveredDevicesList = new ArrayList<>();
     private final ArrayList<String> devicesList = new ArrayList<>(),
                                     pairedDevicesList = new ArrayList<>();
-    private final String selectedBluetoothAddress = "00-11-22-33";
+    private String selectedBluetoothAddress;
     private ListView pairedDevicesListView, lv;
     private ArrayAdapter<String> devicesListAdapter;
     private Button b1, b2, b3, b4;
@@ -117,6 +117,8 @@ public class BluetoothFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SharedPreferencesHelper sharedPreferencesHelper = new SharedPreferencesHelper(requireContext());
+        selectedBluetoothAddress = sharedPreferencesHelper.getBluetoothAddress();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             // Check location permissions required for Bluetooth, prompt for permissions from user
@@ -199,6 +201,9 @@ public class BluetoothFragment extends Fragment {
                     Toast.makeText(requireContext(), "You selected: " + selectedDevice.getName(), Toast.LENGTH_LONG).show();
                     bluetoothAdapter.cancelDiscovery();
                     initiatePairing(selectedDevice);
+                    SharedPreferencesHelper sharedPreferencesHelper = new SharedPreferencesHelper(requireContext());
+                    selectedBluetoothAddress = selectedDevice.getAddress();
+                    sharedPreferencesHelper.saveBluetoothAddress(selectedBluetoothAddress);
                 } catch (SecurityException e) {
                     throw new RuntimeException(e);
                 }
@@ -211,6 +216,7 @@ public class BluetoothFragment extends Fragment {
             // Get the selected device name
             String deviceName = (String) parent.getItemAtPosition(position);
 
+            // TODO: Uncomment
             // Call the function to connect to the selected Bluetooth device
             try {
                 connectToDevice(deviceName);

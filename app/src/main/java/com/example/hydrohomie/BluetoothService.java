@@ -33,6 +33,11 @@ public class BluetoothService extends Service {
     int readBufferPosition;
     volatile boolean stopWorker;
 
+    // Define a flag to indicate whether data collection is complete
+    private boolean dataCollectionComplete = false;
+
+    // Define an object for synchronization
+    private final Object lock = new Object();
     @Override
     public void onCreate() {
         super.onCreate();
@@ -52,16 +57,16 @@ public class BluetoothService extends Service {
             return START_NOT_STICKY;
         }
 
-        tester(deviceAddress);
+        // tester(deviceAddress);
 
 
         // Connect to the Bluetooth device
-//        try {
-//            connectToDevice(deviceAddress);
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-
+        try {
+            connectToDevice(deviceAddress);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        stopSelf();
         // Return START_NOT_STICKY, no need to restart if service is killed
         return START_NOT_STICKY;
     }
@@ -89,6 +94,7 @@ public class BluetoothService extends Service {
             stopSelf();
         }
         Toast.makeText(this, "Trying to connect to Bluetooth address: " + deviceAddress, Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "Trying to connect to Bluetooth address: " + deviceAddress);
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         BluetoothDevice selectedDevice = bluetoothAdapter.getRemoteDevice(deviceAddress);
 
@@ -102,8 +108,8 @@ public class BluetoothService extends Service {
 
         UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); //Standard SerialPortService ID\
         try (BluetoothSocket socket = selectedDevice.createRfcommSocketToServiceRecord(uuid)) {
-
-            Toast.makeText(this, "Selected device" + selectedDevice.getName(), Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "Selected device " + selectedDevice.getName());
+            Toast.makeText(this, "Selected device " + selectedDevice.getName(), Toast.LENGTH_SHORT).show();
             socket.connect();
 
             mmOutputStream = socket.getOutputStream();
@@ -111,17 +117,27 @@ public class BluetoothService extends Service {
 
             beginListenForData();
 
+            // Wait until data collection is complete
+            synchronized (lock) {
+                while (!dataCollectionComplete) {
+                    try {
+                        lock.wait(); // Wait until notified
+                    } catch (InterruptedException e) {
+                        Log.e(TAG, "connectToDevice: Interrupted", e);
+                    }
+                }
+            }
         } catch (IOException | SecurityException e) {
             // Error occurred while connecting to the device
             Toast.makeText(this, "Error connecting to device: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             Log.e(TAG, "connectToDevice: Error connecting to device: ", e);
             stopSelf(); // Stop the service
-            return;
         }
     }
 
     void beginListenForData() {
         // TODO: Test if this runs in the background
+        Log.d(TAG, "beginListenForData: called");
         final Handler handler = new Handler();
         final byte delimiter = 10; //This is the ASCII code for a newline character
 
@@ -130,32 +146,42 @@ public class BluetoothService extends Service {
         readBuffer = new byte[1024];
 
         // TODO: Test
-        Thread workerThread = new Thread(new Runnable() {
-            public void run() {
-                while (!Thread.currentThread().isInterrupted() && !stopWorker) {
-                    try {
-                        // TODO: Help Anto modify Arduino code with compact format
-                        int bytesAvailable = mmInputStream.available();
-                        if (bytesAvailable > 0) {
-                            byte[] packetBytes = new byte[bytesAvailable];
-                            mmInputStream.read(packetBytes);
-                            for (int i = 0; i < bytesAvailable; i++) {
-                                byte b = packetBytes[i];
-                                if (b == delimiter) {
-                                    byte[] encodedBytes = new byte[readBufferPosition];
-                                    System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length);
-                                    final String data = new String(encodedBytes, StandardCharsets.US_ASCII);
-                                    readBufferPosition = 0;
-                                    // TODO: Send data to Firebase
-                                    // handler.post(() -> textView.setText(data));
-                                } else {
-                                    readBuffer[readBufferPosition++] = b;
-                                }
+        Thread workerThread = new Thread(() -> {
+            Log.d(TAG, "beginListenForData: workerThread running");
+            int numReads = 0;
+            while (!Thread.currentThread().isInterrupted() && !stopWorker) {
+                try {
+                    // TODO: Help Anto modify Arduino code with compact format
+                    int bytesAvailable = mmInputStream.available();
+                    if (bytesAvailable > 0) {
+                        byte[] packetBytes = new byte[bytesAvailable];
+                        int numBytesRead = mmInputStream.read(packetBytes);
+                        for (int i = 0; i < bytesAvailable; i++) {
+                            byte b = packetBytes[i];
+                            if (b == delimiter) {
+                                byte[] encodedBytes = new byte[readBufferPosition];
+                                System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length);
+                                final String data = new String(encodedBytes, StandardCharsets.US_ASCII);
+                                readBufferPosition = 0;
+                                // TODO: Send data to Firebase
+                                handler.post(() -> Log.d(TAG, "Data: " + data));
+//                                Log.d(TAG, "Data: " + data);
+                                ++numReads;
+                            } else {
+                                readBuffer[readBufferPosition++] = b;
                             }
                         }
-                    } catch (IOException ex) {
-                        stopWorker = true;
+                        if (numReads == 3) {
+                            stopWorker = true;
+                            synchronized (lock) {
+                                dataCollectionComplete = true;
+                                lock.notifyAll(); // Notify the waiting thread
+                            }
+                        }
                     }
+                } catch (IOException e) {
+                    Log.e(TAG, "threadWorker Runnable: ", e);
+                    stopWorker = true;
                 }
             }
         });
@@ -163,7 +189,8 @@ public class BluetoothService extends Service {
     }
 
     private void tester(String deviceAddress) {
-        Toast.makeText(this,"Service doing work with address", Toast.LENGTH_LONG).show();
+        Log.d(TAG, "Service doing work with address" + deviceAddress);
+        Toast.makeText(this,"Service doing work with address" + deviceAddress, Toast.LENGTH_LONG).show();
     }
 }
 
