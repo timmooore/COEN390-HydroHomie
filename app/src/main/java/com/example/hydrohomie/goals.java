@@ -58,7 +58,7 @@ public class goals extends Fragment {
         // Populate gender spinner
         ArrayAdapter<CharSequence> genderAdapter = ArrayAdapter.createFromResource(requireContext
 
-(),
+                        (),
                 R.array.gender_array, android.R.layout.simple_spinner_item);
         genderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         genderSpinner.setAdapter(genderAdapter);
@@ -335,7 +335,7 @@ public class goals extends Fragment {
     private double calculateWaterIntakeForActive(String gender) {
         //Taking the average between 45 mins and 4 hours of activity
         //Total water intake plus the additional intake for active
-        return (0.35/30.0) * 142.5;
+        return (0.35 / 30.0) * 142.5;
     }
 
     private double calculateWaterIntakeForWeight() {
@@ -343,6 +343,66 @@ public class goals extends Fragment {
         double weight = info1.getText().toString().isEmpty() ? 0 : Double.parseDouble(info1.getText().toString());
         Log.d("WEIGHT_DEBUG", String.valueOf(weight));
         return weight * 0.035;
+    }
+
+
+    private double calculatedRecommendedWaterIntake(String selectedActivityLevel, String selectedGender, String selectedWeight, String selectedBirthday) {
+        // Initialize variables
+        double recommendedWaterIntakeActivityLevel = 0;
+        double baseRecommendedWaterIntake = 0;
+        double weightAdjustedWaterIntake = 0;
+        double calculatedRecommendedWaterIntake;
+
+        // Validate and parse selectedBirthday to age
+        try {
+            if (!selectedBirthday.isEmpty() && selectedBirthday.matches("\\d+")) {
+                int age = Integer.parseInt(selectedBirthday); // Assuming selectedBirthday is an age
+                baseRecommendedWaterIntake = calculateBaseWaterIntakeForAge(age, selectedGender);
+            } else {
+                Log.d("Error", "Invalid birthday input: " + selectedBirthday);
+                baseRecommendedWaterIntake = calculateBaseWaterIntakeForAge(25, selectedGender); // Default age
+            }
+        } catch (NumberFormatException e) {
+            Log.e("NumberFormatException", "Could not parse selectedBirthday: " + selectedBirthday, e);
+            baseRecommendedWaterIntake = calculateBaseWaterIntakeForAge(25, selectedGender); // Default age for exception
+        }
+
+        // Validate and parse selectedWeight
+        try {
+            if (!selectedWeight.isEmpty() && selectedWeight.matches("\\d+(\\.\\d+)?")) {
+                double weight = Double.parseDouble(selectedWeight);
+                weightAdjustedWaterIntake = calculateWaterIntakeForWeight(weight);
+            } else {
+                Log.d("Error", "Invalid weight input: " + selectedWeight);
+                weightAdjustedWaterIntake = 0; // Assuming no weight input leads to no adjustment
+            }
+        } catch (NumberFormatException e) {
+            Log.e("NumberFormatException", "Could not parse selectedWeight: " + selectedWeight, e);
+            weightAdjustedWaterIntake = 0; // Default behavior for exception
+        }
+
+        // Adjust based on activity level
+        switch (selectedActivityLevel) {
+            case "Moderate (15 to 45 min per day)":
+                recommendedWaterIntakeActivityLevel = 0.35;
+                break;
+            case "Active (46 min to 3 hours per day)":
+                recommendedWaterIntakeActivityLevel = (0.35 / 30.0) * 142.5; // Example calculation
+                break;
+            default:
+                recommendedWaterIntakeActivityLevel = 0; // No extra water for low activity levels
+                break;
+        }
+
+        // Combine all factors to calculate the final recommended water intake
+        calculatedRecommendedWaterIntake = baseRecommendedWaterIntake + weightAdjustedWaterIntake + recommendedWaterIntakeActivityLevel;
+
+        return calculatedRecommendedWaterIntake;
+    }
+
+    private double calculateWaterIntakeForWeight(double weight) {
+        // Assuming an increase of 0.03 liters per kilogram as a simplistic model
+        return weight * 0.03;
     }
 
     private double calculateBaseWaterIntakeForAge(int age, String gender) {
@@ -381,39 +441,5 @@ public class goals extends Fragment {
         }
     }
 
-    private double calculatedRecommendedWaterIntake(String selectedActivityLevel, String selectedGender, String selectedWeight, String selectedBirthday) {
-        // Calculate recommended water intake based on all different factors
-        double recommendedWaterIntakeActivityLevel;
-        double baseRecommendedWaterIntake;
-        double calculatedRecommendedWaterIntake;
 
-        baseRecommendedWaterIntake = calculateBaseWaterIntakeForAge(Integer.parseInt(selectedBirthday), selectedGender);
-
-
-
-        switch (selectedActivityLevel) {
-            case "Moderate (15 to 45 min per day)":
-                recommendedWaterIntakeActivityLevel = 0.35;
-                break;
-            case "Active (46 min to 3 hours per day)":
-                //Taking the average between 45 mins and 4 hours of activity
-                //Total water intake plus the additional intake for active
-                recommendedWaterIntakeActivityLevel = (0.35/30.0) * 142.5;
-                break;
-            default:
-                recommendedWaterIntakeActivityLevel = 0; // Default consumption
-                break;
-        }
-
-        //calculate different values of water intake based on weight
-        double weight = info1.getText().toString().isEmpty() ? 72 : Double.parseDouble(info1.getText().toString());
-        Log.d("WEIGHT_DEBUG", String.valueOf(weight));
-
-        calculatedRecommendedWaterIntake = baseRecommendedWaterIntake
-                + 0.035 * weight
-                + recommendedWaterIntakeActivityLevel;
-
-        return calculatedRecommendedWaterIntake;
-    }
-
-    }
+}
