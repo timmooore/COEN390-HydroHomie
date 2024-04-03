@@ -23,17 +23,18 @@ import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 import com.example.hydrohomie.SensorReaderData;
 
+import antonkozyriatskyi.circularprogressindicator.CircularProgressIndicator;
+
 public class home extends Fragment  {
     private static final String CHANNEL_ID = "my_channel_id";
 
-    private ProgressBar simpleProgressBar;
+    private CircularProgressIndicator circularProgress1;
     private TextView titleNotif;
     private TextView firstReadingTextView; // Added TextView for displaying the first reading
     private TextView lastReadingTextView; // Added TextView for displaying the last reading
     private Button refreshButton;
     private float waterLevel = 0; // Initial water level in percentage
-    private float firstReading = -1; // Variable to hold the first reading
-    private float lastReading = -1; // Variable to hold the last reading
+
     private final Handler handler = new Handler();
     public home() {
         // require an empty public constructor
@@ -44,10 +45,9 @@ public class home extends Fragment  {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        simpleProgressBar = view.findViewById(R.id.pb2);
+        circularProgress1 = view.findViewById(R.id.circular_progress1);
         titleNotif = view.findViewById(R.id.titleMessage);
-        firstReadingTextView = view.findViewById(R.id.firstReadingTextView); // Initialize first reading TextView
-        lastReadingTextView = view.findViewById(R.id.lastReadingTextView); // Initialize last reading TextView
+   // Initialize last reading TextView
 
         // Enable options menu in the fragment
         setHasOptionsMenu(true);
@@ -91,7 +91,7 @@ public class home extends Fragment  {
 
     // Method to update UI based on water level
     private void updateUI() {
-        simpleProgressBar.setProgress((int) waterLevel);
+     //   circularProgress1.setProgress((int) waterLevel);
         updateNotification();
     }
 
@@ -111,9 +111,7 @@ public class home extends Fragment  {
         }
         titleNotif.setText(notificationMessage);
 
-        // Update first and last reading TextViews
-        firstReadingTextView.setText("First Reading: " + firstReading);
-        lastReadingTextView.setText("Last Reading: " + lastReading);
+
     }
 
 //    // Implementation of DataUpdateListener interface method
