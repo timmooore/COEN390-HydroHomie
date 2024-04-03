@@ -1,5 +1,6 @@
 package com.example.hydrohomie;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,8 +30,8 @@ import java.util.List;
 
 public class goals extends Fragment {
 
-    protected EditText info1, info3;
-    protected TextView infO1, infO3;
+    protected EditText info1, info3, birthday;
+    protected TextView infO1;
     protected Button save, edit;
     protected Spinner genderSpinner, daySpinner, monthSpinner, yearSpinner, activityLevelSpinner; // Added activityLevelSpinner
     private FirebaseAuth mAuth;
@@ -39,6 +40,7 @@ public class goals extends Fragment {
         // Required empty public constructor
     }
 
+    @SuppressLint("MissingInflatedId")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_goals, container, false);
@@ -46,14 +48,12 @@ public class goals extends Fragment {
         mAuth = FirebaseAuth.getInstance();
         info1 = view.findViewById(R.id.info1);
         info3 = view.findViewById(R.id.info3);
-        infO3 = view.findViewById(R.id.infO3);
         save = view.findViewById(R.id.Save);
-        edit = view.findViewById(R.id.edit);
-        genderSpinner = view.findViewById(R.id.genderSpinner);
-        daySpinner = view.findViewById(R.id.daySpinner);
-        monthSpinner = view.findViewById(R.id.monthSpinner);
-        yearSpinner = view.findViewById(R.id.yearSpinner);
+        edit = view.findViewById(R.id.Edit);
+        birthday = view.findViewById(R.id.birthday);
         activityLevelSpinner = view.findViewById(R.id.activityLevelSpinner); // Initialize activityLevelSpinner
+        genderSpinner = view.findViewById(R.id.genderSpinner);
+
 
         // Populate gender spinner
         ArrayAdapter<CharSequence> genderAdapter = ArrayAdapter.createFromResource(requireContext
@@ -64,27 +64,6 @@ public class goals extends Fragment {
         genderSpinner.setAdapter(genderAdapter);
         // Set the first item as "Gender"
         genderSpinner.setSelection(0);
-
-        // Populate day spinner
-        ArrayAdapter<CharSequence> dayAdapter = ArrayAdapter.createFromResource(requireContext
-
-(),
-                R.array.day_array, android.R.layout.simple_spinner_item);
-        dayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        daySpinner.setAdapter(dayAdapter);
-
-        // Populate month spinner
-        ArrayAdapter<CharSequence> monthAdapter = ArrayAdapter.createFromResource(requireContext
-
-(),
-                R.array.month_array, android.R.layout.simple_spinner_item);
-        monthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        monthSpinner.setAdapter(monthAdapter);
-
-        // Populate year spinner
-        ArrayAdapter<String> yearAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, generateYears());
-        yearAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        yearSpinner.setAdapter(yearAdapter);
 
         // Populate activity level spinner
         ArrayAdapter<CharSequence> activityLevelAdapter = ArrayAdapter.createFromResource(requireContext(),
@@ -137,11 +116,10 @@ public class goals extends Fragment {
                 String selectedActivityLevel = activityLevelSpinner.getSelectedItem().toString();
                 String selectedGender = genderSpinner.getSelectedItem().toString();
                 String selectedWeight = info1.getText().toString();
-                String selectedBirthday = daySpinner.getSelectedItem().toString() + "/" + monthSpinner.getSelectedItem().toString() + "/" + yearSpinner.getSelectedItem().toString();
-                String selectedYear = yearSpinner.getSelectedItem().toString();
+                String selectedBirthday = birthday.getText().toString();
 
                 // Calculate recommendedWaterIntake
-                double recommendedWaterIntake = calculatedRecommendedWaterIntake(selectedActivityLevel, selectedGender, selectedWeight, selectedBirthday, selectedYear);
+                double recommendedWaterIntake = calculatedRecommendedWaterIntake(selectedActivityLevel, selectedGender, selectedWeight, selectedBirthday);
 
                 Log.d("Recommended Water Intake", String.valueOf(recommendedWaterIntake));
 
@@ -235,23 +213,12 @@ public class goals extends Fragment {
 
             // Check if a birthday is selected
             String selectedDay = "";
-            if (daySpinner.getSelectedItem() != null) {
-                selectedDay = daySpinner.getSelectedItem().toString();
-            }
-
-            String selectedMonth = "";
-            if (monthSpinner.getSelectedItem() != null) {
-                selectedMonth = monthSpinner.getSelectedItem().toString();
-            }
-
-            String selectedYear = "";
-
-            if (yearSpinner.getSelectedItem() != null) {
-                selectedYear = yearSpinner.getSelectedItem().toString();
+            if (birthday.getText() != null) {
+                selectedDay = birthday.getText().toString();
             }
 
             // Combine selected day, month, and year into a single string for birthday
-            String selectedBirthday = selectedDay + "/" + selectedMonth + "/" + selectedYear;
+            String selectedBirthday = selectedDay;
 
             // Get selected activity level
             String selectedActivityLevel = activityLevelSpinner.getSelectedItem().toString();
@@ -290,7 +257,7 @@ public class goals extends Fragment {
 
             switch (selectedBirthday) {
                 case "birthday":
-                    recommendedWaterIntakeAge = calculateBaseWaterIntakeForAge(Integer.parseInt(selectedYear), selectedGender);
+                    recommendedWaterIntakeAge = calculateBaseWaterIntakeForAge(Integer.parseInt(selectedBirthday), selectedGender);
                     break;
             }
 
@@ -340,9 +307,6 @@ public class goals extends Fragment {
         info1.setEnabled(false);
         info3.setEnabled(false);
         genderSpinner.setEnabled(false);
-        daySpinner.setEnabled(false);
-        monthSpinner.setEnabled(false);
-        yearSpinner.setEnabled(false);
         activityLevelSpinner.setEnabled(false);
         save.setVisibility(View.GONE);
         edit.setVisibility(View.VISIBLE);
@@ -352,9 +316,6 @@ public class goals extends Fragment {
         info1.setEnabled(true);
         info3.setEnabled(true);
         genderSpinner.setEnabled(true);
-        daySpinner.setEnabled(true);
-        monthSpinner.setEnabled(true);
-        yearSpinner.setEnabled(true);
         activityLevelSpinner.setEnabled(true);
         save.setVisibility(View.VISIBLE);
         edit.setVisibility(View.GONE);
@@ -420,13 +381,13 @@ public class goals extends Fragment {
         }
     }
 
-    private double calculatedRecommendedWaterIntake(String selectedActivityLevel, String selectedGender, String selectedWeight, String selectedBirthday, String selectedYear) {
+    private double calculatedRecommendedWaterIntake(String selectedActivityLevel, String selectedGender, String selectedWeight, String selectedBirthday) {
         // Calculate recommended water intake based on all different factors
         double recommendedWaterIntakeActivityLevel;
         double baseRecommendedWaterIntake;
         double calculatedRecommendedWaterIntake;
 
-        baseRecommendedWaterIntake = calculateBaseWaterIntakeForAge(Integer.parseInt(selectedYear), selectedGender);
+        baseRecommendedWaterIntake = calculateBaseWaterIntakeForAge(Integer.parseInt(selectedBirthday), selectedGender);
 
 
 
