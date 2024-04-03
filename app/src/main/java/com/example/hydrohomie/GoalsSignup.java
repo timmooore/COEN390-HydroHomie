@@ -133,7 +133,7 @@ public class GoalsSignup extends AppCompatActivity implements AdapterView.OnItem
         userData.put("weight", weight);
 
         // Saving the user data under "users" node, then under the user's UID
-        mDatabase.child("users").child(userId).setValue(userData);
+        mDatabase.child("user_goals").child(userId).setValue(userData);
 
         DatabaseReference userGoalsRef;
 
