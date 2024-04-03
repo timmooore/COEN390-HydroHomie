@@ -294,7 +294,6 @@ public class BluetoothFragment extends Fragment {
                 for (BluetoothDevice device : pairedDevices) {
                     String deviceName = device.getName();
                     String deviceHardwareAddress = device.getAddress(); // MAC address
-                    // TODO: Setup processing of deviceName so that it remembers the device
                     pairedDevicesList.add(deviceName);
                 }
             }
