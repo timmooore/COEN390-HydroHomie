@@ -2,7 +2,6 @@ package com.example.hydrohomie;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -14,33 +13,44 @@ import android.widget.Spinner;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
-
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class GoalsSignup extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
-    private String[] gender = {"Select Gender", "Male", "Female", "Other"};
-    private String[] activityLevel = {"Select Activity Level", "Not Active", "Moderately Active", "Very Active"};
+    private FirebaseAuth mAuth;
+    private DatabaseReference mDatabase;
+
+    private String[] genderArray = {"Select Gender", "Male", "Female", "Other"};
+    private String[] activityLevelArray = {"Select Activity Level", "Not Active", "Moderately Active", "Very Active"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_goals_signup); // Ensure this is your layout file
+        setContentView(R.layout.activity_goals_signup);
 
+        // Initialize Firebase Auth and Database Reference
+        mAuth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         setupBirthdayEditText();
         setupGenderSpinner();
         setupActivityLevelSpinner();
         setupWeightEditText();
-        setupContinueButton(); // Ensure this call is included
+        setupContinueButton();
     }
 
     private void setupContinueButton() {
         Button continueButton = findViewById(R.id.button2);
         continueButton.setOnClickListener(v -> {
+            saveUserData();
             Intent intent = new Intent(GoalsSignup.this, MainActivity.class);
             startActivity(intent);
         });
@@ -53,7 +63,7 @@ public class GoalsSignup extends AppCompatActivity implements AdapterView.OnItem
 
     private void setupGenderSpinner() {
         Spinner genderSpinner = findViewById(R.id.genderSpinner2);
-        ArrayAdapter<String> genderAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, gender);
+        ArrayAdapter<String> genderAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, genderArray);
         genderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         genderSpinner.setAdapter(genderAdapter);
         genderSpinner.setOnItemSelectedListener(this);
@@ -61,7 +71,7 @@ public class GoalsSignup extends AppCompatActivity implements AdapterView.OnItem
 
     private void setupActivityLevelSpinner() {
         Spinner activitySpinner = findViewById(R.id.activitySpinner);
-        ArrayAdapter<String> activityAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, activityLevel);
+        ArrayAdapter<String> activityAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, activityLevelArray);
         activityAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         activitySpinner.setAdapter(activityAdapter);
         activitySpinner.setOnItemSelectedListener(this);
@@ -101,6 +111,29 @@ public class GoalsSignup extends AppCompatActivity implements AdapterView.OnItem
                 })
                 .setNegativeButton("Cancel", null)
                 .show();
+    }
+
+    private void saveUserData() {
+        String userId = mAuth.getCurrentUser().getUid();
+        EditText birthdayEditText = findViewById(R.id.birthday);
+        Spinner genderSpinner = findViewById(R.id.genderSpinner2);
+        Spinner activitySpinner = findViewById(R.id.activitySpinner);
+        EditText weightEditText = findViewById(R.id.weight);
+
+        String birthday = birthdayEditText.getText().toString();
+        String gender = genderSpinner.getSelectedItem().toString();
+        String activityLevel = activitySpinner.getSelectedItem().toString();
+        String weight = weightEditText.getText().toString();
+
+        // Creating a user map to hold the user data
+        Map<String, Object> userData = new HashMap<>();
+        userData.put("birthday", birthday);
+        userData.put("gender", gender);
+        userData.put("activityLevel", activityLevel);
+        userData.put("weight", weight);
+
+        // Saving the user data under "users" node, then under the user's UID
+        mDatabase.child("users").child(userId).setValue(userData);
     }
 
     @Override
