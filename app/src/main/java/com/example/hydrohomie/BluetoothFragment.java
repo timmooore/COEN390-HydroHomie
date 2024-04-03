@@ -1,5 +1,7 @@
 package com.example.hydrohomie;
 
+import static android.content.Context.BIND_AUTO_CREATE;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
@@ -156,12 +158,15 @@ public class BluetoothFragment extends Fragment {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+      // Replace with your Bluetooth device address
+
+
         View rootView = inflater.inflate(R.layout.fragment_bluetooth, container, false);
 
         b1 = rootView.findViewById(R.id.button);
         b2 = rootView.findViewById(R.id.scanButton);
         b3 = rootView.findViewById(R.id.refreshButton);
-        b4 = rootView.findViewById(R.id.button4);
+//        b4 = rootView.findViewById(R.id.button4);
         textView = rootView.findViewById(R.id.thirdFragment);
 
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();

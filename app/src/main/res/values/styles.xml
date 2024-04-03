@@ -73,4 +73,7 @@
             <item name="android:maxHeight">14dp</item>
         </style>
 
+        <string name="channel_name">Bluetooth Service</string>
+        <string name="channel_description">Notification channel for Bluetooth background service</string>
+
 </resources>

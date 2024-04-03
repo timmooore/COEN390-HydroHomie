@@ -1,204 +1,113 @@
 package com.example.hydrohomie;
 
-import static androidx.core.content.ContextCompat.startForegroundService;
-
-import android.app.ActivityManager;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
+import android.Manifest;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.provider.Settings;
+import android.util.Log;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import com.example.hydrohomie.R;
 
-public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
-    private FirebaseAuth mAuth;
-
-
-
-    private Toolbar toolbar;
-    private SettingBonhomme settingBonhomme = new SettingBonhomme();
-    private BottomNavigationView bottomNavigationView;
-    private home firstFragment = new home();
-    private WaterConsumptionHistory waterConsumption = new WaterConsumptionHistory();
-    private BluetoothFragment thirdFragment = new BluetoothFragment();
-    private goals forthFragment = new goals();
-    private SettingBonhomme fifthFragment = new SettingBonhomme();
-    private int selectedMenuItemId;
+public class MainActivity extends AppCompatActivity {
+    private static final int REQUEST_ENABLE_BT = 1;
+    private static final int REQUEST_PERMISSIONS = 2;
+    private TextView textViewStatus;
+    private BluetoothAdapter bluetoothAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mAuth = FirebaseAuth.getInstance();
 
-        bottomNavigationView = findViewById(R.id.bottomNavigationView);
-        bottomNavigationView.setOnNavigationItemSelectedListener(this);
-        bottomNavigationView.setSelectedItemId(R.id.home);
+        textViewStatus = findViewById(R.id.textViewStatus);
 
-        toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        // The home fragment will be defaulted as the first fragment
-        // Initial fragment transaction
-        loadFragment(firstFragment);
-        selectedMenuItemId = R.id.home; // Set the default selected menu item
-     //   SensorReaderData.pushDummyDataToFirebase();
-
-    }
-
-
-
-
-
-    // navigation bar setup menu option
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        int itemId = item.getItemId();
-
-        // Menu option based on the icon and which fragment should be reached
-        if (itemId == R.id.home) {
-            selectedMenuItemId = R.id.home;
-            getSupportFragmentManager().beginTransaction().replace(R.id.flFragment, firstFragment).commit();
-            return true;
-        } else if (itemId == R.id.details) {
-
-            selectedMenuItemId = R.id.details;
-            getSupportFragmentManager().beginTransaction().replace(R.id.flFragment,waterConsumption).commit();
-            return true;
-
-
-        } else if (itemId == R.id.bluetooth) {
-            selectedMenuItemId = R.id.bluetooth;
-            getSupportFragmentManager().beginTransaction().replace(R.id.flFragment, thirdFragment).commit();
-            return true;
-        } else if (itemId == R.id.goals) {
-            selectedMenuItemId = R.id.goals;
-            getSupportFragmentManager().beginTransaction().replace(R.id.flFragment, forthFragment).commit();
-            return true;
-        } else if (itemId == R.id.setting) {
-            selectedMenuItemId = R.id.setting;
-            getSupportFragmentManager().beginTransaction().replace(R.id.flFragment, fifthFragment).commit();
-            return true;
-        }
-
-        return false;
-    }
-
-
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.bonhomme, menu);
-        return true;
+        checkBluetoothSupport();
+        checkPermissions();
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int itemId = item.getItemId();
-
-        // Update the selected menu item and synchronize it with the bottom navigation view
-        selectedMenuItemId = itemId;
-        bottomNavigationView.setSelectedItemId(itemId);
-        if (itemId == R.id.sub_action_one) {
-
-
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.flFragment, thirdFragment)
-                    .addToBackStack(null)  // Optional: This allows the user to navigate back to the previous fragment
-                    .commit();
-
-            return true;
+    protected void onResume() {
+        super.onResume();
+        if (isBluetoothEnabled()) {
+            startBluetoothService();
+        } else {
+            requestBluetoothEnable();
         }
-
-
-        if (itemId == R.id.sub_action_two) {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.flFragment, fifthFragment)
-                    .addToBackStack(null)  // Optional: This allows the user to navigate back to the previous fragment
-                    .commit();
-
-            return true;
-        }
-
-//// signup button might also be useless
-//        if (itemId == R.id.sub_action_third) {
-//            Intent intent = new Intent(this, signup.class);
-//            startActivity(intent);
-//            return true;
-//        }
-//logout
-        if (itemId == R.id.sub_action_forth) {
-            mAuth.signOut();
-            Intent intent = new Intent(this, signinup.class);
-            startActivity(intent);
-            return true;
-        }
-
-//        //login button might be uselesss
-//        if (itemId == R.id.sub_action_fifth) {
-//            Intent intent = new Intent(this, signin.class);
-//            startActivity(intent);
-//            return true;
-//        }
-
-
-        /// goals is a fragment not an activity
-        if (itemId == R.id.sub_action_sixth) {
-
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.flFragment, forthFragment)
-                    .addToBackStack(null)
-                    .commit();
-
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (!NotificationManagerCompat.from(this).areNotificationsEnabled()) {
+                Log.d("MainActivity", "Notifications are not enabled. Prompting user to enable them.");
+                Intent intent = new Intent();
+                intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+                intent.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
+                startActivity(intent);
+            }}
     }
 
-
-
-
-    //  smth to do with navigation bar bottom
-    private void loadFragment(Fragment fragment) {
-        if (fragment != null) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.flFragment, fragment)
-                    .commit();
+    private void checkBluetoothSupport() {
+        bluetoothAdapter = ((BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
+        if (bluetoothAdapter == null) {
+            Log.e("MainActivity", "Bluetooth not supported on this device.");
+            finish();
         }
     }
 
+    private boolean isBluetoothEnabled() {
+        return bluetoothAdapter != null && bluetoothAdapter.isEnabled();
+    }
 
+    private void requestBluetoothEnable() {
+        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+    }
 
+    private void startBluetoothService() {
+        Intent serviceIntent = new Intent(this, BluetoothService.class);
+        startService(serviceIntent);
+    }
+
+    private void checkPermissions() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.BLUETOOTH_CONNECT},
+                    REQUEST_PERMISSIONS);
+        }
+    }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        // Check if user is signed in during the app's lifecycle (e.g., when returning from background)
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser == null) {
-            // User is not signed in, navigate to signinup activity
-            Intent intent = new Intent(this, signinup.class);
-            startActivity(intent);
-            finish(); // Finish the current activity to prevent the user from coming back to it
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_PERMISSIONS) {
+            for (int grantResult : grantResults) {
+                if (grantResult != PackageManager.PERMISSION_GRANTED) {
+                    Log.e("MainActivity", "Required permissions not granted. Closing the app.");
+                    finish();
+                    return;
+                }
+            }
+            startBluetoothService();
         }
     }
-
-
-
-
-
 }
