@@ -134,12 +134,22 @@ public class GoalsSignup extends AppCompatActivity implements AdapterView.OnItem
 
         // Saving the user data under "users" node, then under the user's UID
         mDatabase.child("users").child(userId).setValue(userData);
+
+        DatabaseReference userGoalsRef;
+
+        // Create a reference to the user's goals in the database
+        userGoalsRef = FirebaseDatabase.getInstance().getReference("user_goals").child(userId);
+
+        // Save the information to the user's goals
+        userGoalsRef.child("info1").setValue(weight);
+        userGoalsRef.child("gender").setValue(gender);
+        userGoalsRef.child("birthday").setValue(birthday);
+        userGoalsRef.child("activity_level").setValue(activityLevel);
     }
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         // Implement your selection handling logic here
-        // For demonstration:
         Toast.makeText(parent.getContext(), "Selected: " + parent.getItemAtPosition(position).toString(), Toast.LENGTH_LONG).show();
     }
 
