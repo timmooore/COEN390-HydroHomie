@@ -60,11 +60,8 @@ public class goals extends Fragment {
         activityLevelSpinner = view.findViewById(R.id.activityLevelSpinner); // Initialize activityLevelSpinner
         genderSpinner = view.findViewById(R.id.genderSpinner);
 
-
         // Populate gender spinner
-        ArrayAdapter<CharSequence> genderAdapter = ArrayAdapter.createFromResource(requireContext
-
-                        (),
+        ArrayAdapter<CharSequence> genderAdapter = ArrayAdapter.createFromResource(requireContext(),
                 R.array.gender_array, android.R.layout.simple_spinner_item);
         genderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         genderSpinner.setAdapter(genderAdapter);
@@ -385,11 +382,6 @@ public class goals extends Fragment {
         return calculatedRecommendedWaterIntake;
     }
 
-    private double calculateWaterIntakeForWeight(double weight) {
-        // Assuming an increase of 0.03 liters per kilogram as a simplistic model
-        return weight * 0.03;
-    }
-
     private double calculateBaseWaterIntakeForAge(int age, String gender) {
         // Baseline water intake in liters
 
@@ -426,7 +418,6 @@ public class goals extends Fragment {
         }
     }
 
-    // TODO: Update the selectedYear/selectedAge to be the user's age
     private double calculateRecommendedWaterIntake(String selectedActivityLevel, String selectedGender, String selectedWeight, int age) {
         Log.d("AGE_DEBUG", String.valueOf(age));
         // Get weight from String
