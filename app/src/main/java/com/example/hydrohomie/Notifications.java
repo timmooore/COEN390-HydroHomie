@@ -4,7 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
-public class Notification extends AppCompatActivity {
+public class Notifications extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
