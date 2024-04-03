@@ -48,5 +48,6 @@ dependencies {
     implementation("com.github.badoualy:datepicker-timeline:c6dcd05737")
     implementation ("me.zhanghai.android.materialprogressbar:library:1.6.1")
 
+    implementation ("com.github.antonKozyriatskyi:CircularProgressIndicator:1.3.0")
 
 }

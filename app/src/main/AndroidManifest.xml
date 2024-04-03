@@ -11,6 +11,7 @@
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
         android:allowBackup="true"
@@ -28,7 +29,10 @@
             android:name=".GoalsSignup"
             android:exported="false" />
         <activity
-            android:name=".Notification"
+            android:name=".WaterConsumptionHistoryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Notifications"
             android:exported="false" />
         <activity
             android:name=".signin"
@@ -41,9 +45,6 @@
             android:name=".signup"
             android:exported="false" />
         <activity
-            android:name=".SettingMenuBonhomme"
-            android:exported="false" />
-        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
@@ -52,6 +53,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>

@@ -21,8 +21,6 @@ need to be deleted with it xml file
 
 
 
-
-
 public class SettingBonhomme extends Fragment {
 
     public SettingBonhomme(){
@@ -32,6 +30,6 @@ public class SettingBonhomme extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_details, container, false);
+        return inflater.inflate(R.layout.fragment_setting_bonhomme, container, false);
     }
 }
