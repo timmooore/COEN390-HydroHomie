@@ -14,11 +14,18 @@ import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class BluetoothService extends Service {
     private static final String TAG = "BluetoothService";
@@ -38,6 +45,12 @@ public class BluetoothService extends Service {
 
     // Define an object for synchronization
     private final Object lock = new Object();
+
+    private FirebaseAuth mAuth;
+    private FirebaseDatabase firebaseDatabase;
+    private String firebaseUserId;
+
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -52,9 +65,23 @@ public class BluetoothService extends Service {
 
         if (deviceAddress == null) {
             // Device address is not provided, cannot proceed
+            Log.e(TAG, "Device address not provided");
             Toast.makeText(this, "Device address not provided", Toast.LENGTH_SHORT).show();
             stopSelf(); // Stop the service
             return START_NOT_STICKY;
+        }
+
+        // Initialize Firebase Database
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) {
+            Log.e(TAG, "Could not get Firebase user");
+            Toast.makeText(this, "Could not get Firebase user", Toast.LENGTH_SHORT).show();
+            stopSelf(); // Stop the service
+            return START_NOT_STICKY;
+        } else {
+            firebaseUserId = currentUser.getUid();
+            firebaseDatabase = FirebaseDatabase.getInstance();
         }
 
         // tester(deviceAddress);
@@ -164,7 +191,31 @@ public class BluetoothService extends Service {
                                 final String data = new String(encodedBytes, StandardCharsets.US_ASCII);
                                 readBufferPosition = 0;
                                 // TODO: Send data to Firebase
-                                handler.post(() -> Log.d(TAG, "Data: " + data));
+                                handler.post(() -> {
+                                    Log.d(TAG, "Data: " + data);
+                                    // Regular expression pattern to match the double value
+                                    Pattern pattern = Pattern.compile("\\d+\\.\\d+");
+
+                                    // Matcher to find the pattern in the text
+                                    Matcher matcher = pattern.matcher(data);
+
+                                    // Check if the pattern is found
+                                    if (matcher.find()) {
+                                        // Extract the matched value and convert it to double
+                                        double value = Double.parseDouble(matcher.group());
+
+                                        // Print the extracted double value
+                                        Log.d("ParsedValue", "Extracted double value: " + value);
+                                        DatabaseReference databaseReference =
+                                                firebaseDatabase.getReference("user_data").child(firebaseUserId);
+                                        // Write data to the database
+                                        databaseReference.setValue(value)
+                                                .addOnSuccessListener(aVoid -> Log.d(TAG, "Data written successfully to Firebase"))
+                                                .addOnFailureListener(e -> Log.e(TAG, "Error writing data to Firebase", e));
+                                    } else {
+                                        Log.d("ParsedValue", "No double value found in the text.");
+                                    }
+                                });
 //                                Log.d(TAG, "Data: " + data);
                                 ++numReads;
                             } else {
