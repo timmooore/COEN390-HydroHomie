@@ -26,16 +26,12 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class BluetoothService extends Service {
     private static final String TAG = "BluetoothService";
-
-    // Interval for Bluetooth communication (30 minutes)
-    private static final long INTERVAL_MILLIS = 30 * 60 * 1000;
 
     // Input and output streams for serial Bluetooth
     OutputStream mmOutputStream;
@@ -54,7 +50,7 @@ public class BluetoothService extends Service {
     private FirebaseDatabase firebaseDatabase;
     private String firebaseUserId;
 
-    private final LocalDate today = LocalDate.now();;
+    private final LocalDate today = LocalDate.now();
 
 
     @Override
@@ -238,7 +234,7 @@ public class BluetoothService extends Service {
                                 readBuffer[readBufferPosition++] = b;
                             }
                         }
-                        if (numReads == 3) {
+                        if (numReads == 1) {
                             stopWorker = true;
                             synchronized (lock) {
                                 dataCollectionComplete = true;
