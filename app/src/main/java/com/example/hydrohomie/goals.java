@@ -80,9 +80,7 @@ public class goals extends Fragment {
         daySpinner.setAdapter(dayAdapter);
 
         // Populate month spinner
-        ArrayAdapter<CharSequence> monthAdapter = ArrayAdapter.createFromResource(requireContext
-
-(),
+        ArrayAdapter<CharSequence> monthAdapter = ArrayAdapter.createFromResource(requireContext(),
                 R.array.month_array, android.R.layout.simple_spinner_item);
         monthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         monthSpinner.setAdapter(monthAdapter);

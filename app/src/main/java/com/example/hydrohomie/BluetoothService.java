@@ -23,6 +23,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -49,6 +53,8 @@ public class BluetoothService extends Service {
     private FirebaseAuth mAuth;
     private FirebaseDatabase firebaseDatabase;
     private String firebaseUserId;
+
+    private final LocalDate today = LocalDate.now();;
 
 
     @Override
@@ -206,12 +212,22 @@ public class BluetoothService extends Service {
 
                                         // Print the extracted double value
                                         Log.d("ParsedValue", "Extracted double value: " + value);
+                                        String currentTime = getCurrentTime();
+
                                         DatabaseReference databaseReference =
-                                                firebaseDatabase.getReference("user_data").child(firebaseUserId);
-                                        // Write data to the database
-                                        databaseReference.setValue(value)
-                                                .addOnSuccessListener(aVoid -> Log.d(TAG, "Data written successfully to Firebase"))
-                                                .addOnFailureListener(e -> Log.e(TAG, "Error writing data to Firebase", e));
+                                                firebaseDatabase.getReference("user_data")
+                                                        .child(firebaseUserId)
+                                                        .child(today.toString());
+                                        FirebaseUtils.accumulateValue(databaseReference, currentTime, value);
+//                                        DatabaseReference databaseReference =
+//                                                firebaseDatabase.getReference("user_data")
+//                                                        .child(firebaseUserId)
+//                                                        .child(today.toString())
+//                                                        .child(currentTime);
+//                                        // Write data to the database
+//                                        databaseReference.setValue(value)
+//                                                .addOnSuccessListener(aVoid -> Log.d(TAG, "Data written successfully to Firebase"))
+//                                                .addOnFailureListener(e -> Log.e(TAG, "Error writing data to Firebase", e));
                                     } else {
                                         Log.d("ParsedValue", "No double value found in the text.");
                                     }
@@ -237,6 +253,18 @@ public class BluetoothService extends Service {
             }
         });
         workerThread.start();
+    }
+
+    // Method to get the current time in 24-hour format
+    private static String getCurrentTime() {
+        // Get the current time
+        LocalTime currentTime = LocalTime.now();
+
+        // Define the format for the 24-hour time
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+
+        // Return the formatted time
+        return currentTime.format(formatter);
     }
 
     private void tester(String deviceAddress) {
