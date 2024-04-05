@@ -24,16 +24,22 @@ public class FirebaseUtils {
                 Double cumulatedValue = mutableData.child("cumulated_value").getValue(Double.class);
 
                 // TODO: Handle edge case where data is updated at midnight
-                // If the latest time slot is null, set it to the first key in 'values'
+                // If the cumulated value is null, set it to 0
                 if (cumulatedValue == null) {
                     mutableData.child("cumulated_value").setValue(0);
                     mutableData.child("values").child(currentTime).setValue(value);
+
+                    // Store the key of the latest_time_slot for future access
+                    mutableData.child("latest_time_slot").setValue(currentTime);
                 } else {
                     // Add the new value to the cumulated value
                     cumulatedValue += value;
 
                     // Update the value in the database
                     mutableData.child("values").child(currentTime).setValue(cumulatedValue);
+
+                    // Update the latest time slot
+                    mutableData.child("latest_time_slot").setValue(currentTime);
                 }
                 // Return the updated value
                 return Transaction.success(mutableData);
