@@ -46,6 +46,7 @@ public class BluetoothFragment extends Fragment {
     private final ArrayList<BluetoothDevice> discoveredDevicesList = new ArrayList<>();
     private final ArrayList<String> devicesList = new ArrayList<>(),
                                     pairedDevicesList = new ArrayList<>();
+    private String selectedBluetoothAddress;
     private ListView pairedDevicesListView, lv;
     private ArrayAdapter<String> devicesListAdapter;
     private Button b1, b2, b3, b4;
@@ -116,6 +117,8 @@ public class BluetoothFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SharedPreferencesHelper sharedPreferencesHelper = new SharedPreferencesHelper(requireContext());
+        selectedBluetoothAddress = sharedPreferencesHelper.getBluetoothAddress();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             // Check location permissions required for Bluetooth, prompt for permissions from user
@@ -158,10 +161,10 @@ public class BluetoothFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_bluetooth, container, false);
 
-        b1 = rootView.findViewById(R.id.button);
+        b1 = rootView.findViewById(R.id.schedule);
         b2 = rootView.findViewById(R.id.scanButton);
         b3 = rootView.findViewById(R.id.refreshButton);
-        b4 = rootView.findViewById(R.id.button4);
+
         textView = rootView.findViewById(R.id.thirdFragment);
 
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -198,6 +201,9 @@ public class BluetoothFragment extends Fragment {
                     Toast.makeText(requireContext(), "You selected: " + selectedDevice.getName(), Toast.LENGTH_LONG).show();
                     bluetoothAdapter.cancelDiscovery();
                     initiatePairing(selectedDevice);
+                    SharedPreferencesHelper sharedPreferencesHelper = new SharedPreferencesHelper(requireContext());
+                    selectedBluetoothAddress = selectedDevice.getAddress();
+                    sharedPreferencesHelper.saveBluetoothAddress(selectedBluetoothAddress);
                 } catch (SecurityException e) {
                     throw new RuntimeException(e);
                 }
@@ -210,6 +216,7 @@ public class BluetoothFragment extends Fragment {
             // Get the selected device name
             String deviceName = (String) parent.getItemAtPosition(position);
 
+            // TODO: Uncomment
             // Call the function to connect to the selected Bluetooth device
             try {
                 connectToDevice(deviceName);
@@ -226,6 +233,11 @@ public class BluetoothFragment extends Fragment {
             }
 
             dialog.show();
+        });
+
+        b1.setOnClickListener(v -> {
+            Toast.makeText(getContext(), "Schedule button clicked", Toast.LENGTH_SHORT).show();
+            SensorDataScheduler.scheduleSensorDataReading(requireContext(), selectedBluetoothAddress);
         });
         return rootView;
     }
@@ -282,7 +294,6 @@ public class BluetoothFragment extends Fragment {
                 for (BluetoothDevice device : pairedDevices) {
                     String deviceName = device.getName();
                     String deviceHardwareAddress = device.getAddress(); // MAC address
-                    // TODO: Setup processing of deviceName so that it remembers the device
                     pairedDevicesList.add(deviceName);
                 }
             }
@@ -327,16 +338,20 @@ public class BluetoothFragment extends Fragment {
     }
 
     void beginListenForData() {
+        // TODO: Test if this runs in the background
         final Handler handler = new Handler();
         final byte delimiter = 10; //This is the ASCII code for a newline character
 
         stopWorker = false;
         readBufferPosition = 0;
         readBuffer = new byte[1024];
+
+        // TODO: Test
         workerThread = new Thread(new Runnable() {
             public void run() {
                 while (!Thread.currentThread().isInterrupted() && !stopWorker) {
                     try {
+                        // TODO: Help Anto modify Arduino code with compact format
                         int bytesAvailable = mmInputStream.available();
                         if (bytesAvailable > 0) {
                             byte[] packetBytes = new byte[bytesAvailable];
@@ -349,11 +364,7 @@ public class BluetoothFragment extends Fragment {
                                     final String data = new String(encodedBytes, StandardCharsets.US_ASCII);
                                     readBufferPosition = 0;
 
-                                    handler.post(new Runnable() {
-                                        public void run() {
-                                            textView.setText(data);
-                                        }
-                                    });
+                                    handler.post(() -> textView.setText(data));
                                 } else {
                                     readBuffer[readBufferPosition++] = b;
                                 }
