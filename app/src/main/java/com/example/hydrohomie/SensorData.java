@@ -1,43 +1,42 @@
 package com.example.hydrohomie;
 
-import android.hardware.Sensor;
+import android.util.Log;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 public class SensorData {
-    private double value; // Increasing integer value
-    private Date timestamp; // Timestamp associated with the data point
+    private final double value; // Increasing integer value
+    private final LocalTime timestamp; // Timestamp associated with the data point
 
-    public SensorData(double value, Date timestamp) {
+    public SensorData(double value, LocalTime timestamp) {
         this.value = value;
         this.timestamp = timestamp;
     }
 
     // Getter methods
-    public double getValue() {
-        return value;
-    }
+    public double getValue() { return value; }
 
-    public Date getTimestamp() {
+    public LocalTime getTimestamp() {
         return timestamp;
     }
 
     // Generate data points with timestamps at 30-minute intervals
-    public static List<SensorData> generateDataPoints(int numPoints) {
+    public static List<SensorData> generateDataPoints(int numPoints, double recommendedIntake) {
         List<SensorData> dataPoints = new ArrayList<>();
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 0); // Start at midnight
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
+        double incrementalIntake = recommendedIntake / numPoints;
+        // Set the start time to 8 AM and end time to 12 AM
+        LocalTime startTime = LocalTime.of(8, 0);
+        LocalTime endTime = LocalTime.of(0, 0);
 
-        for (int i = 0; i < numPoints; i++) {
-            dataPoints.add(new SensorData(i, calendar.getTime()));
-            calendar.add(Calendar.MINUTE, 30); // Increment by 30 minutes
+        // Loop from start time to end time, adding 5 minutes each iteration
+        for (LocalTime time = startTime; time.isBefore(endTime); time = time.plusMinutes(5)) {
+            SensorData dataPoint = new SensorData(incrementalIntake, time);
+            dataPoints.add(dataPoint);
+            Log.d("SensorData", "Timestamp: " + time + ", value: " + incrementalIntake);
+            incrementalIntake += incrementalIntake;
         }
-
         return dataPoints;
     }
 
