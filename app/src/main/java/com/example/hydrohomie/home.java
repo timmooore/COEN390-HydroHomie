@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,6 +29,8 @@ import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 import com.example.hydrohomie.SensorReaderData;
 
+import java.time.LocalTime;
+
 import antonkozyriatskyi.circularprogressindicator.CircularProgressIndicator;
 
 public class home extends Fragment  {
@@ -37,7 +40,7 @@ public class home extends Fragment  {
     private TextView titleNotif;
     private TextView firstReadingTextView; // Added TextView for displaying the first reading
     private TextView lastReadingTextView; // Added TextView for displaying the last reading
-    private Button refreshButton;
+    private Button notiTestButton;
     private float waterLevel = 0; // Initial water level in percentage
 
     private final Handler handler = new Handler();
@@ -52,6 +55,9 @@ public class home extends Fragment  {
 
         circularProgress1 = view.findViewById(R.id.circular_progress1);
         titleNotif = view.findViewById(R.id.titleMessage);
+
+        // TODO: Remove
+        notiTest(view);
    // Initialize last reading TextView
 
 
@@ -62,6 +68,15 @@ public class home extends Fragment  {
         startTimer();
 
         return view;
+    }
+
+    private void notiTest(View view) {
+        notiTestButton = view.findViewById(R.id.notiTestButton);
+        notiTestButton.setOnClickListener(v -> {
+            SensorData sd = new SensorData(2.1, LocalTime.now());
+            boolean result = SensorData.isHydrated(SensorData.dataPoints, sd);
+            Log.d("NOTI_TEST", "Result is: " + result);
+        });
     }
 
     // Method to start the timer for periodic updates

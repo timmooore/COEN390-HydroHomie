@@ -11,7 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SensorData {
+    static final List<SensorData> dataPoints = new ArrayList<>();
     private static final String TAG = "SensorData";
+    private static final double threshold = 0.5;
     private final double value; // Increasing integer value
     private final LocalTime timestamp; // Timestamp associated with the data point
 
@@ -27,9 +29,16 @@ public class SensorData {
         return timestamp;
     }
 
-    // Generate data points with timestamps at 30-minute intervals
+    /**
+     * Generate data points with timestamps at minute intervals specified by granularity
+     * @param recommendedIntake The total daily recommended water intake of the user
+     * @return A List of SensorData entries at minute intervals with the recommended
+     * accumulated intake for that time of day
+     */
+    //
     public static List<SensorData> generateDataPoints(double recommendedIntake) {
-        List<SensorData> dataPoints = new ArrayList<>();
+        Log.d(TAG, "generateDataPoints: method invoked");
+        //List<SensorData> dataPoints = new ArrayList<>();
 
         // Set the start time to 8 AM and end time to 12 AM
         LocalDateTime startTime = LocalDateTime.now().toLocalDate().atTime(8, 0);
@@ -67,5 +76,38 @@ public class SensorData {
             cumulatedIntake += intakeIncrement;
         }
         return dataPoints;
+    }
+
+    /**
+     * Compares the most recent sensor data reading with where the user should
+     * be throughout the day and returns whether we should notify them to hydrate
+     * @param dataPoints
+     * @param input
+     * @return
+     */
+    public static boolean isHydrated(List<SensorData> dataPoints, SensorData input) {
+        double diff;
+        for (SensorData dataPoint : dataPoints) {
+            LocalTime dataPointTime = dataPoint.getTimestamp();
+            // Check if the input timestamp is before the current data point's timestamp
+            if (input.getTimestamp().isBefore(dataPointTime)) {
+                // Found the interval just after the input timestamp
+                // Compare the input value with the previous data point's value (floor value)
+                if (dataPointTime.equals(LocalTime.MIDNIGHT)) {
+                    // Handle the case where dataPointTime is midnight (start of next day)
+                    return input.getValue() >= dataPoints.get(dataPoints.size() - 1).getValue();
+                } else {
+                    int currentIndex = dataPoints.indexOf(dataPoint);
+                    SensorData floorDataPoint = dataPoints.get(currentIndex - 1);
+                    diff = floorDataPoint.getValue() - input.getValue();
+                    Log.d(TAG, "dataPoint: time: " + floorDataPoint.getTimestamp() + ", value: " + floorDataPoint.getValue() + ", input: time: " + input.getTimestamp() + ", value: " + input.getValue());
+                    return diff >= threshold;
+                }
+            }
+        }
+        // If input timestamp is after all data points, compare with the last data point
+        SensorData lastDataPoint = dataPoints.get(dataPoints.size() - 1);
+        diff = lastDataPoint.getValue() - input.getValue();
+        return diff >= threshold;
     }
 }
