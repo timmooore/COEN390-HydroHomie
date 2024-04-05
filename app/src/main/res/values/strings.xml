@@ -74,4 +74,12 @@
         <item>Active (46 min to 3 hours per day)</item>
     </string-array>
 
+
+    <string-array name="notification_array">Notification
+        <item>Once a Day</item>
+        <item>Once every 4 hours</item>
+        <item>Once every hour</item>
+        <item>Once every minute</item>
+    </string-array>
+
 </resources>

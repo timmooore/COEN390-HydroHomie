@@ -1,5 +1,7 @@
 package com.example.hydrohomie;
 
+import android.app.ActivityManager;
+import android.content.Context;
 import static androidx.core.content.ContextCompat.startForegroundService;
 
 import android.app.ActivityManager;
@@ -9,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -20,6 +23,8 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
     private FirebaseAuth mAuth;
@@ -55,7 +60,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         selectedMenuItemId = R.id.home; // Set the default selected menu item
      //   SensorReaderData.pushDummyDataToFirebase();
 
-    }
 
 
     public static class GoalsSignup extends AppCompatActivity {
@@ -69,7 +73,13 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
 
 
-
+//        // Check if BluetoothService is running and run it if not
+//        if (!isServiceRunning()) {
+//            // If not running, start the service
+//            Intent serviceIntent = new Intent(this, BluetoothService.class);
+//            startService(serviceIntent);
+//        }
+    }
 
     // navigation bar setup menu option
     @Override
@@ -178,9 +188,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         return super.onOptionsItemSelected(item);
     }
 
-
-
-
     //  smth to do with navigation bar bottom
     private void loadFragment(Fragment fragment) {
         if (fragment != null) {
@@ -190,9 +197,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                     .commit();
         }
     }
-
-
-
 
     @Override
     protected void onStart() {
@@ -207,8 +211,35 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d("MainActivity", "MainActivity onDestroy()");
+    }
 
+    // Method to start the BluetoothService
+    public void startBluetoothService() {
+        Intent serviceIntent = new Intent(this, BluetoothService.class);
+        startService(serviceIntent);
+    }
 
+    // Method to stop the BluetoothService
+    public void stopBluetoothService() {
+        Intent serviceIntent = new Intent(this, BluetoothService.class);
+        stopService(serviceIntent);
+    }
 
+    private boolean isServiceRunning() {
+        ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningServiceInfo> runningServices = activityManager.getRunningServices(Integer.MAX_VALUE);
+        if (runningServices != null) {
+            for (ActivityManager.RunningServiceInfo service : runningServices) {
+                if (BluetoothService.class.getName().equals(service.service.getClassName())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
 }

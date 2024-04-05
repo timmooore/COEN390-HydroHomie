@@ -7,18 +7,23 @@ import static androidx.core.content.ContextCompat.getSystemService;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 import com.example.hydrohomie.SensorReaderData;
@@ -27,7 +32,7 @@ import antonkozyriatskyi.circularprogressindicator.CircularProgressIndicator;
 
 public class home extends Fragment  {
     private static final String CHANNEL_ID = "my_channel_id";
-
+    private Toolbar toolbar;
     private CircularProgressIndicator circularProgress1;
     private TextView titleNotif;
     private TextView firstReadingTextView; // Added TextView for displaying the first reading
@@ -49,10 +54,8 @@ public class home extends Fragment  {
         titleNotif = view.findViewById(R.id.titleMessage);
    // Initialize last reading TextView
 
-        // Enable options menu in the fragment
-        setHasOptionsMenu(true);
 
-        // Initialize UI with initial water level and readings
+
         updateUI();
 
         // Start the timer to periodically update sensor data
@@ -60,6 +63,7 @@ public class home extends Fragment  {
 
         return view;
     }
+
     // Method to start the timer for periodic updates
     private void startTimer() {
 
@@ -113,6 +117,9 @@ public class home extends Fragment  {
 
 
     }
+
+
+
 
 //    // Implementation of DataUpdateListener interface method
 //    @Override

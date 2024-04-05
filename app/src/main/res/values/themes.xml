@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.HydroHomie" parent="Theme.AppCompat.DayNight.NoActionBar">
+    <style name="Base.Theme.HydroHomie" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">#1da2d8</item>
 
 </style>
