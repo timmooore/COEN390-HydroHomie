@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class goals extends Fragment {
-
+    private static final String TAG = "Goals";
     protected EditText info1, info3, birthday;
     protected TextView infO1;
     protected Button save, edit;
@@ -163,7 +163,7 @@ public class goals extends Fragment {
                         // Retrieve data from the database
                         String dbValue1 = dataSnapshot.child("info1").getValue(String.class);
                         String dbValue2 = dataSnapshot.child("info2").getValue(String.class);
-                        String dbValue3 = dataSnapshot.child("info3").getValue(String.class);
+                        String dbValue3 = dataSnapshot.child("water_recommendation").getValue(String.class);
 
                         info1.setText(dbValue1);
                         info3.setText(dbValue3);
@@ -262,6 +262,10 @@ public class goals extends Fragment {
                         String dbValue3 = dataSnapshot.child("water_recommendation").getValue(String.class);
                         info1.setText(dbValue1);
                         info3.setText(dbValue3);
+                        if (dbValue3 != null) {
+                            Log.d(TAG, "This got exec");
+                            FirebaseUtils.generateRecommendedIntakeData(userGoalsRef, Double.parseDouble(dbValue3));
+                        }
                     }
                 }
 
@@ -330,9 +334,9 @@ public class goals extends Fragment {
 
     private double calculatedRecommendedWaterIntake(String selectedActivityLevel, String selectedGender, String selectedWeight, String selectedBirthday) {
         // Initialize variables
-        double recommendedWaterIntakeActivityLevel = 0;
-        double baseRecommendedWaterIntake = 0;
-        double weightAdjustedWaterIntake = 0;
+        double recommendedWaterIntakeActivityLevel;
+        double baseRecommendedWaterIntake;
+        double weightAdjustedWaterIntake;
         double calculatedRecommendedWaterIntake;
 
         // Validate and parse selectedBirthday to age

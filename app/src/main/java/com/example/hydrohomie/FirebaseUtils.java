@@ -10,6 +10,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 
+import java.util.List;
+
 public class FirebaseUtils {
     private static final String TAG = "FirebaseUtils";
 
@@ -105,5 +107,16 @@ public class FirebaseUtils {
                 }
             }
         });
+    }
+
+    public static void generateRecommendedIntakeData(DatabaseReference databaseRef, double recommendedIntake) {
+        List<SensorData> dataPoints = SensorData.generateDataPoints(recommendedIntake);
+        if (dataPoints.isEmpty()) Log.d(TAG, "You fucked up");
+        for (SensorData dataPoint : dataPoints) {
+            // Log.d(TAG, "dataPoint: timestamp: " + dataPoint.getTimestamp().toString() + "value: " + dataPoint.getValue());
+            databaseRef.child("incremental_intake_data")
+                    .child(dataPoint.getTimestamp().toString())
+                    .setValue(dataPoint.getValue());
+        }
     }
 }
