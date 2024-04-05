@@ -57,6 +57,7 @@ public class goals extends Fragment {
         save = view.findViewById(R.id.Save);
         edit = view.findViewById(R.id.Edit);
         birthday = view.findViewById(R.id.birthday);
+        birthday.setText("01/01/2000");
         activityLevelSpinner = view.findViewById(R.id.activityLevelSpinner); // Initialize activityLevelSpinner
         genderSpinner = view.findViewById(R.id.genderSpinner);
 
@@ -191,7 +192,6 @@ public class goals extends Fragment {
             String userId = currentUser.getUid();
 
             String value1 = info1.getText().toString();
-            String value3 = info3.getText().toString();
 
             // Check if a gender is selected
             String selectedGender = "";
@@ -244,13 +244,13 @@ public class goals extends Fragment {
 
             // Save the information to the user's goals
             userGoalsRef.child("info1").setValue(value1);
-            userGoalsRef.child("info3").setValue(value3);
             userGoalsRef.child("water_recommendation").setValue(String.valueOf(calculatedRecommendedWaterIntake));
             userGoalsRef.child("gender").setValue(selectedGender);
             userGoalsRef.child("birthday").setValue(selectedBirthday);
             userGoalsRef.child("activity_level").setValue(selectedActivityLevel);
             userGoalsRef.child("recommendedWaterIntake").setValue(calculatedRecommendedWaterIntake);
 
+            // TODO: Why do we store and then fetch to update? Should fix @Daniel
             // Retrieve data from userGoalsRef and update TextViews
             userGoalsRef.addValueEventListener(new ValueEventListener() {
                 @Override
@@ -259,7 +259,7 @@ public class goals extends Fragment {
                         // Retrieve data from the database
                         String dbValue1 = dataSnapshot.child("info1").getValue(String.class);
                         String dbValue2 = dataSnapshot.child("info2").getValue(String.class);
-                        String dbValue3 = dataSnapshot.child("info3").getValue(String.class);
+                        String dbValue3 = dataSnapshot.child("water_recommendation").getValue(String.class);
                         info1.setText(dbValue1);
                         info3.setText(dbValue3);
                     }
