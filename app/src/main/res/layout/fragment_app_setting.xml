@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:backgroundTint="@color/myBackgroundColor"
+    tools:context=".MainActivity">
+
+
+
+    <FrameLayout
+        android:id="@+id/flFragment"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <id.yuana.itemsettingview.ItemSettingView
+        android:id="@+id/itemNotif4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="176dp"
+        android:background="#B3B3B3"
+        android:padding="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/itemNotif3"
+        app:layout_constraintVertical_bias="1.0"
+        app:settingActionIcon="@drawable/ic_arrow_right"
+        app:settingDescription="Logout from your account"
+        app:settingDescriptionColor="@android:color/white"
+        app:settingIcon="@drawable/logout"
+        app:settingLabel="Logout"
+        app:settingLabelColor="@android:color/white" />
+
+    <id.yuana.itemsettingview.ItemSettingView
+        android:id="@+id/itemNotif1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="164dp"
+        android:background="#B3B3B3"
+        android:padding="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/flFragment"
+        app:settingActionIcon="@drawable/ic_arrow_right"
+        app:settingDescription="Setup Notification"
+        app:settingDescriptionColor="@android:color/white"
+        app:settingIcon="@drawable/notification"
+        app:settingLabel="Notifications"
+        app:settingLabelColor="@android:color/white" />
+
+    <id.yuana.itemsettingview.ItemSettingView
+        android:id="@+id/itemNotif2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:background="#B3B3B3"
+        android:padding="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/itemNotif1"
+        app:settingActionIcon="@drawable/ic_arrow_right"
+        app:settingDescription="Setup Bluetooth"
+        app:settingDescriptionColor="@android:color/white"
+        app:settingIcon="@drawable/ic_stat_name"
+        app:settingLabel="Bluetooth"
+        app:settingLabelColor="@android:color/white" />
+
+    <id.yuana.itemsettingview.ItemSettingView
+        android:id="@+id/itemNotif3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="#B3B3B3"
+        android:padding="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/itemNotif2"
+        app:settingActionIcon="@drawable/ic_arrow_right"
+        app:settingDescription="User Info"
+        app:settingDescriptionColor="@android:color/white"
+        app:settingIcon="@drawable/goals"
+        app:settingLabel="Update Information"
+        app:settingLabelColor="@android:color/white" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+

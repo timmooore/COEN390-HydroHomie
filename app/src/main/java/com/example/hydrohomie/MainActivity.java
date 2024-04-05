@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     private WaterConsumptionHistory waterConsumption = new WaterConsumptionHistory();
     private BluetoothFragment thirdFragment = new BluetoothFragment();
     private goals forthFragment = new goals();
-    private SettingBonhomme fifthFragment = new SettingBonhomme();
+    private AppSetting fifthFragment = new AppSetting();
     private int selectedMenuItemId;
 
     @Override
