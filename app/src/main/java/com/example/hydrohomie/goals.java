@@ -442,5 +442,4 @@ public class goals extends Fragment {
 
         return calculatedRecommendedWaterIntake;
     }
-
 }
