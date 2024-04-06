@@ -1,5 +1,6 @@
 package com.example.hydrohomie;
 
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
@@ -24,6 +25,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.Manifest;
+import com.example.hydrohomie.MockBluetoothConnection;
+
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -60,6 +63,22 @@ public class BluetoothFragment extends Fragment {
     int readBufferPosition;
     int counter;
     volatile boolean stopWorker;
+
+    private MockBluetoothConnection mockBluetoothConnection = new MockBluetoothConnection();
+
+    // Method to simulate connecting to the mock Bluetooth device
+    private void connectToMockBluetoothDevice() {
+        // Simulate the connection process
+        mockBluetoothConnection.connect();
+        // Update isConnected flag or perform any other necessary actions
+    }
+
+    // Method to simulate disconnecting from the mock Bluetooth device
+    private void disconnectFromMockBluetoothDevice() {
+        // Simulate the disconnection process
+        mockBluetoothConnection.disconnect();
+        // Update isConnected flag or perform any other necessary actions
+    }
     
     // Create a BroadcastReceiver for ACTION_FOUND.
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -161,6 +180,20 @@ public class BluetoothFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_bluetooth, container, false);
 
+        // Button to simulate connecting to the mock Bluetooth device
+        Button connectButton = rootView.findViewById(R.id.connectButton);
+        connectButton.setOnClickListener(v -> {
+            connectToMockBluetoothDevice(); // Simulate connecting to the mock Bluetooth device
+            textView.setText("Bluetooth device connected"); // Update UI to reflect connection status
+        });
+
+        // Button to simulate disconnecting from the mock Bluetooth device
+        Button disconnectButton = rootView.findViewById(R.id.disconnectButton);
+        disconnectButton.setOnClickListener(v -> {
+            disconnectFromMockBluetoothDevice(); // Simulate disconnecting from the mock Bluetooth device
+            textView.setText("Bluetooth device disconnected"); // Update UI to reflect disconnection status
+        });
+
         b1 = rootView.findViewById(R.id.schedule);
         b2 = rootView.findViewById(R.id.scanButton);
         b3 = rootView.findViewById(R.id.refreshButton);
@@ -177,6 +210,35 @@ public class BluetoothFragment extends Fragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Select a device to pair");
         builder.setView(listView);
+        // Create dialog
+        AlertDialog dialog = builder.create();
+
+        // Set a click listener for the "Scan" button to simulate discovering new devices
+        b2.setOnClickListener(v -> {
+            // Show the dialog to simulate discovering new devices
+            dialog.show();
+        });
+
+        // Button to simulate connecting to the mock Bluetooth device
+        connectButton = rootView.findViewById(R.id.connectButton);
+        connectButton.setOnClickListener(v -> {
+            connectToMockBluetoothDevice(); // Simulate connecting to the mock Bluetooth device
+            textView.setText("Bluetooth device connected"); // Update UI to reflect connection status
+            // Add the mock device name to the paired devices list and update the adapter
+            pairedDevicesList.add("Mock Device");
+            devicesListAdapter.notifyDataSetChanged();
+        });
+
+        // Button to simulate disconnecting from the mock Bluetooth device
+        disconnectButton = rootView.findViewById(R.id.disconnectButton);
+        disconnectButton.setOnClickListener(v -> {
+            disconnectFromMockBluetoothDevice(); // Simulate disconnecting from the mock Bluetooth device
+            textView.setText("Bluetooth device disconnected"); // Update UI to reflect disconnection status
+            // Remove the mock device name from the paired devices list and update the adapter
+            pairedDevicesList.remove("Mock Device");
+            devicesListAdapter.notifyDataSetChanged();
+        });
+
 
         // Get a reference to the ListView
         pairedDevicesListView = rootView.findViewById(R.id.pairedDevicesListView);
@@ -184,8 +246,7 @@ public class BluetoothFragment extends Fragment {
         devicesListAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, pairedDevicesList);
         pairedDevicesListView.setAdapter(devicesListAdapter);
 
-        // Create dialog
-        AlertDialog dialog = builder.create();
+
 
         // Set a click listener for list items to handle pairing
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
