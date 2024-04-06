@@ -1,6 +1,10 @@
 package com.example.hydrohomie;
 
 import android.Manifest;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -12,6 +16,7 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -32,6 +37,7 @@ import java.util.regex.Pattern;
 
 public class BluetoothService extends Service {
     private static final String TAG = "BluetoothService";
+    private final static String CHANNEL_ID = "BluetoothServiceChannel";
 
     // Input and output streams for serial Bluetooth
     OutputStream mmOutputStream;
@@ -40,7 +46,7 @@ public class BluetoothService extends Service {
     int readBufferPosition;
     volatile boolean stopWorker;
 
-    // Define a flag to indicate whether data collection is complete
+    // Flag to indicate whether data collection is complete
     private boolean dataCollectionComplete = false;
 
     // Define an object for synchronization
@@ -52,18 +58,23 @@ public class BluetoothService extends Service {
 
     private final LocalDate today = LocalDate.now();
 
-
     @Override
     public void onCreate() {
         super.onCreate();
         Log.d(TAG, "BluetoothService onCreate()");
+
+        createNotificationChannel();
+
         Toast.makeText(this, "Service Started", Toast.LENGTH_LONG).show();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "BluetoothService onStartCommand()");
-        String deviceAddress = intent.getStringExtra("DEVICE_ADDRESS");
+//        String deviceAddress = intent.getStringExtra("DEVICE_ADDRESS");
+
+        // TODO: Revert
+        String deviceAddress = "00-11-22-33";
 
         if (deviceAddress == null) {
             // Device address is not provided, cannot proceed
@@ -72,6 +83,9 @@ public class BluetoothService extends Service {
             stopSelf(); // Stop the service
             return START_NOT_STICKY;
         }
+
+        // Start notification service
+        startForegroundService();
 
         // Initialize Firebase Database
         mAuth = FirebaseAuth.getInstance();
@@ -88,14 +102,14 @@ public class BluetoothService extends Service {
 
         // tester(deviceAddress);
 
-
+        // TODO: Revert
         // Connect to the Bluetooth device
-        try {
-            connectToDevice(deviceAddress);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        stopSelf();
+//        try {
+//            connectToDevice(deviceAddress);
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+        // stopSelf();
         // Return START_NOT_STICKY, no need to restart if service is killed
         return START_NOT_STICKY;
     }
@@ -263,6 +277,44 @@ public class BluetoothService extends Service {
         return currentTime.format(formatter);
     }
 
+    private void createNotificationChannel() {
+        Log.d(TAG, "Creating notification channel");
+
+        NotificationManager notificationManager = getSystemService(NotificationManager.class);
+
+        if (notificationManager != null) {
+            // Check if the channel already exists
+            if (notificationManager.getNotificationChannel(CHANNEL_ID) == null) {
+                CharSequence name = "Bluetooth Service";
+                String description = "Notification channel for Bluetooth Service";
+                int importance = NotificationManager.IMPORTANCE_HIGH;
+
+                NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+
+                channel.setDescription(description);
+                notificationManager.createNotificationChannel(channel);
+                Log.d(TAG, "Notification channel created");
+            } else {
+                Log.d(TAG, "Notification channel already exists");
+            }
+        } else {
+            Log.e(TAG, "NotificationManager is null, cannot create notification channel");
+        }
+    }
+
+    private void startForegroundService() {
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
+
+        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setContentTitle("Bluetooth Service Running")
+                .setContentText("Bluetooth service is active in the background.")
+                .setSmallIcon(R.drawable.notification) // Use an appropriate icon for your app
+                .setContentIntent(pendingIntent)
+                .build();
+
+        startForeground(1, notification);
+    }
     private void tester(String deviceAddress) {
         Log.d(TAG, "Service doing work with address" + deviceAddress);
         Toast.makeText(this,"Service doing work with address" + deviceAddress, Toast.LENGTH_LONG).show();

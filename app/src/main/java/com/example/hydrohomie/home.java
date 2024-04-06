@@ -179,29 +179,29 @@ public class home extends Fragment  {
 //    }
 
     public void notification() {
-        // Define notification sound and vibration
-        Uri notificationSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        long[] vibrationPattern = {0, 100, 200, 300}; // Vibrate for 100ms, then pause for 200ms, then vibrate for 300ms
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(getContext(), CHANNEL_ID)
-                .setSmallIcon(R.drawable.notification) // Set small icon
-                .setSound(notificationSound) // Set notification sound
-                .setVibrate(vibrationPattern) // Set vibration pattern
-                .setContentTitle("Notification") // Set notification title
-                .setContentText("This is a notification for you"); // Set notification content
-
-        // Define notification channel
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Channel Name", NotificationManager.IMPORTANCE_DEFAULT);
-            NotificationManager notificationManager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.createNotificationChannel(channel);
-        }
-
-        // Display notification
-        NotificationManager notificationManager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
-        if (notificationManager != null) {
-            notificationManager.notify(0, builder.build());
-        }
+//        // Define notification sound and vibration
+//        Uri notificationSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+//        long[] vibrationPattern = {0, 100, 200, 300}; // Vibrate for 100ms, then pause for 200ms, then vibrate for 300ms
+//
+//        NotificationCompat.Builder builder = new NotificationCompat.Builder(getContext(), CHANNEL_ID)
+//                .setSmallIcon(R.drawable.notification) // Set small icon
+//                .setSound(notificationSound) // Set notification sound
+//                .setVibrate(vibrationPattern) // Set vibration pattern
+//                .setContentTitle("Notification") // Set notification title
+//                .setContentText("This is a notification for you"); // Set notification content
+//
+//        // Define notification channel
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Channel Name", NotificationManager.IMPORTANCE_DEFAULT);
+//            NotificationManager notificationManager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+//            notificationManager.createNotificationChannel(channel);
+//        }
+//
+//        // Display notification
+//        NotificationManager notificationManager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+//        if (notificationManager != null) {
+//            notificationManager.notify(0, builder.build());
+//        }
     }
 
 

@@ -1,6 +1,7 @@
 package com.example.hydrohomie;
 
 import android.app.ActivityManager;
+import android.app.NotificationManager;
 import android.content.Context;
 import static androidx.core.content.ContextCompat.startForegroundService;
 
@@ -11,6 +12,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,6 +20,7 @@ import android.view.MenuItem;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -45,6 +48,9 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        getNotificationPermissions();
+        
         mAuth = FirebaseAuth.getInstance();
 
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
@@ -59,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         loadFragment(firstFragment);
         selectedMenuItemId = R.id.home; // Set the default selected menu item
      //   SensorReaderData.pushDummyDataToFirebase();
+
 
 
 
@@ -240,6 +247,16 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             }
         }
         return false;
+    }
+
+    private void getNotificationPermissions() {
+        if (!NotificationManagerCompat.from(this).areNotificationsEnabled()) {
+            // Notification policy access not granted, request the user to grant access
+            Intent intent = new Intent();
+            intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+            intent.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
+            startActivity(intent);
+        }
     }
 
 }

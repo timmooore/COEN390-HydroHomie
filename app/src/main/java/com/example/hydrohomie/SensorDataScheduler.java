@@ -39,7 +39,7 @@ public class SensorDataScheduler {
         calendar3.setTimeInMillis(System.currentTimeMillis());
         calendar3.add(Calendar.MINUTE, 10);
 
-        Log.d("SensorDataScheduler", "Calendar 1 time: " + calendar1.getTime() + "getTimeInMillis: " + calendar1.getTimeInMillis());
+        Log.d("SensorDataScheduler", "Calendar 1 time: " + calendar1.getTime() + ", getTimeInMillis: " + calendar1.getTimeInMillis());
         Log.d("SensorDataScheduler", "Calendar 2 time: " + calendar2.getTime());
         Log.d("SensorDataScheduler", "Calendar 3 time: " + calendar3.getTime());
         Log.d("SensorDataScheduler", "SensorDataScheduler: Calling setInexactRepeating called");
@@ -58,13 +58,13 @@ public class SensorDataScheduler {
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar1.getTimeInMillis(),
                 60000, pendingIntent1);
 
-        // Schedule the second alarm
-        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar2.getTimeInMillis(),
-                AlarmManager.INTERVAL_FIFTEEN_MINUTES, pendingIntent2);
-
-        // Schedule the third alarm
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar3.getTimeInMillis(),
-                AlarmManager.INTERVAL_FIFTEEN_MINUTES, pendingIntent3);
+//        // Schedule the second alarm
+//        alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar2.getTimeInMillis(),
+//                AlarmManager.INTERVAL_FIFTEEN_MINUTES, pendingIntent2);
+//
+//        // Schedule the third alarm
+//        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar3.getTimeInMillis(),
+//                AlarmManager.INTERVAL_FIFTEEN_MINUTES, pendingIntent3);
 
 //        PendingIntent pendingIntent = PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 //
