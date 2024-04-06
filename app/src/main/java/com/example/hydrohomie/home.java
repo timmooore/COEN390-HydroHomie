@@ -28,6 +28,10 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 import com.example.hydrohomie.SensorReaderData;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.time.LocalTime;
 
@@ -40,7 +44,7 @@ public class home extends Fragment  {
     private TextView titleNotif;
     private TextView firstReadingTextView; // Added TextView for displaying the first reading
     private TextView lastReadingTextView; // Added TextView for displaying the last reading
-    private Button notiTestButton;
+    private Button notiTestButton, dummyButton;
     private float waterLevel = 0; // Initial water level in percentage
 
     private final Handler handler = new Handler();
@@ -72,11 +76,33 @@ public class home extends Fragment  {
 
     private void notiTest(View view) {
         notiTestButton = view.findViewById(R.id.notiTestButton);
+        dummyButton = view.findViewById(R.id.genDummyButton);
+
         notiTestButton.setOnClickListener(v -> {
             SensorData sd = new SensorData(2.1, LocalTime.now());
             boolean result = SensorData.isHydrated(SensorData.dataPoints, sd);
             Log.d("NOTI_TEST", "Result is: " + result);
         });
+
+        dummyButton.setOnClickListener(v -> {
+            dummyData();
+        });
+    }
+
+    private void dummyData() {
+        // Generate data from 8 AM to this time
+        LocalTime latestTimeSlot = LocalTime.of(17, 42, 55);
+
+        FirebaseAuth lAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = lAuth.getCurrentUser();
+        if (currentUser != null) {
+            String userId = currentUser.getUid();
+
+            // Create a reference to the user's goals in the database
+            DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("user_data").child(userId);
+
+            FirebaseUtils.generateDummyData(userRef, latestTimeSlot);
+        }
     }
 
     // Method to start the timer for periodic updates

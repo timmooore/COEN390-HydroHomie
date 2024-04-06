@@ -10,6 +10,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 public class FirebaseUtils {
@@ -115,6 +117,20 @@ public class FirebaseUtils {
         for (SensorData dataPoint : dataPoints) {
             // Log.d(TAG, "dataPoint: timestamp: " + dataPoint.getTimestamp().toString() + "value: " + dataPoint.getValue());
             databaseRef.child("incremental_intake_data")
+                    .child(dataPoint.getTimestamp().toString())
+                    .setValue(dataPoint.getValue());
+        }
+    }
+
+    public static void generateDummyData(DatabaseReference databaseRef, LocalTime timestamp) {
+        List<SensorData> dataPoints = SensorData.generateDummyData(timestamp);
+        LocalDate today = LocalDate.now();
+
+        if (dataPoints.isEmpty()) Log.d(TAG, "You fucked up");
+        for (SensorData dataPoint : dataPoints) {
+            // Log.d(TAG, "dataPoint: timestamp: " + dataPoint.getTimestamp().toString() + "value: " + dataPoint.getValue());
+            databaseRef.child(today.toString())
+                    .child("values")
                     .child(dataPoint.getTimestamp().toString())
                     .setValue(dataPoint.getValue());
         }

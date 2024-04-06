@@ -264,7 +264,6 @@ public class goals extends Fragment {
                         info3.setText(dbValue3);
                         if (dbValue3 != null) {
                             Log.d(TAG, "This got exec");
-                            FirebaseUtils.generateRecommendedIntakeData(userGoalsRef, Double.parseDouble(dbValue3));
                         }
                     }
                 }
@@ -274,6 +273,9 @@ public class goals extends Fragment {
                     // Handle errors here
                 }
             });
+
+            FirebaseUtils.generateRecommendedIntakeData(userGoalsRef,
+                    Double.parseDouble(String.valueOf(calculatedRecommendedWaterIntake)));
         }
     }
 

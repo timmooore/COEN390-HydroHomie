@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class SensorData {
     static final List<SensorData> dataPoints = new ArrayList<>();
@@ -109,5 +110,38 @@ public class SensorData {
         SensorData lastDataPoint = dataPoints.get(dataPoints.size() - 1);
         diff = lastDataPoint.getValue() - input.getValue();
         return diff >= threshold;
+    }
+
+    public static List<SensorData> generateDummyData(LocalTime timestamp) {
+        List<SensorData> dummyDataList = new ArrayList<>();
+
+        LocalTime startTime = LocalTime.of(8, 0, 0);
+
+        double cumulatedIntake = 0D;
+        Log.d(TAG, "timestamp: " + timestamp);
+
+        int i = 0;
+        for (LocalTime time = startTime; time.isBefore(timestamp); time = time.plusMinutes(5)) {
+            // Format double value
+            DecimalFormat df = new DecimalFormat("0.00");
+
+            double roundedIntake = Double.parseDouble(df.format(cumulatedIntake));
+            SensorData dataPoint = new SensorData(roundedIntake, time);
+            dummyDataList.add(dataPoint);
+
+            if (i == 0) {
+                // Create an instance of Random class
+                Random random = new Random();
+
+                // Generate a random double between 15.0 (inclusive) and 80.0 (exclusive)
+                double randomIntake = 15 + (120 - 15) * random.nextDouble();
+                Log.d(TAG, "Timestamp: " + time + ", value: " + cumulatedIntake);
+                cumulatedIntake += randomIntake;
+                i = 3;
+            }
+            i--;
+        }
+
+        return dummyDataList;
     }
 }
