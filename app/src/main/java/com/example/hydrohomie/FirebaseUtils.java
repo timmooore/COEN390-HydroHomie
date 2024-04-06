@@ -125,14 +125,16 @@ public class FirebaseUtils {
     public static void generateDummyData(DatabaseReference databaseRef, LocalTime timestamp) {
         List<SensorData> dataPoints = SensorData.generateDummyData(timestamp);
         LocalDate today = LocalDate.now();
+        databaseRef = databaseRef.child(today.toString());
 
         if (dataPoints.isEmpty()) Log.d(TAG, "You fucked up");
         for (SensorData dataPoint : dataPoints) {
-            // Log.d(TAG, "dataPoint: timestamp: " + dataPoint.getTimestamp().toString() + "value: " + dataPoint.getValue());
-            databaseRef.child(today.toString())
-                    .child("values")
-                    .child(dataPoint.getTimestamp().toString())
-                    .setValue(dataPoint.getValue());
+            accumulateValue(databaseRef, dataPoint.getTimestamp().toString(), dataPoint.getValue());
+//            // Log.d(TAG, "dataPoint: timestamp: " + dataPoint.getTimestamp().toString() + "value: " + dataPoint.getValue());
+//            databaseRef.child(today.toString())
+//                    .child("values")
+//                    .child(dataPoint.getTimestamp().toString())
+//                    .setValue(dataPoint.getValue());
         }
     }
 }
