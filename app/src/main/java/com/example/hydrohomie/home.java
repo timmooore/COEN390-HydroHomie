@@ -4,6 +4,8 @@ import static android.content.Context.NOTIFICATION_SERVICE;
 
 import static androidx.core.content.ContextCompat.getSystemService;
 
+
+
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -23,28 +25,47 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 import com.example.hydrohomie.SensorReaderData;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 import antonkozyriatskyi.circularprogressindicator.CircularProgressIndicator;
-
+import java.time.LocalTime;
 public class home extends Fragment  {
+
+    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+    private DatabaseReference databaseReference,databaseReference1,databaseReference2;
+private double recommandwater, percentage;
+
     private static final String CHANNEL_ID = "my_channel_id";
     private Toolbar toolbar;
     private CircularProgressIndicator circularProgress1;
     private TextView titleNotif;
-    private TextView firstReadingTextView; // Added TextView for displaying the first reading
-    private TextView lastReadingTextView; // Added TextView for displaying the last reading
+
+
     private Button notiTestButton, dummyButton;
+    private TextView accumulateReading;
+
+
     private float waterLevel = 0; // Initial water level in percentage
 
     private final Handler handler = new Handler();
@@ -56,9 +77,18 @@ public class home extends Fragment  {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-
+        accumulateReading= view.findViewById(R.id.textView4);
         circularProgress1 = view.findViewById(R.id.circular_progress1);
         titleNotif = view.findViewById(R.id.titleMessage);
+        LocalDate today = LocalDate.now();
+
+
+
+        if (user != null) {
+            databaseReference = FirebaseDatabase.getInstance().getReference("user_data").child(user.getUid()).child(today.toString()).child("latest_time_slot");
+            databaseReference2 = FirebaseDatabase.getInstance().getReference("user_goals").child(user.getUid()).child("water_recommendation");
+            databaseReference1 = FirebaseDatabase.getInstance().getReference("user_data").child(user.getUid()).child(today.toString()).child("values");
+        }
 
         // TODO: Remove
         notiTest(view);
@@ -66,11 +96,11 @@ public class home extends Fragment  {
 
 
 
-        updateUI();
+
 
         // Start the timer to periodically update sensor data
         startTimer();
-
+        getdata();
         return view;
     }
 
@@ -135,48 +165,102 @@ public class home extends Fragment  {
 
 
     // Method to update UI based on water level
-    private void updateUI() {
-     //   circularProgress1.setProgress((int) waterLevel);
-        updateNotification();
-    }
+
 
     // Method to update notification based on water level
     private void updateNotification() {
         // Update notification message based on water level
         String notificationMessage;
-        if (waterLevel < 25) {
+        if (percentage < 25) {
             notificationMessage = "LOW WATER LEVEL! REFILL THE BOTTLE!";
             notification();
-        } else if (waterLevel < 75) {
+        } else if (percentage < 75) {
             notificationMessage = "MODERATE WATER LEVEL. KEEP HYDRATING!";
             notification();
-        } else {
+        } else if (percentage <= 100) {
             notificationMessage = "GOOD WATER LEVEL. STAY HYDRATED!";
+            notification();
+        } else {
+            // Handle case where percentage exceeds 100
+            notificationMessage = "WATER LEVEL EXCEEDS MAXIMUM CAPACITY!";
             notification();
         }
         titleNotif.setText(notificationMessage);
-
-
     }
 
 
 
+    private void getdata() {
+        getRecommendedWaterIntake();
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String value = snapshot.getValue(String.class);
 
-//    // Implementation of DataUpdateListener interface method
-//    @Override
-//    public void onDataUpdate(float waterLevel, float first, float last) {
-//        // Update water level and UI when new data is received
-//        this.waterLevel = waterLevel;
-//        updateUI();
-//
-//        // Check if it's the first reading
-//        if (firstReading == -1) {
-//            setFirstReading(first);
-//        }
-//
-//        // Always update the last reading
-//        setLastReading(last);
-//    }
+                if (value != null) {
+                    DatabaseReference dataRef = databaseReference1.child(value);
+                    dataRef.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                           double  value1 = snapshot.getValue(Double.class);
+                            // Set the value to accumulateReading
+                            if (value1 != 0.0) {
+
+
+
+
+                                double recommendedWaterIntake = recommandwater;
+                                double currentValue = value1/1000;
+
+                                 percentage = (currentValue / recommendedWaterIntake) * 100;
+                                circularProgress1.setProgress(percentage, 100);
+                                accumulateReading.setText("Level Water Consummed "+value1+" mL");
+                                updateNotification();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            // Handle onCancelled for dataRef
+                            Toast.makeText(getContext(), "Failed to fetch data: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Handle onCancelled for databaseReference
+                Toast.makeText(getContext(), "Failed to fetch data: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void getRecommendedWaterIntake() {
+        // Fetch the recommended water intake value from Firebase
+        databaseReference2.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot1) {
+                if (snapshot1.exists()) {
+                    // Get the recommended water intake value
+                  String  recommendedWaterIntakeString1 = snapshot1.getValue(String.class);
+                    if (recommendedWaterIntakeString1 != null) {
+                        // Convert the String value to long
+                        double recommendedWaterIntake = Double.parseDouble(recommendedWaterIntakeString1);
+                        recommandwater=recommendedWaterIntake;
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle errors
+                Toast.makeText(getContext(), "Failed to fetch recommended water intake: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
 
     public void notification() {
 //        // Define notification sound and vibration
