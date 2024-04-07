@@ -1,14 +1,17 @@
 package com.example.hydrohomie;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -28,6 +31,7 @@ import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -37,10 +41,9 @@ import java.util.Locale;
 public class goals extends Fragment {
     private static final String TAG = "Goals";
     protected EditText info1, info3, birthday;
-    protected TextView infO1;
-    protected Button save, edit;
-    protected Spinner genderSpinner, daySpinner, monthSpinner, yearSpinner, activityLevelSpinner; // Added activityLevelSpinner
+    protected Spinner genderSpinner, activityLevelSpinner; // Added activityLevelSpinner
     private FirebaseAuth mAuth;
+    private DatabaseReference mDatabase;
 
     public goals() {
         // Required empty public constructor
@@ -52,90 +55,182 @@ public class goals extends Fragment {
         View view = inflater.inflate(R.layout.fragment_goals, container, false);
 
         mAuth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
         info1 = view.findViewById(R.id.info1);
         info3 = view.findViewById(R.id.info3);
-        save = view.findViewById(R.id.Save);
-        edit = view.findViewById(R.id.Edit);
         birthday = view.findViewById(R.id.birthday);
         birthday.setText("01/01/2000");
         activityLevelSpinner = view.findViewById(R.id.activityLevelSpinner); // Initialize activityLevelSpinner
         genderSpinner = view.findViewById(R.id.genderSpinner);
 
-        // Populate gender spinner
-        ArrayAdapter<CharSequence> genderAdapter = ArrayAdapter.createFromResource(requireContext(),
-                R.array.gender_array, android.R.layout.simple_spinner_item);
-        genderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        genderSpinner.setAdapter(genderAdapter);
-        // Set the first item as "Gender"
-        genderSpinner.setSelection(0);
+        setupBirthdayEditText(view);
+        setupWeightEditText(view);
+        setupGenderSpinner();
+        setupActivityLevelSpinner();
+        setupWeightEditTextListener();
 
+
+        // Populate gender spinner
         // Populate activity level spinner
         ArrayAdapter<CharSequence> activityLevelAdapter = ArrayAdapter.createFromResource(requireContext(),
                 R.array.activity_level_array_prompt, android.R.layout.simple_spinner_item);
         activityLevelAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         activityLevelSpinner.setAdapter(activityLevelAdapter);
-
-        // Set a listener for activity level spinner
         activityLevelSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String selectedActivityLevel = parent.getItemAtPosition(position).toString();
-                double recommendedWaterIntake;
-
-                // Calculate recommended water intake based on selected activity level
-                String gender = "male";
-//                switch (selectedActivityLevel) {
-//                    case "Not Active (0 to 14 min per day)":
-//                        recommendedWaterIntake = 2.5; // Default consumption for not active
-//                        break;
-//                    case "Moderate (15 to 45 min per day)":
-//                        recommendedWaterIntake = calculateWaterIntakeForModerate(gender);
-//                        break;
-//                    case "Active (46 min to 3 hours per day)":
-//                        recommendedWaterIntake = calculateWaterIntakeForActive(gender);
-//                        break;
-//                    default:
-//                        recommendedWaterIntake = 2.5; // Default consumption
-//                        break;
-//                }
-
-                // Set the recommended water intake value in the UI (You may remove this if not needed)
-                // waterRecommendation.setText(String.valueOf(recommendedWaterIntake));
+                saveData("activityLevel", parent.getItemAtPosition(position).toString());
+                updateRecommendedWaterIntake();
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                // Handle situation when nothing is selected
             }
         });
 
         // Retrieve and display data when the fragment is created
         retrieveAndDisplayData();
 
-        save.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                //Get selected values from spinners
-                String selectedActivityLevel = activityLevelSpinner.getSelectedItem().toString();
-                String selectedGender = genderSpinner.getSelectedItem().toString();
-                String selectedWeight = info1.getText().toString();
-                String selectedBirthday = birthday.getText().toString();
-
-                saveInformation();
-                disableText();
-            }
-        });
-
-        edit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                enableText();
-            }
-        });
-
         return view;
     }
+
+    private void setupGenderSpinner() {
+        ArrayAdapter<CharSequence> genderAdapter = ArrayAdapter.createFromResource(getContext(), R.array.gender_array, android.R.layout.simple_spinner_item);
+        genderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        genderSpinner.setAdapter(genderAdapter);
+        genderSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                saveData("gender", parent.getItemAtPosition(position).toString());
+                updateRecommendedWaterIntake();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+    }
+
+    private void setupActivityLevelSpinner() {
+        ArrayAdapter<CharSequence> activityLevelAdapter = ArrayAdapter.createFromResource(getContext(), R.array.activity_level_array_prompt, android.R.layout.simple_spinner_item);
+        activityLevelAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        activityLevelSpinner.setAdapter(activityLevelAdapter);
+        activityLevelSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selectedActivityLevel = parent.getItemAtPosition(position).toString();
+                saveData("activityLevel", selectedActivityLevel);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+    }
+
+    private void setupBirthdayEditText(View view) {
+        birthday.setOnClickListener(v -> showBirthdayDialog());
+    }
+
+    private void showBirthdayDialog() {
+        final Calendar calendar = Calendar.getInstance();
+        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), (view, year, monthOfYear, dayOfMonth) -> {
+            // Format the date
+            String formattedDate = formatDate(year, monthOfYear, dayOfMonth);
+
+            // Set the formatted date text to birthday EditText
+            birthday.setText(formattedDate);
+
+            // Save the formatted date as birthday
+            saveData("birthday", formattedDate);
+
+            // You might want to update the recommended water intake right after the birthday is set
+            updateRecommendedWaterIntake();
+        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+        datePickerDialog.show();
+    }
+
+
+
+
+    private String formatDate(int year, int month, int day) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(year, month, day);
+        return dateFormat.format(calendar.getTime());
+    }
+
+    private void setupWeightEditText(View view) {
+        EditText weightEditText = view.findViewById(R.id.info1); // Make sure the ID matches your layout
+        weightEditText.setOnClickListener(v -> showWeightInput());
+    }
+
+    private void setupWeightEditTextListener() {
+        info1.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // Implementation not needed for this example
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // Implementation not needed for this example
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // Only attempt to save and update if there's actual numeric content
+                if (!s.toString().isEmpty() && s.toString().matches("\\d+")) {
+                    saveData("weight", s.toString());
+                    updateRecommendedWaterIntake();
+                }
+            }
+        });
+    }
+
+    private void saveData(String field, String value) {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            String userId = currentUser.getUid();
+            mDatabase.child("user_goals").child(userId).child(field).setValue(value);
+        }
+    }
+
+    private void showWeightInput() {
+        final EditText weightInput = new EditText(getContext());
+        weightInput.setInputType(android.text.InputType.TYPE_CLASS_NUMBER | android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL);
+
+        new AlertDialog.Builder(getContext())
+                .setTitle("Enter Weight")
+                .setView(weightInput)
+                .setPositiveButton("OK", (dialog, which) -> {
+                    EditText weightEditText = getView().findViewById(R.id.info1);
+                    String weight = weightInput.getText().toString();
+                    weightEditText.setText(weight);
+                    // Save the weight immediately after input
+                    saveWeight(weight);
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    private void saveWeight(String gender) {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            String userId = currentUser.getUid();
+            mDatabase.child("user_goals").child(userId).child("info1").setValue(gender);
+        }
+    }
+
+    private void saveActivityLevel(String gender) {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            String userId = currentUser.getUid();
+            mDatabase.child("user_goals").child(userId).child("activityLevel").setValue(gender);
+        }
+    }
+
+
 
     private List<String> generateYears() {
         List<String> years = new ArrayList<>();
@@ -148,42 +243,47 @@ public class goals extends Fragment {
 
     private void retrieveAndDisplayData() {
         FirebaseUser currentUser = mAuth.getCurrentUser();
-
         if (currentUser != null) {
             String userId = currentUser.getUid();
-
-            // Create a reference to the user's goals in the database
             DatabaseReference userGoalsRef = FirebaseDatabase.getInstance().getReference("user_goals").child(userId);
-
 
             userGoalsRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
-                        // Retrieve data from the database
-                        String dbValue1 = dataSnapshot.child("info1").getValue(String.class);
-                        String dbValue2 = dataSnapshot.child("info2").getValue(String.class);
-                        String dbValue3 = dataSnapshot.child("water_recommendation").getValue(String.class);
+                        String weight = dataSnapshot.child("info1").getValue(String.class);
+                        String gender = dataSnapshot.child("gender").getValue(String.class);
+                        String birthdayStr = dataSnapshot.child("birthday").getValue(String.class);
+                        String activityLevel = dataSnapshot.child("activityLevel").getValue(String.class);
 
-                        info1.setText(dbValue1);
-                        info3.setText(dbValue3);
+                        // Update UI with retrieved data
+                        info1.setText(weight);
+                        birthday.setText(birthdayStr);
+                        // For gender and activity level, you need to set the spinner selection accordingly
 
-                        // Disable or enable text based on data presence
-                        if (dbValue1 != null && dbValue2 != null && dbValue3 != null) {
-                            disableText();
-                        } else {
-                            enableText();
-                        }
+                        // Here you might need custom logic to select the right spinner item based on the value
+                        // This is an example for gender, do similarly for activity level
+                        ArrayAdapter<CharSequence> genderAdapter = (ArrayAdapter<CharSequence>) genderSpinner.getAdapter();
+                        int genderPosition = genderAdapter.getPosition(gender);
+                        genderSpinner.setSelection(genderPosition, true);
+
+                        ArrayAdapter<CharSequence> activityLevelAdapter = (ArrayAdapter<CharSequence>) activityLevelSpinner.getAdapter();
+                        int activityLevelPosition = activityLevelAdapter.getPosition(activityLevel);
+                        activityLevelSpinner.setSelection(activityLevelPosition, true);
+
+                        // Call updateRecommendedWaterIntake() here if you want to immediately show the calculated value
+                        updateRecommendedWaterIntake();
                     }
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
-                    // Handle errors here
+                    Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
                 }
             });
         }
     }
+
 
     private void saveInformation() {
         FirebaseUser currentUser = mAuth.getCurrentUser();
@@ -247,7 +347,7 @@ public class goals extends Fragment {
             userGoalsRef.child("water_recommendation").setValue(String.valueOf(calculatedRecommendedWaterIntake));
             userGoalsRef.child("gender").setValue(selectedGender);
             userGoalsRef.child("birthday").setValue(selectedBirthday);
-            userGoalsRef.child("activity_level").setValue(selectedActivityLevel);
+            userGoalsRef.child("activityLevel").setValue(selectedActivityLevel);
             userGoalsRef.child("recommendedWaterIntake").setValue(calculatedRecommendedWaterIntake);
 
             // TODO: Why do we store and then fetch to update? Should fix @Daniel
@@ -282,8 +382,6 @@ public class goals extends Fragment {
         info3.setEnabled(false);
         genderSpinner.setEnabled(false);
         activityLevelSpinner.setEnabled(false);
-        save.setVisibility(View.GONE);
-        edit.setVisibility(View.VISIBLE);
     }
 
     private void enableText() {
@@ -291,8 +389,6 @@ public class goals extends Fragment {
         info3.setEnabled(true);
         genderSpinner.setEnabled(true);
         activityLevelSpinner.setEnabled(true);
-        save.setVisibility(View.VISIBLE);
-        edit.setVisibility(View.GONE);
     }
 
     private int calculateAge(Date birthDate) {
@@ -439,6 +535,56 @@ public class goals extends Fragment {
                 + recommendedWaterIntakeActivityLevel;
 
         return calculatedRecommendedWaterIntake;
+    }
+
+    private int calculateAgeBasedOnBirthday(String birthdayStr) {
+        try {
+            Date birthDate = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(birthdayStr);
+            return calculateAge(birthDate);
+        } catch (ParseException e) {
+            Log.e(TAG, "Error parsing birthday", e);
+            return 0; // Default or error age
+        }
+    }
+
+    private void updateRecommendedWaterIntake() {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            String userId = currentUser.getUid();
+            DatabaseReference userGoalsRef = FirebaseDatabase.getInstance().getReference("user_goals").child(userId);
+
+            userGoalsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        String weight = dataSnapshot.child("weight").getValue(String.class);
+                        String gender = dataSnapshot.child("gender").getValue(String.class);
+                        String birthday = dataSnapshot.child("birthday").getValue(String.class);
+                        String activityLevel = dataSnapshot.child("activityLevel").getValue(String.class);
+
+                        // Calculate age
+                        int age = calculateAgeBasedOnBirthday(birthday);
+
+                        // Now calculate the recommended water intake
+                        double recommendedWaterIntake = calculateRecommendedWaterIntake(activityLevel, gender, weight, age);
+
+                        DecimalFormat df = new DecimalFormat("#.##");
+                        df.setRoundingMode(RoundingMode.HALF_UP);
+
+                        // Update the UI
+                        info3.setText(df.format(recommendedWaterIntake) + " liters");
+
+                        // Optionally, save the updated recommended water intake
+                        saveData("recommendedWaterIntake", String.valueOf(recommendedWaterIntake));
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
+                }
+            });
+        }
     }
 
 }

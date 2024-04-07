@@ -144,7 +144,7 @@ public class GoalsSignup extends AppCompatActivity implements AdapterView.OnItem
         userGoalsRef.child("info1").setValue(weight);
         userGoalsRef.child("gender").setValue(gender);
         userGoalsRef.child("birthday").setValue(birthday);
-        userGoalsRef.child("activity_level").setValue(activityLevel);
+        userGoalsRef.child("activityLevel").setValue(activityLevel);
     }
 
     @Override
