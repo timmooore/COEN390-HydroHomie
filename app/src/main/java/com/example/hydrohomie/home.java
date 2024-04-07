@@ -4,7 +4,7 @@ import static android.content.Context.NOTIFICATION_SERVICE;
 
 import static androidx.core.content.ContextCompat.getSystemService;
 
-import static com.example.hydrohomie.WaterConsumptionHistory.recommendedWaterIntakeString;
+
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -207,7 +207,7 @@ private double recommandwater, percentage;
                             if (value1 != 0.0) {
 
 
-                            String temp= recommendedWaterIntakeString;
+
 
                                 double recommendedWaterIntake = recommandwater;
                                 double currentValue = value1/1000;
@@ -243,10 +243,10 @@ private double recommandwater, percentage;
             public void onDataChange(@NonNull DataSnapshot snapshot1) {
                 if (snapshot1.exists()) {
                     // Get the recommended water intake value
-                    recommendedWaterIntakeString = snapshot1.getValue(String.class);
-                    if (recommendedWaterIntakeString != null) {
+                  String  recommendedWaterIntakeString1 = snapshot1.getValue(String.class);
+                    if (recommendedWaterIntakeString1 != null) {
                         // Convert the String value to long
-                        double recommendedWaterIntake = Double.parseDouble(recommendedWaterIntakeString);
+                        double recommendedWaterIntake = Double.parseDouble(recommendedWaterIntakeString1);
                         recommandwater=recommendedWaterIntake;
                     }
                 }
