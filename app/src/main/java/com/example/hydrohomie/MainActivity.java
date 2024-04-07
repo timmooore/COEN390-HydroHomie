@@ -23,13 +23,19 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
+    private static final String TAG = "MainActivity";
     private FirebaseAuth mAuth;
 
 
@@ -65,7 +71,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         loadFragment(firstFragment);
         selectedMenuItemId = R.id.home; // Set the default selected menu item
      //   SensorReaderData.pushDummyDataToFirebase();
-
 
 
 
@@ -216,6 +221,29 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             startActivity(intent);
             finish(); // Finish the current activity to prevent the user from coming back to it
         }
+
+        // Obtain the FCM token
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Log.w(TAG, "Fetching FCM token failed", task.getException());
+                        return;
+                    }
+                    // Get the token
+                    String token = task.getResult();
+
+                    // TODO: Save the token to your backend (e.g., Firebase Realtime Database or Firestore)
+                    Log.d(TAG, "FCM token: " + token);
+                    FirebaseUser user = mAuth.getCurrentUser();
+
+                    if (user != null) {
+                        String userId = user.getUid();
+
+                        // Create a reference to the user's goals in the database
+                        DatabaseReference userFCMTokenRef = FirebaseDatabase.getInstance().getReference("FCM_tokens").child(userId);
+                        userFCMTokenRef.setValue(token);
+                    }
+                });
     }
 
     @Override

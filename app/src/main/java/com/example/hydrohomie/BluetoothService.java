@@ -287,7 +287,7 @@ public class BluetoothService extends Service {
             if (notificationManager.getNotificationChannel(CHANNEL_ID) == null) {
                 CharSequence name = "Bluetooth Service";
                 String description = "Notification channel for Bluetooth Service";
-                int importance = NotificationManager.IMPORTANCE_HIGH;
+                int importance = NotificationManager.IMPORTANCE_DEFAULT;
 
                 NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
 
@@ -308,7 +308,7 @@ public class BluetoothService extends Service {
 
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle("Bluetooth Service Running")
-                .setContentText("Bluetooth service is active in the background.")
+                .setContentText("HydroHomie is currently taking a sensor reading")
                 .setSmallIcon(R.drawable.notification) // Use an appropriate icon for your app
                 .setContentIntent(pendingIntent)
                 .build();

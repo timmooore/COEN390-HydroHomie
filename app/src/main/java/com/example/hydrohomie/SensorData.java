@@ -2,7 +2,6 @@ package com.example.hydrohomie;
 
 import android.util.Log;
 
-import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -36,7 +35,6 @@ public class SensorData {
      * @return A List of SensorData entries at minute intervals with the recommended
      * accumulated intake for that time of day
      */
-    //
     public static List<SensorData> generateDataPoints(double recommendedIntake) {
         Log.d(TAG, "generateDataPoints: method invoked");
         //List<SensorData> dataPoints = new ArrayList<>();
@@ -58,11 +56,11 @@ public class SensorData {
         int numPoints = (int) (totalMinutes / granularity);
 
         // Get the incremental intake
-        double intakeIncrement = recommendedIntake / numPoints;
+        double intakeIncrement = recommendedIntake * 1000 / numPoints;
         double cumulatedIntake = 0D;
 
         // Format double value
-        DecimalFormat df = new DecimalFormat("0.000");
+        DecimalFormat df = new DecimalFormat("0.00");
 
         // TODO: Remove debug prints
         // Log.d(TAG, "startTime: " + startTime.toString() + ", endTime: " + endTime.toString() + ", totalMinutes: " + totalMinutes + ", numPoints: " + numPoints + ", inc_intake: " + intakeIncrement);
@@ -79,13 +77,6 @@ public class SensorData {
         return dataPoints;
     }
 
-    /**
-     * Compares the most recent sensor data reading with where the user should
-     * be throughout the day and returns whether we should notify them to hydrate
-     * @param dataPoints
-     * @param input
-     * @return
-     */
     public static boolean isHydrated(List<SensorData> dataPoints, SensorData input) {
         double diff;
         for (SensorData dataPoint : dataPoints) {
