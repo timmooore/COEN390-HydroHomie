@@ -23,7 +23,7 @@ public class MyWorker extends Worker {
         String deviceAddress = getInputData().getString("DEVICE_ADDRESS");
         Intent serviceIntent = new Intent(getApplicationContext(), BluetoothService.class);
         serviceIntent.putExtra("DEVICE_ADDRESS", deviceAddress);
-        getApplicationContext().startService(serviceIntent);
+        getApplicationContext().startForegroundService(serviceIntent);
         Log.d("MyWorker", "Finished starting service");
         return Result.success();
     }

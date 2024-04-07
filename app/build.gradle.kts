@@ -40,6 +40,7 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("com.google.firebase:firebase-auth:22.3.1")
     implementation("com.google.firebase:firebase-database:20.3.0")
+    implementation ("com.google.firebase:firebase-messaging:22.0.0")
     implementation("androidx.activity:activity:1.8.0")
     implementation("androidx.work:work-runtime:2.9.0")
     testImplementation("junit:junit:4.13.2")
