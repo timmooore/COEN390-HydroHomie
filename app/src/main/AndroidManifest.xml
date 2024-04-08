@@ -45,18 +45,21 @@
             android:exported="false" />
         <activity
             android:name=".signinup"
-            android:exported="false" />
-        <activity
-            android:name=".signup"
-            android:exported="false" />
-        <activity
-            android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true"> <!-- Set exported to true for launcher activity -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".signup"
+            android:exported="false" /> <!-- Assuming signup is not the launcher activity -->
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" /> <!-- Assuming MainActivity is not the launcher activity -->
+
 
         <receiver android:name=".AlarmReceiver"
             android:exported="true">

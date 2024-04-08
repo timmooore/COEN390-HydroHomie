@@ -214,13 +214,13 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     protected void onStart() {
         super.onStart();
         // Check if user is signed in during the app's lifecycle (e.g., when returning from background)
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser == null) {
-            // User is not signed in, navigate to signinup activity
-            Intent intent = new Intent(this, signinup.class);
-            startActivity(intent);
-            finish(); // Finish the current activity to prevent the user from coming back to it
-        }
+//        FirebaseUser currentUser = mAuth.getCurrentUser();
+//        if (currentUser == null) {
+//            // User is not signed in, navigate to signinup activity
+//            Intent intent = new Intent(this, signinup.class);
+//            startActivity(intent);
+//            finish(); // Finish the current activity to prevent the user from coming back to it
+//        }
 
         // Obtain the FCM token
         FirebaseMessaging.getInstance().getToken()
