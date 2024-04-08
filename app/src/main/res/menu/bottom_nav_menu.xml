@@ -14,7 +14,7 @@
         android:id="@+id/bluetooth"
         android:title="Bluetooth"
         android:background="@color/white"
-        android:icon="@drawable/ic_stat_name"/>
+        android:icon="@drawable/bluet"/>
 
     <item
         android:id="@+id/goals"

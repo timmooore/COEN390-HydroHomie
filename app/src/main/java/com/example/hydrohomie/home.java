@@ -86,7 +86,7 @@ private double recommandwater, percentage;
 
         if (user != null) {
             databaseReference = FirebaseDatabase.getInstance().getReference("user_data").child(user.getUid()).child(today.toString()).child("latest_time_slot");
-            databaseReference2 = FirebaseDatabase.getInstance().getReference("user_goals").child(user.getUid()).child("water_recommendation");
+            databaseReference2 = FirebaseDatabase.getInstance().getReference("user_goals").child(user.getUid()).child("recommendedWaterIntake");
             databaseReference1 = FirebaseDatabase.getInstance().getReference("user_data").child(user.getUid()).child(today.toString()).child("values");
         }
 
@@ -95,11 +95,9 @@ private double recommandwater, percentage;
    // Initialize last reading TextView
 
 
-
-
-
         // Start the timer to periodically update sensor data
         startTimer();
+
         getdata();
         return view;
     }

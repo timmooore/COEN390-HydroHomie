@@ -9,7 +9,7 @@
         <menu>
             <item
                 android:id="@+id/sub_action_one"
-                android:icon="@drawable/ic_stat_name"
+                android:icon="@drawable/bluetootmenu"
                 android:title="Connect"
                 app:showAsAction="never"
                 android:iconTint="@color/black" />
@@ -20,19 +20,7 @@
                 android:title="Setting"
                 app:showAsAction="never"
                 android:iconTint="@color/black" />
-<!--            <item-->
-<!--                android:id="@+id/sub_action_fifth"-->
-<!--                android:icon="@drawable/login"-->
-<!--                android:title="Login"-->
-<!--                app:showAsAction="never"-->
-<!--                android:iconTint="@color/black" />-->
 
-<!--            <item-->
-<!--                android:id="@+id/sub_action_third"-->
-<!--                android:icon="@drawable/signup"-->
-<!--                android:title="Signup"-->
-<!--                app:showAsAction="never"-->
-<!--                android:iconTint="@color/black" />-->
             <item
                 android:id="@+id/sub_action_sixth"
                 android:icon="@drawable/goals"
