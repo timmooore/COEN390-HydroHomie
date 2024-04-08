@@ -241,6 +241,7 @@ public class goals extends Fragment {
         return years;
     }
 
+    // TODO: Ensure generateDataPoints is onChange of recommended intake
     private void retrieveAndDisplayData() {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
@@ -273,6 +274,8 @@ public class goals extends Fragment {
 
                         // Call updateRecommendedWaterIntake() here if you want to immediately show the calculated value
                         updateRecommendedWaterIntake();
+
+
                     }
                 }
 
@@ -578,6 +581,9 @@ public class goals extends Fragment {
 
                         // Optionally, save the updated recommended water intake
                         saveData("recommendedWaterIntake", String.valueOf(recommendedWaterIntake));
+
+                        FirebaseUtils.generateRecommendedIntakeData(userGoalsRef,
+                                Double.parseDouble(String.valueOf(recommendedWaterIntake)));
                     }
                 }
 

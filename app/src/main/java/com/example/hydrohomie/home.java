@@ -55,7 +55,7 @@ public class home extends Fragment  {
 
     private DatabaseReference databaseReference,databaseReference1,databaseReference2;
 private double recommandwater, percentage;
-
+private static final String TAG = "home";
     private static final String CHANNEL_ID = "my_channel_id";
     private Toolbar toolbar;
     private CircularProgressIndicator circularProgress1;
@@ -83,7 +83,7 @@ private double recommandwater, percentage;
         LocalDate today = LocalDate.now();
 
 
-
+        // TODO: Yas fix the databaseRef for recommendation
         if (user != null) {
             databaseReference = FirebaseDatabase.getInstance().getReference("user_data").child(user.getUid()).child(today.toString()).child("latest_time_slot");
             databaseReference2 = FirebaseDatabase.getInstance().getReference("user_goals").child(user.getUid()).child("recommendedWaterIntake");
@@ -193,27 +193,31 @@ private double recommandwater, percentage;
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Log.d("home", "getData: onDataChange: called");
                 String value = snapshot.getValue(String.class);
 
                 if (value != null) {
                     DatabaseReference dataRef = databaseReference1.child(value);
-                    dataRef.addValueEventListener(new ValueEventListener() {
+
+                    dataRef.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
-                           double  value1 = snapshot.getValue(Double.class);
-                            // Set the value to accumulateReading
-                            if (value1 != 0.0) {
+                            if (snapshot.exists()) {
+                                if (snapshot.getValue() == null) {
+                                    Log.d("home", "onDataChange: snapshot.getValue() is null");
+                                } else {
+                                    double value1 = snapshot.getValue(Double.class);
+                                    // Set the value to accumulateReading
+                                    if (value1 != 0.0) {
+                                        double recommendedWaterIntake = recommandwater;
+                                        double currentValue = value1 / 1000;
 
-
-
-
-                                double recommendedWaterIntake = recommandwater;
-                                double currentValue = value1/1000;
-
-                                 percentage = (currentValue / recommendedWaterIntake) * 100;
-                                circularProgress1.setProgress(percentage, 100);
-                                accumulateReading.setText("Level Water Consummed "+value1+" mL");
-                                updateNotification();
+                                        percentage = (currentValue / recommendedWaterIntake) * 100;
+                                        circularProgress1.setProgress(percentage, 100);
+                                        accumulateReading.setText("Level Water Consummed " + value1 + " mL");
+                                        updateNotification();
+                                    }
+                                }
                             }
                         }
 
@@ -236,9 +240,12 @@ private double recommandwater, percentage;
 
     private void getRecommendedWaterIntake() {
         // Fetch the recommended water intake value from Firebase
+
+        Log.d(TAG, "getRecommendedWaterIntake: called");
         databaseReference2.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot1) {
+                Log.d(TAG, "getRecommendedWaterIntake: onDataChange: called");
                 if (snapshot1.exists()) {
                     // Get the recommended water intake value
                   String  recommendedWaterIntakeString1 = snapshot1.getValue(String.class);
@@ -247,6 +254,7 @@ private double recommandwater, percentage;
                         double recommendedWaterIntake = Double.parseDouble(recommendedWaterIntakeString1);
                         recommandwater=recommendedWaterIntake;
                     }
+                    Log.d("home", "recommendedWater : " + recommandwater);
                 }
             }
 
