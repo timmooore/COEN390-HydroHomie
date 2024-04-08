@@ -1,0 +1,25 @@
+runtime: nodejs18
+
+# Specify the entrypoint for your Node.js application
+entrypoint: node app.js
+
+# Ensure that App Engine scales to handle your application's traffic
+automatic_scaling:
+  min_instances: 1
+  max_instances: 10
+  target_cpu_utilization: 0.65
+  target_throughput_utilization: 0.75
+  max_concurrent_requests: 50
+
+# Health check to ensure your app is healthy and receiving traffic
+readiness_check:
+  path: "/healthcheck"
+  timeout_sec: 4
+  check_interval_sec: 5
+  failure_threshold: 2
+  success_threshold: 2
+
+# Define environment variables if needed
+env_variables:
+  NODE_ENV: production
+  # PORT: 8080  # Update with the port your application listens on
