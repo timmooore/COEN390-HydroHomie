@@ -110,14 +110,13 @@
         android:layout_width="357dp"
         android:layout_height="67dp"
         android:layout_marginTop="16dp"
-        android:clickable="true"
-        android:cursorVisible="false"
-        android:focusable="false"
-        android:hint="Enter Weight(Kg)"
-        android:inputType="none"
+        android:hint="Enter Weight (Kg)"
+        android:inputType="numberDecimal"
+        android:ems="10"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView14" />
+
 
     <TextView
         android:id="@+id/textView15"

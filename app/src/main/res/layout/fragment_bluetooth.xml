@@ -20,10 +20,10 @@
 
     <Button
         android:id="@+id/schedule"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="125dp"
+        android:layout_height="66dp"
         android:layout_below="@+id/imageView"
-        android:layout_marginStart="32dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="404dp"
         android:layout_toStartOf="@+id/imageView"
         android:layout_toLeftOf="@+id/imageView"
@@ -41,8 +41,8 @@
 
     <Button
         android:id="@+id/scanButton"
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
+        android:layout_width="127dp"
+        android:layout_height="66dp"
         android:layout_alignBottom="@+id/schedule"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="404dp"
@@ -60,10 +60,10 @@
 
     <Button
         android:id="@+id/refreshButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="112dp"
+        android:layout_height="66dp"
         android:layout_marginTop="404dp"
-        android:layout_marginEnd="32dp"
+        android:layout_marginEnd="8dp"
         android:background="@drawable/round"
         android:onClick="list"
         android:text="Refresh"

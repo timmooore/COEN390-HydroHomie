@@ -27,21 +27,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <Button
-        android:id="@+id/Save"
-        android:layout_width="166dp"
-        android:layout_height="50dp"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/round"
-        android:text="Save"
-        android:textColor="#FFFFFF"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/Edit"
-        app:layout_constraintHorizontal_bias="0.25"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/activityLevelSpinner"
-        app:layout_constraintVertical_bias="1.0" />
-
     <TextView
         android:id="@+id/textView11"
         android:layout_width="wrap_content"
@@ -127,6 +112,7 @@
         android:focusable="false"
         android:hint="Select date"
         android:inputType="none"
+        android:textAlignment="center"
         app:layout_constraintBottom_toTopOf="@+id/textView14"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -141,6 +127,7 @@
         android:focusable="false"
         android:hint="Enter Weight(Kg)"
         android:inputType="none"
+        android:textAlignment="center"
         app:layout_constraintBottom_toTopOf="@+id/textView15"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -153,6 +140,7 @@
         android:ems="10"
         android:hint="Consumption Goals (Litres)"
         android:inputType="numberDecimal"
+        android:textAlignment="center"
         app:layout_constraintBottom_toTopOf="@+id/textView11"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -171,20 +159,5 @@
         app:layout_constraintVertical_bias="0.0"
         app:title="HydroHomie"
         app:titleTextColor="#FFFFFF" />
-
-    <Button
-        android:id="@+id/Edit"
-        android:layout_width="165dp"
-        android:layout_height="49dp"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/round"
-        android:text="Edit"
-        android:textColor="#FFFFFF"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.934"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/activityLevelSpinner"
-        app:layout_constraintVertical_bias="1.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
