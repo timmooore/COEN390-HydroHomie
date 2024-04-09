@@ -52,7 +52,6 @@ public class BluetoothService extends Service {
     // Define an object for synchronization
     private final Object lock = new Object();
 
-    private FirebaseAuth mAuth;
     private FirebaseDatabase firebaseDatabase;
     private String firebaseUserId;
 
@@ -71,10 +70,10 @@ public class BluetoothService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "BluetoothService onStartCommand()");
-//        String deviceAddress = intent.getStringExtra("DEVICE_ADDRESS");
+        String deviceAddress = intent.getStringExtra("DEVICE_ADDRESS");
 
         // TODO: Revert
-        String deviceAddress = "00-11-22-33";
+        // String deviceAddress = "00-11-22-33";
 
         if (deviceAddress == null) {
             // Device address is not provided, cannot proceed
@@ -88,7 +87,7 @@ public class BluetoothService extends Service {
         startForegroundService();
 
         // Initialize Firebase Database
-        mAuth = FirebaseAuth.getInstance();
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser == null) {
             Log.e(TAG, "Could not get Firebase user");
@@ -104,12 +103,13 @@ public class BluetoothService extends Service {
 
         // TODO: Revert
         // Connect to the Bluetooth device
-//        try {
-//            connectToDevice(deviceAddress);
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-        // stopSelf();
+        try {
+            connectToDevice(deviceAddress);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        stopSelf();
+
         // Return START_NOT_STICKY, no need to restart if service is killed
         return START_NOT_STICKY;
     }
@@ -261,6 +261,7 @@ public class BluetoothService extends Service {
                     stopWorker = true;
                 }
             }
+            Log.d(TAG, "workerThread finished executing.");
         });
         workerThread.start();
     }
