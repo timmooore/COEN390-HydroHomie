@@ -57,7 +57,7 @@ SensorReaderData.pushDummyDataToFirebase();
         if (user != null) {
             databaseReference = FirebaseDatabase.getInstance().getReference("user_goals").child(user.getUid()).child("water_consumption_history");
 
-            databaseReference1 = FirebaseDatabase.getInstance().getReference("user_goals").child(user.getUid()).child("water_recommendation");
+            databaseReference1 = FirebaseDatabase.getInstance().getReference("user_goals").child(user.getUid()).child("recommendedWaterIntake");
         }
 
         // Display water consumption history for the current date initially
