@@ -60,7 +60,7 @@ public class goals extends Fragment {
         info3 = view.findViewById(R.id.info3);
         birthday = view.findViewById(R.id.birthday);
         birthday.setText("01/01/2000");
-        activityLevelSpinner = view.findViewById(R.id.activityLevelSpinner); // Initialize activityLevelSpinner
+        activityLevelSpinner = view.findViewById(R.id.activitySpinner); // Initialize activityLevelSpinner
         genderSpinner = view.findViewById(R.id.genderSpinner);
 
         setupBirthdayEditText(view);
@@ -118,8 +118,8 @@ public class goals extends Fragment {
         activityLevelSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String selectedActivityLevel = parent.getItemAtPosition(position).toString();
-                saveData("activityLevel", selectedActivityLevel);
+                saveData("activityLevel", parent.getItemAtPosition(position).toString());
+                updateRecommendedWaterIntake();
             }
 
             @Override
@@ -284,115 +284,6 @@ public class goals extends Fragment {
         }
     }
 
-
-    private void saveInformation() {
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-
-        if (currentUser != null) {
-            String userId = currentUser.getUid();
-
-            String value1 = info1.getText().toString();
-
-            // Check if a gender is selected
-            String selectedGender = "";
-            if (genderSpinner.getSelectedItem() != null) {
-                selectedGender = genderSpinner.getSelectedItem().toString();
-            }
-
-            //Check if a weight is selected
-            String selectedWeight = "";
-            if (info1 != null) {
-                selectedWeight = info1.getText().toString();
-            }
-
-            // Check if a birthday is selected
-            String selectedDay = "";
-            if (birthday.getText() != null) {
-                selectedDay = birthday.getText().toString();
-            }
-
-            // Combine selected day, month, and year into a single string for birthday
-            String selectedBirthday = selectedDay;
-
-            // Parse the birthdate string into a Date object
-
-            Date birthDate;
-            try {
-                birthDate = DateFormat.getDateInstance(DateFormat.SHORT, Locale.US).parse(selectedBirthday);
-            } catch (ParseException e) {
-                throw new RuntimeException(e);
-            }
-
-            int age = calculateAge(birthDate);
-
-            // Get selected activity level
-            String selectedActivityLevel = activityLevelSpinner.getSelectedItem().toString();
-
-            double calculatedRecommendedWaterIntake = calculateRecommendedWaterIntake(selectedActivityLevel, selectedGender, selectedWeight, age);
-            DecimalFormat df = new DecimalFormat("#.##");
-            df.setRoundingMode(RoundingMode.HALF_UP);
-            Log.d("Recommended Water Intake", df.format(calculatedRecommendedWaterIntake));
-
-            //Set the recommended water intake value in the UI
-            info3.setText(df.format(calculatedRecommendedWaterIntake));
-
-            //Save the value in the database
-            DatabaseReference userGoalsRef;
-
-            // Create a reference to the user's goals in the database
-            userGoalsRef = FirebaseDatabase.getInstance().getReference("user_goals").child(userId);
-
-            // Save the information to the user's goals
-            userGoalsRef.child("info1").setValue(value1);
-            userGoalsRef.child("water_recommendation").setValue(String.valueOf(calculatedRecommendedWaterIntake));
-            userGoalsRef.child("gender").setValue(selectedGender);
-            userGoalsRef.child("birthday").setValue(selectedBirthday);
-            userGoalsRef.child("activityLevel").setValue(selectedActivityLevel);
-            userGoalsRef.child("recommendedWaterIntake").setValue(calculatedRecommendedWaterIntake);
-
-            // TODO: Why do we store and then fetch to update? Should fix @Daniel
-            // Retrieve data from userGoalsRef and update TextViews
-            userGoalsRef.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.exists()) {
-                        // Retrieve data from the database
-                        String dbValue1 = dataSnapshot.child("info1").getValue(String.class);
-                        String dbValue2 = dataSnapshot.child("info2").getValue(String.class);
-                        String dbValue3 = dataSnapshot.child("water_recommendation").getValue(String.class);
-                        info1.setText(dbValue1);
-                        info3.setText(dbValue3);
-                        if (dbValue3 != null) {
-                            Log.d(TAG, "This got exec");
-                        }
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    // Handle errors here
-                }
-            });
-
-            FirebaseUtils.generateRecommendedIntakeData(userGoalsRef,
-                    Double.parseDouble(String.valueOf(calculatedRecommendedWaterIntake)));
-        }
-    }
-
-    private void disableText() {
-        info1.setEnabled(false);
-        info3.setEnabled(false);
-        genderSpinner.setEnabled(false);
-        activityLevelSpinner.setEnabled(false);
-    }
-
-    private void enableText() {
-        info1.setEnabled(true);
-        info3.setEnabled(true);
-        genderSpinner.setEnabled(true);
-        activityLevelSpinner.setEnabled(true);
-    }
-
     private int calculateAge(Date birthDate) {
         Calendar today = Calendar.getInstance();
         Calendar dob = Calendar.getInstance();
@@ -414,8 +305,6 @@ public class goals extends Fragment {
                 recommendedWaterIntakeActivityLevel = 0.35;
                 break;
             case "Active (46 min to 3 hours per day)":
-                //Taking the average between 45 mins and 4 hours of activity
-                //Total water intake plus the additional intake for active
                 recommendedWaterIntakeActivityLevel = (0.35/30.0) * 142.5;
                 break;
             default:
@@ -429,60 +318,6 @@ public class goals extends Fragment {
         return weight * 0.015;
     }
 
-
-    private double calculatedRecommendedWaterIntake(String selectedActivityLevel, String selectedGender, String selectedWeight, String selectedBirthday) {
-        // Initialize variables
-        double recommendedWaterIntakeActivityLevel;
-        double baseRecommendedWaterIntake;
-        double weightAdjustedWaterIntake;
-        double calculatedRecommendedWaterIntake;
-
-        // Validate and parse selectedBirthday to age
-        try {
-            if (!selectedBirthday.isEmpty() && selectedBirthday.matches("\\d+")) {
-                int age = Integer.parseInt(selectedBirthday); // Assuming selectedBirthday is an age
-                baseRecommendedWaterIntake = calculateBaseWaterIntakeForAge(age, selectedGender);
-            } else {
-                Log.d("Error", "Invalid birthday input: " + selectedBirthday);
-                baseRecommendedWaterIntake = calculateBaseWaterIntakeForAge(25, selectedGender); // Default age
-            }
-        } catch (NumberFormatException e) {
-            Log.e("NumberFormatException", "Could not parse selectedBirthday: " + selectedBirthday, e);
-            baseRecommendedWaterIntake = calculateBaseWaterIntakeForAge(25, selectedGender); // Default age for exception
-        }
-
-        // Validate and parse selectedWeight
-        try {
-            if (!selectedWeight.isEmpty() && selectedWeight.matches("\\d+(\\.\\d+)?")) {
-                double weight = Double.parseDouble(selectedWeight);
-                weightAdjustedWaterIntake = calculateWaterIntakeForWeight(weight);
-            } else {
-                Log.d("Error", "Invalid weight input: " + selectedWeight);
-                weightAdjustedWaterIntake = 0; // Assuming no weight input leads to no adjustment
-            }
-        } catch (NumberFormatException e) {
-            Log.e("NumberFormatException", "Could not parse selectedWeight: " + selectedWeight, e);
-            weightAdjustedWaterIntake = 0; // Default behavior for exception
-        }
-
-        // Adjust based on activity level
-        switch (selectedActivityLevel) {
-            case "Moderate (15 to 45 min per day)":
-                recommendedWaterIntakeActivityLevel = 0.35;
-                break;
-            case "Active (46 min to 3 hours per day)":
-                recommendedWaterIntakeActivityLevel = (0.35 / 30.0) * 142.5; // Example calculation
-                break;
-            default:
-                recommendedWaterIntakeActivityLevel = 0; // No extra water for low activity levels
-                break;
-        }
-
-        // Combine all factors to calculate the final recommended water intake
-        calculatedRecommendedWaterIntake = baseRecommendedWaterIntake + weightAdjustedWaterIntake + recommendedWaterIntakeActivityLevel;
-
-        return calculatedRecommendedWaterIntake;
-    }
 
     private double calculateBaseWaterIntakeForAge(int age, String gender) {
         // Baseline water intake in liters
