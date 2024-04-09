@@ -64,7 +64,7 @@
         android:text="Enter your weight"
         android:textColor="#FFFFFF"
         android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/info1"
+        app:layout_constraintBottom_toTopOf="@+id/weightEditText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -74,7 +74,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:text="Consumption Recommendation (L)"
-        app:layout_constraintBottom_toTopOf="@+id/info3"
+        app:layout_constraintBottom_toTopOf="@+id/waterGoalEditText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent" />
@@ -118,7 +118,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
-        android:id="@+id/info1"
+        android:id="@+id/weightEditText"
         android:layout_width="357dp"
         android:layout_height="67dp"
         android:layout_marginBottom="16dp"
@@ -126,14 +126,14 @@
         android:cursorVisible="false"
         android:focusable="false"
         android:hint="Enter Weight(Kg)"
-        android:inputType="none"
+        android:inputType="number|numberDecimal"
         android:textAlignment="center"
         app:layout_constraintBottom_toTopOf="@+id/textView15"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
-        android:id="@+id/info3"
+        android:id="@+id/waterGoalEditText"
         android:layout_width="242dp"
         android:layout_height="50dp"
         android:layout_marginBottom="16dp"
