@@ -129,7 +129,7 @@ public class GoalsSignup extends AppCompatActivity implements AdapterView.OnItem
         Map<String, Object> userData = new HashMap<>();
         userData.put("birthday", birthday);
         userData.put("gender", gender);
-        userData.put("activityLevel", activityLevel);
+        userData.put("activity_level", activityLevel);
         userData.put("weight", weight);
 
         // Saving the user data under "users" node, then under the user's UID
@@ -141,10 +141,17 @@ public class GoalsSignup extends AppCompatActivity implements AdapterView.OnItem
         userGoalsRef = FirebaseDatabase.getInstance().getReference("user_goals").child(userId);
 
         // Save the information to the user's goals
-        userGoalsRef.child("info1").setValue(weight);
+        userGoalsRef.child("weight").setValue(weight);
         userGoalsRef.child("gender").setValue(gender);
         userGoalsRef.child("birthday").setValue(birthday);
-        userGoalsRef.child("activityLevel").setValue(activityLevel);
+        userGoalsRef.child("activity_level").setValue(activityLevel);
+
+        // Generate the user's incremental_intake_data for Firebase
+        int age = goals.calculateAgeBasedOnBirthday(birthday);
+        double recommendedWaterIntake = goals.calculateRecommendedWaterIntake(activityLevel, gender, weight, age);
+
+        FirebaseUtils.generateRecommendedIntakeData(userGoalsRef, recommendedWaterIntake);
+
     }
 
     @Override
