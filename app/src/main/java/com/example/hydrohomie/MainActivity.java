@@ -1,16 +1,8 @@
 package com.example.hydrohomie;
 
 import android.app.ActivityManager;
-import android.app.NotificationManager;
-import android.content.Context;
-import static androidx.core.content.ContextCompat.startForegroundService;
-
-import android.app.ActivityManager;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -23,8 +15,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -39,16 +29,13 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     private FirebaseAuth mAuth;
 
 
-
-    private Toolbar toolbar;
     private SettingBonhomme settingBonhomme = new SettingBonhomme();
     private BottomNavigationView bottomNavigationView;
-    private home firstFragment = new home();
-    private WaterConsumptionHistory waterConsumption = new WaterConsumptionHistory();
-    private BluetoothFragment thirdFragment = new BluetoothFragment();
-    private goals forthFragment = new goals();
-    private AppSetting fifthFragment = new AppSetting();
-    private int selectedMenuItemId;
+    private final home firstFragment = new home();
+    private final WaterConsumptionHistory waterConsumption = new WaterConsumptionHistory();
+    private final BluetoothFragment thirdFragment = new BluetoothFragment();
+    private final goals forthFragment = new goals();
+    private final AppSetting fifthFragment = new AppSetting();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,27 +50,13 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
         bottomNavigationView.setSelectedItemId(R.id.home);
 
-        toolbar = findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         // The home fragment will be defaulted as the first fragment
         // Initial fragment transaction
         loadFragment(firstFragment);
-        selectedMenuItemId = R.id.home; // Set the default selected menu item
-     //   SensorReaderData.pushDummyDataToFirebase();
-
-
-
-    class GoalsSignup extends AppCompatActivity {
-        @Override
-        protected void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_goals_signup);
-
-        }
-    }
-
-
+        //   SensorReaderData.pushDummyDataToFirebase();
 
 //        // Check if BluetoothService is running and run it if not
 //        if (!isServiceRunning()) {
@@ -100,26 +73,21 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         // Menu option based on the icon and which fragment should be reached
         if (itemId == R.id.home) {
-            selectedMenuItemId = R.id.home;
             getSupportFragmentManager().beginTransaction().replace(R.id.flFragment, firstFragment).commit();
             return true;
         } else if (itemId == R.id.details) {
 
-            selectedMenuItemId = R.id.details;
             getSupportFragmentManager().beginTransaction().replace(R.id.flFragment,waterConsumption).commit();
             return true;
 
 
         } else if (itemId == R.id.bluetooth) {
-            selectedMenuItemId = R.id.bluetooth;
             getSupportFragmentManager().beginTransaction().replace(R.id.flFragment, thirdFragment).commit();
             return true;
         } else if (itemId == R.id.goals) {
-            selectedMenuItemId = R.id.goals;
             getSupportFragmentManager().beginTransaction().replace(R.id.flFragment, forthFragment).commit();
             return true;
         } else if (itemId == R.id.setting) {
-            selectedMenuItemId = R.id.setting;
             getSupportFragmentManager().beginTransaction().replace(R.id.flFragment, fifthFragment).commit();
             return true;
         }
@@ -141,7 +109,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         int itemId = item.getItemId();
 
         // Update the selected menu item and synchronize it with the bottom navigation view
-        selectedMenuItemId = itemId;
         bottomNavigationView.setSelectedItemId(itemId);
         if (itemId == R.id.sub_action_one) {
 
