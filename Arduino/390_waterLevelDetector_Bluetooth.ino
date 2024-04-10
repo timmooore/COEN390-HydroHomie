@@ -38,6 +38,7 @@ double prevWaterHeight = 0;
 // Water level activity flags
 bool waterConsumed = false;
 bool waterRefilled = false;
+bool acknowledged  = true;
 bool idle = false;
 
 long distanceReadings[WINDOW_SIZE]; // Array to store sensor readings
@@ -89,20 +90,46 @@ void setup() {
 }
 
 void loop() {
+  // Read command from bluetooth serial terminal
+  if (SerialBT.available()) {
+    Serial.println("SerialBT.available() == true");
+    cmd = SerialBT.read();
+    if (cmd != -1) {
+      if (cmd == 'a') {
+        acknowledged = true;
+        Serial.println("ACK received");
+      }
+      else {
+        // call updateLED()
+        Serial.println("ACK not received properly");
+      }
+    }
 
+    // Flush the input buffer by reading and discarding any remaining bytes
+    while (SerialBT.available()) {
+      SerialBT.read(); // Read and discard the remaining bytes in the input buffer
+    }
+  }
+  
   if (verticallyOriented()) {
 
     calculateWaterLevel();
 
-    if (waterConsumed) {
-      Serial.print("You have consumed: " + String(waterConsumption) + "mL\n");
+    if (waterConsumed || acknowledged == false) {
+      if (acknowledged) {
+        Serial.print("Ack true: You have consumed: " + String(waterConsumption) + "mL\n");
+      } else {
+        Serial.print("Ack false: You have consumed: " + String(waterConsumption) + "mL\n");
+      }
     
       // Send amount of water consumed to bluetooth serial terminal
       SerialBT.println("You have consumed: " + String(waterConsumption) + "mL\n");
-
+    } else {
+      Serial.print("True: You have consumed: " + String(0.0) + "mL\n");
+    
+      // Send amount of water consumed to bluetooth serial terminal
+      SerialBT.println("You have consumed: " + String(0.0) + "mL\n");
     }
-   
-
   
   // get water level measurements (old)
   // waterHeight = (WH_MAX+WH_OFFSET) - medianDistance; // get the water height in cm
@@ -150,8 +177,8 @@ void loop() {
       Serial.println("Congrats! You drank a full water bottle!");
       Serial.println("Please refill the water bottle");
     }
-
-    delay(1000);
+// TODO: REVERT
+    delay(10000);
 
   } // end if vertically oriented
   else {
@@ -217,7 +244,13 @@ void calculateWaterLevel() {
   currWaterHeight = (WH_MAX+WH_OFFSET) - medianDistance; // get the water height in cm
 
   if (currWaterHeight < prevWaterHeight) { // water is consumed from the bottle
-    waterConsumption = calculateWaterConsumption(prevWaterHeight, currWaterHeight); // get amount of water consumed (in mL)
+    if (acknowledged == false) {
+      waterConsumption += calculateWaterConsumption(prevWaterHeight, currWaterHeight); // get amount of water consumed (in mL)
+    } else {
+      waterConsumption = calculateWaterConsumption(prevWaterHeight, currWaterHeight); // get amount of water consumed (in mL)
+      acknowledged = false;
+    }
+
     prevWaterHeight = currWaterHeight;
 
     // update water activity flags 
@@ -439,6 +472,3 @@ void updateLEDs() {
   }
 
 }
-
-
-
