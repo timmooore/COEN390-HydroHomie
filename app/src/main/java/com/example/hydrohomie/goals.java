@@ -44,6 +44,11 @@ public class goals extends Fragment {
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
 
+    private boolean isFirstSelectionAge = true;
+    private boolean isFirstSelectionWeight = true;
+    private boolean isFirstSelectionActivity = true;
+    private boolean isFirstSelectionGender = true;
+
     public goals() {
         // Required empty public constructor
     }
@@ -62,7 +67,7 @@ public class goals extends Fragment {
         activityLevelSpinner = view.findViewById(R.id.activityLevelSpinner); // Initialize activityLevelSpinner
         genderSpinner = view.findViewById(R.id.genderSpinner);
 
-        retrieveAndDisplayData();
+
 
         birthday.setOnClickListener(v -> showBirthdayDialog());
         setupWeightEditText(view);
@@ -70,6 +75,7 @@ public class goals extends Fragment {
         setupActivityLevelSpinner();
         setupWeightEditTextListener();
 
+        retrieveAndDisplayData();
         return view;
     }
 
@@ -80,8 +86,12 @@ public class goals extends Fragment {
         genderSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                saveData("gender", parent.getItemAtPosition(position).toString());
-                updateRecommendedWaterIntake();
+                if (isFirstSelectionGender) {
+                    isFirstSelectionGender = false;
+                } else {
+                    saveData("gender", parent.getItemAtPosition(position).toString());
+                    updateRecommendedWaterIntake();
+                }
             }
 
             @Override
@@ -97,8 +107,12 @@ public class goals extends Fragment {
         activityLevelSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                saveData("activity_level", parent.getItemAtPosition(position).toString());
-                updateRecommendedWaterIntake();
+                if (isFirstSelectionActivity) {
+                    isFirstSelectionActivity = false;
+                } else {
+                    saveData("activity_level", parent.getItemAtPosition(position).toString());
+                    updateRecommendedWaterIntake();
+                }
             }
 
             @Override
@@ -153,10 +167,15 @@ public class goals extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                // Only attempt to save and update if there's actual numeric content
-                if (!s.toString().isEmpty() && s.toString().matches("\\d+")) {
-                    saveData("weight", s.toString());
-                    updateRecommendedWaterIntake();
+                if (isFirstSelectionWeight) {
+                    isFirstSelectionWeight = false;
+                } else {
+                    Log.d(TAG, "setupWeightEditTextListener: afterTextChanged: called");
+                    // Only attempt to save and update if there's actual numeric content
+                    if (!s.toString().isEmpty() && s.toString().matches("\\d+")) {
+                        saveData("weight", s.toString());
+                        updateRecommendedWaterIntake();
+                    }
                 }
             }
         });
@@ -227,6 +246,7 @@ public class goals extends Fragment {
             userGoalsRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    Log.d(TAG, "retrieveAndDisplayData: onDataChange: called");
                     if (dataSnapshot.exists()) {
                         String weight = dataSnapshot.child("weight").getValue(String.class);
                         String gender = dataSnapshot.child("gender").getValue(String.class);

@@ -1,37 +1,20 @@
 package com.example.hydrohomie;
 
-import static android.content.Context.NOTIFICATION_SERVICE;
 
-import static androidx.core.content.ContextCompat.getSystemService;
-
-
-
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.content.Context;
-import android.content.Intent;
-import android.media.RingtoneManager;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
-import com.example.hydrohomie.SensorReaderData;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -39,24 +22,21 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 import antonkozyriatskyi.circularprogressindicator.CircularProgressIndicator;
-import java.time.LocalTime;
+
 public class home extends Fragment  {
 
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
     private DatabaseReference databaseReference,databaseReference1,databaseReference2;
-private double recommandwater, percentage;
+private double recommendedWater, percentage;
 private static final String TAG = "home";
     private static final String CHANNEL_ID = "my_channel_id";
+    private static boolean firstDataChange = true;
     private Toolbar toolbar;
     private CircularProgressIndicator circularProgress1;
     private TextView titleNotif;
@@ -85,9 +65,9 @@ private static final String TAG = "home";
 
         // TODO: Yas fix the databaseRef for recommendation
         if (user != null) {
-            databaseReference = FirebaseDatabase.getInstance().getReference("user_data").child(user.getUid()).child(today.toString()).child("latest_time_slot");
+            databaseReference = FirebaseDatabase.getInstance().getReference("user_data").child(user.getUid()).child(today.toString());
             databaseReference2 = FirebaseDatabase.getInstance().getReference("user_goals").child(user.getUid()).child("recommendedWaterIntake");
-            databaseReference1 = FirebaseDatabase.getInstance().getReference("user_data").child(user.getUid()).child(today.toString()).child("values");
+            databaseReference1 = FirebaseDatabase.getInstance().getReference("user_data").child(user.getUid()).child(today.toString()).child("latest_time_slot");
         }
 
         // TODO: Remove
@@ -98,7 +78,11 @@ private static final String TAG = "home";
         // Start the timer to periodically update sensor data
         startTimer();
 
-        getdata();
+        // Fetch the recommended water intake value from Firebase
+        // then fetch data and update UI in onDataChange
+        getRecommendedWaterIntake();
+        setupUserDataListener();
+
         return view;
     }
 
@@ -112,9 +96,7 @@ private static final String TAG = "home";
             Log.d("NOTI_TEST", "Result is: " + result);
         });
 
-        dummyButton.setOnClickListener(v -> {
-            dummyData();
-        });
+        dummyButton.setOnClickListener(v -> dummyData());
     }
 
     private void dummyData() {
@@ -186,47 +168,63 @@ private static final String TAG = "home";
         titleNotif.setText(notificationMessage);
     }
 
-
-
-    private void getdata() {
-        getRecommendedWaterIntake();
-        databaseReference.addValueEventListener(new ValueEventListener() {
+    private void getData() {
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 Log.d("home", "getData: onDataChange: called");
-                String value = snapshot.getValue(String.class);
+                String latestTimeSlot = snapshot.child("latest_time_slot").getValue(String.class);
 
-                if (value != null) {
-                    DatabaseReference dataRef = databaseReference1.child(value);
+                if (latestTimeSlot != null) {
+                    // DatabaseReference dataRef = databaseReference1.child(value);
+                    Double value1 = snapshot.child("values").child(latestTimeSlot).getValue(Double.class);
+                    // Set the value to accumulateReading
+                    if (value1 != null && value1 != 0.0) {
+                        double recommendedWaterIntake = recommendedWater;
+                        double currentValue = value1 / 1000;
 
-                    dataRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            if (snapshot.exists()) {
-                                if (snapshot.getValue() == null) {
-                                    Log.d("home", "onDataChange: snapshot.getValue() is null");
-                                } else {
-                                    double value1 = snapshot.getValue(Double.class);
-                                    // Set the value to accumulateReading
-                                    if (value1 != 0.0) {
-                                        double recommendedWaterIntake = recommandwater;
-                                        double currentValue = value1 / 1000;
+                        percentage = (currentValue / recommendedWaterIntake) * 100;
+                        Log.d(TAG, "getData: onDataChange: percentage: " + percentage + ", value1: " + value1 + ", recommendedWaterIntake: " + recommendedWaterIntake);
+                        circularProgress1.setProgress(percentage, 100);
+                        accumulateReading.setText("You have consumed " + value1 + " mL so far!");
+                        updateNotification();
+                    }
+                }
+            }
 
-                                        percentage = (currentValue / recommendedWaterIntake) * 100;
-                                        circularProgress1.setProgress(percentage, 100);
-                                        accumulateReading.setText("Level Water Consummed " + value1 + " mL");
-                                        updateNotification();
-                                    }
-                                }
-                            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Handle onCancelled for databaseReference
+                Toast.makeText(getContext(), "Failed to fetch data: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void setupUserDataListener() {
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (firstDataChange) {
+                    firstDataChange = false;
+                } else {
+                    Log.d("home", "setupUserDataListener: onDataChange: called");
+                    String latestTimeSlot = snapshot.child("latest_time_slot").getValue(String.class);
+
+                    if (latestTimeSlot != null) {
+                        // DatabaseReference dataRef = databaseReference1.child(value);
+                        Double value1 = snapshot.child("values").child(latestTimeSlot).getValue(Double.class);
+                        // Set the value to accumulateReading
+                        if (value1 != null && value1 != 0.0) {
+                            double recommendedWaterIntake = recommendedWater;
+                            double currentValue = value1 / 1000;
+
+                            percentage = (currentValue / recommendedWaterIntake) * 100;
+                            Log.d(TAG, "getData: onDataChange: percentage: " + percentage + ", value1: " + value1 + ", recommendedWaterIntake: " + recommendedWaterIntake);
+                            circularProgress1.setProgress(percentage, 100);
+                            accumulateReading.setText("You have consumed " + value1 + " mL so far!");
+                            updateNotification();
                         }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                            // Handle onCancelled for dataRef
-                            Toast.makeText(getContext(), "Failed to fetch data: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                    }
                 }
             }
 
@@ -242,19 +240,19 @@ private static final String TAG = "home";
         // Fetch the recommended water intake value from Firebase
 
         Log.d(TAG, "getRecommendedWaterIntake: called");
-        databaseReference2.addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference2.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot1) {
                 Log.d(TAG, "getRecommendedWaterIntake: onDataChange: called");
                 if (snapshot1.exists()) {
                     // Get the recommended water intake value
-                  String  recommendedWaterIntakeString1 = snapshot1.getValue(String.class);
+                    String  recommendedWaterIntakeString1 = snapshot1.getValue(String.class);
                     if (recommendedWaterIntakeString1 != null) {
                         // Convert the String value to long
-                        double recommendedWaterIntake = Double.parseDouble(recommendedWaterIntakeString1);
-                        recommandwater=recommendedWaterIntake;
+                        recommendedWater = Double.parseDouble(recommendedWaterIntakeString1);
                     }
-                    Log.d("home", "recommendedWater : " + recommandwater);
+                    Log.d("home", "recommendedWater : " + recommendedWater);
+                    getData();
                 }
             }
 
@@ -293,7 +291,4 @@ private static final String TAG = "home";
 //            notificationManager.notify(0, builder.build());
 //        }
     }
-
-
-
 }
