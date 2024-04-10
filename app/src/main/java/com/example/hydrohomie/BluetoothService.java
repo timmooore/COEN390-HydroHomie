@@ -207,42 +207,35 @@ public class BluetoothService extends Service {
                                 System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length);
                                 final String data = new String(encodedBytes, StandardCharsets.US_ASCII);
                                 readBufferPosition = 0;
-                                handler.post(() -> {
-                                    Log.d(TAG, "Data: " + data);
-                                    // Regular expression pattern to match the double value
-                                    Pattern pattern = Pattern.compile("\\d+\\.\\d+");
 
-                                    // Matcher to find the pattern in the text
-                                    Matcher matcher = pattern.matcher(data);
+                                Log.d(TAG, "Data: " + data);
+                                // Regular expression pattern to match the double value
+                                Pattern pattern = Pattern.compile("\\d+\\.\\d+");
 
-                                    // Check if the pattern is found
-                                    if (matcher.find()) {
-                                        // Extract the matched value and convert it to double
-                                        double value = Double.parseDouble(matcher.group());
+                                // Matcher to find the pattern in the text
+                                Matcher matcher = pattern.matcher(data);
 
-                                        // Print the extracted double value
-                                        Log.d("ParsedValue", "Extracted double value: " + value);
+                                // Check if the pattern is found
+                                if (matcher.find()) {
+                                    // Extract the matched value and convert it to double
+                                    double value = Double.parseDouble(matcher.group());
+
+                                    // Print the extracted double value
+                                    Log.d("ParsedValue", "Extracted double value: " + value);
+
+                                    handler.post(() -> {
                                         String currentTime = getCurrentTime();
                                         DatabaseReference databaseReference =
                                                 firebaseDatabase.getReference("user_data")
                                                         .child(firebaseUserId)
                                                         .child(today.toString());
                                         FirebaseUtils.accumulateValue(databaseReference, currentTime, value);
-//                                        DatabaseReference databaseReference =
-//                                                firebaseDatabase.getReference("user_data")
-//                                                        .child(firebaseUserId)
-//                                                        .child(today.toString())
-//                                                        .child(currentTime);
-//                                        // Write data to the database
-//                                        databaseReference.setValue(value)
-//                                                .addOnSuccessListener(aVoid -> Log.d(TAG, "Data written successfully to Firebase"))
-//                                                .addOnFailureListener(e -> Log.e(TAG, "Error writing data to Firebase", e));
-                                    } else {
-                                        Log.d("ParsedValue", "No double value found in the text.");
-                                    }
-                                });
-//                                Log.d(TAG, "Data: " + data);
-                                acknowledgeData();
+                                    });
+                                    if (value != 0D) acknowledgeData();
+
+                                } else {
+                                    Log.d("ParsedValue", "No double value found in the text.");
+                                }
                                 ++numReads;
                                 mmInputStream.close();
                                 break;
