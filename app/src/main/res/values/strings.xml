@@ -8,6 +8,7 @@
     <!-- Other string resources -->
 
     <string-array name="gender_array">Gender
+
         <item>Select Gender</item>
         <item>Male</item>
         <item>Female</item>

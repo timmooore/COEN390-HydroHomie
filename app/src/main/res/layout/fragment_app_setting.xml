@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-android:background="@color/myBackgroundColor"
+
     tools:context=".MainActivity">
 
 
@@ -40,7 +40,6 @@ android:background="@color/myBackgroundColor"
         android:id="@+id/itemNotif5"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
         android:layout_marginTop="128dp"
         android:padding="10dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -96,6 +95,7 @@ android:background="@color/myBackgroundColor"
         android:layout_height="wrap_content"
         android:layout_marginBottom="124dp"
         android:padding="10dp"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
