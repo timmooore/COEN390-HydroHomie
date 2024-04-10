@@ -30,9 +30,8 @@ public class FirebaseUtils {
                 // TODO: Handle edge case where data is updated at midnight
                 // If the cumulated value is null, set it to 0
                 if (cumulatedValue == null) {
-                    mutableData.child("cumulated_value").setValue(0);
                     mutableData.child("values").child(currentTime).setValue(value);
-
+                    mutableData.child("cumulated_value").setValue(value);
                     // Store the key of the latest_time_slot for future access
                     mutableData.child("latest_time_slot").setValue(currentTime);
                 } else {
@@ -44,6 +43,8 @@ public class FirebaseUtils {
 
                     // Update the latest time slot
                     mutableData.child("latest_time_slot").setValue(currentTime);
+
+                    mutableData.child("cumulated_value").setValue(cumulatedValue);
                 }
                 // Return the updated value
                 return Transaction.success(mutableData);

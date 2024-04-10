@@ -194,9 +194,10 @@ public class BluetoothService extends Service {
             int numReads = 0;
             while (!Thread.currentThread().isInterrupted() && !stopWorker) {
                 try {
-                    // TODO: Help Anto modify Arduino code with compact format
                     int bytesAvailable = mmInputStream.available();
+
                     if (bytesAvailable > 0) {
+                        Log.d(TAG, "workerThread: bytesAvailable: " + bytesAvailable);
                         byte[] packetBytes = new byte[bytesAvailable];
                         int numBytesRead = mmInputStream.read(packetBytes);
                         for (int i = 0; i < bytesAvailable; i++) {
@@ -206,7 +207,6 @@ public class BluetoothService extends Service {
                                 System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length);
                                 final String data = new String(encodedBytes, StandardCharsets.US_ASCII);
                                 readBufferPosition = 0;
-                                // TODO: Send data to Firebase
                                 handler.post(() -> {
                                     Log.d(TAG, "Data: " + data);
                                     // Regular expression pattern to match the double value
@@ -223,7 +223,6 @@ public class BluetoothService extends Service {
                                         // Print the extracted double value
                                         Log.d("ParsedValue", "Extracted double value: " + value);
                                         String currentTime = getCurrentTime();
-
                                         DatabaseReference databaseReference =
                                                 firebaseDatabase.getReference("user_data")
                                                         .child(firebaseUserId)
@@ -243,7 +242,10 @@ public class BluetoothService extends Service {
                                     }
                                 });
 //                                Log.d(TAG, "Data: " + data);
+                                acknowledgeData();
                                 ++numReads;
+                                mmInputStream.close();
+                                break;
                             } else {
                                 readBuffer[readBufferPosition++] = b;
                             }
@@ -316,6 +318,18 @@ public class BluetoothService extends Service {
 
         startForeground(1, notification);
     }
+
+    void acknowledgeData() {
+        String msg = "a";
+        // msg += "\n";
+        try {
+            mmOutputStream.write(msg.getBytes());
+            Log.d(TAG, "acknowledgeData: Data Sent");
+        } catch (IOException e) {
+            Log.e(TAG, "acknowledgeData: ", e);
+        }
+    }
+
     private void tester(String deviceAddress) {
         Log.d(TAG, "Service doing work with address" + deviceAddress);
         Toast.makeText(this,"Service doing work with address" + deviceAddress, Toast.LENGTH_LONG).show();
