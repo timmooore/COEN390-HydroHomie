@@ -227,7 +227,7 @@ public class BluetoothService extends Service {
                                                         .child(today.toString());
                                         FirebaseUtils.accumulateValue(databaseReference, currentTime, value);
                                     });
-                                    if (value != 0D) acknowledgeData();
+                                    acknowledgeData(value);
 
                                 } else {
                                     Log.d("ParsedValue", "No double value found in the text.");
@@ -308,7 +308,7 @@ public class BluetoothService extends Service {
         startForeground(1, notification);
     }
 
-    void acknowledgeData() {
+    void acknowledgeData(double value) {
         SharedPreferencesHelper sharedPreferencesHelper = new SharedPreferencesHelper(this, "Intake");
         double totalIntake = Double.parseDouble(sharedPreferencesHelper.getRecommendedIntake());
         double intakeValue = sharedPreferencesHelper.getCurrentIntake();
@@ -316,8 +316,12 @@ public class BluetoothService extends Service {
         Log.d(TAG, "acknowledgeData: Total Intake: " + totalIntake + ", Intake Value: " + intakeValue);
         double percentage = (intakeValue / 1000 / totalIntake) * 100;
         Log.d(TAG, "acknowledgeData: Percentage: " + percentage);
-
-        String msg = "a";
+        String msg;
+        if (value != 0) {
+            msg = "a";
+        } else {
+            msg = "x";
+        }
 
         if (percentage < 50.0) {
             msg += "r";

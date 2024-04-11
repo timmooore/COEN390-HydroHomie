@@ -84,8 +84,8 @@
         <service android:name=".BluetoothService"
             android:enabled="true"
             android:exported="false"
-            android:foregroundServiceType="location">
-<!--            tools:ignore="ForegroundServicePermission">-->
+            android:foregroundServiceType="location"
+            tools:ignore="ForegroundServicePermission">
         </service>
         
         <service

@@ -16,7 +16,7 @@ import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
 public class SensorDataScheduler {
-    private static final boolean useWorker = false;
+    private static final boolean useWorker = true;
     private static final String TAG = "SensorDataScheduler";
 
     // Schedule alarms to trigger the SensorDataService every hour at 00 and 30 minutes
@@ -28,9 +28,9 @@ public class SensorDataScheduler {
                     .build();
 
             // Set the interval for periodic work (every minute)
-            long repeatIntervalMinutes = 1;
+            long repeatIntervalMinutes = 20;
 
-            PeriodicWorkRequest workRequest = new PeriodicWorkRequest.Builder(MyWorker.class, repeatIntervalMinutes, TimeUnit.MINUTES)
+            PeriodicWorkRequest workRequest = new PeriodicWorkRequest.Builder(MyWorker.class, repeatIntervalMinutes, TimeUnit.SECONDS)
                     .setConstraints(constraints)
                     .setInputData(new Data.Builder().putString("DEVICE_ADDRESS", deviceAddress).build())
                     .build();
