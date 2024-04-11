@@ -56,8 +56,8 @@ public class home extends Fragment  {
     private DatabaseReference databaseReference,databaseReference1,databaseReference2;
 private double recommandwater, percentage;
 private static final String TAG = "home";
-    private static final String CHANNEL_ID = "my_channel_id";
-    private Toolbar toolbar;
+
+
     private CircularProgressIndicator circularProgress1;
     private TextView titleNotif;
 
@@ -66,9 +66,9 @@ private static final String TAG = "home";
     private TextView accumulateReading;
 
 
-    private float waterLevel = 0; // Initial water level in percentage
 
-    private final Handler handler = new Handler();
+
+
     public home() {
         // require an empty public constructor
     }
@@ -83,7 +83,7 @@ private static final String TAG = "home";
         LocalDate today = LocalDate.now();
 
 
-        // TODO: Yas fix the databaseRef for recommendation
+
         if (user != null) {
             databaseReference = FirebaseDatabase.getInstance().getReference("user_data").child(user.getUid()).child(today.toString()).child("latest_time_slot");
             databaseReference2 = FirebaseDatabase.getInstance().getReference("user_goals").child(user.getUid()).child("recommendedWaterIntake");
@@ -93,10 +93,6 @@ private static final String TAG = "home";
         // TODO: Remove
         notiTest(view);
    // Initialize last reading TextView
-
-
-        // Start the timer to periodically update sensor data
-        startTimer();
 
         getdata();
         return view;
@@ -133,33 +129,12 @@ private static final String TAG = "home";
         }
     }
 
-    // Method to start the timer for periodic updates
-    private void startTimer() {
-
-        final int delay = 30000; // 30 seconds in milliseconds
 
 
-        handler.postDelayed(new Runnable() {
-            public void run() {
-                // Call method to read sensor data and send updates
-                //SensorReaderData.readSensorDataAndSendUpdates(home.this);
 
-                // Repeat this runnable task after the specified delay
-                handler.postDelayed(this, delay);
-            }
-        }, delay);
-    }
 
-    // Method to stop the timer for periodic updates
-    private void stopTimer() {
-        handler.removeCallbacksAndMessages(null);
-    }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        stopTimer();
-    }
+
 
 
     // Method to update UI based on water level

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,8 +15,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -74,38 +77,122 @@ public class goals extends Fragment {
     }
 
     private void setupGenderSpinner() {
-        ArrayAdapter<CharSequence> genderAdapter = ArrayAdapter.createFromResource(requireContext(), R.array.gender_array, android.R.layout.simple_spinner_item);
+        // Create an ArrayAdapter without using resource
+        ArrayAdapter<String> genderAdapter = new ArrayAdapter<String>(requireContext(), android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.gender_array)) {
+            @NonNull
+            @Override
+            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                // Inflate a custom layout for the spinner item
+                if (convertView == null) {
+                    convertView = LayoutInflater.from(getContext()).inflate(android.R.layout.simple_spinner_item, parent, false);
+                }
+
+                // Get the TextView from the layout
+                TextView textView = convertView.findViewById(android.R.id.text1);
+
+                // Set text color and background tint
+                textView.setTextColor(getResources().getColor(R.color.white));
+                textView.setGravity(Gravity.CENTER);
+                textView.setPadding(24, 12, 24, 12);// Change to your desired text color
+                textView.setBackgroundColor(getResources().getColor(R.color.myBackgroundColor2)); // Change to your desired background color
+
+                // Set the text of the spinner item
+                textView.setText(getItem(position));
+
+
+                return convertView;
+            }
+
+            @Override
+            public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+           // Adjust the values as needed
+                return getView(position, convertView, parent);
+            }
+        };
+
+        // Set the dropdown view resource
         genderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        // Set the adapter to the spinner
         genderSpinner.setAdapter(genderAdapter);
+
+        // Set the item selection listener
         genderSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                // Save the selected gender
                 saveData("gender", parent.getItemAtPosition(position).toString());
+
+                // Update the recommended water intake based on the selected gender
                 updateRecommendedWaterIntake();
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
+                // Do nothing when nothing is selected
             }
         });
     }
 
+
     private void setupActivityLevelSpinner() {
-        ArrayAdapter<CharSequence> activityLevelAdapter = ArrayAdapter.createFromResource(requireContext(), R.array.activity_level_array_prompt, android.R.layout.simple_spinner_item);
+        // Create an ArrayAdapter without using resource
+        ArrayAdapter<String> activityLevelAdapter = new ArrayAdapter<String>(requireContext(), android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.activity_level_array_prompt)) {
+            @NonNull
+            @Override
+            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                // Inflate a custom layout for the spinner item
+                if (convertView == null) {
+                    convertView = LayoutInflater.from(getContext()).inflate(android.R.layout.simple_spinner_item, parent, false);
+                }
+
+                // Get the TextView from the layout
+                TextView textView = convertView.findViewById(android.R.id.text1);
+
+                // Set text color and background tint
+                textView.setTextColor(getResources().getColor(R.color.white));
+                textView.setGravity(Gravity.CENTER);
+                textView.setPadding(24, 12, 24, 12);// Change to your desired text color
+                textView.setBackgroundColor(getResources().getColor(R.color.myBackgroundColor2)); // Change to your desired background color
+
+                // Set the text of the spinner item
+                textView.setText(getItem(position));
+
+                return convertView;
+            }
+
+            @Override
+
+            public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                // Call getView() to reuse the custom layout for dropdown items
+                return getView(position, convertView, parent);
+            }
+        };
+
+        // Set the dropdown view resource
         activityLevelAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        // Set the adapter to the spinner
         activityLevelSpinner.setAdapter(activityLevelAdapter);
+
+        // Set the item selection listener
         activityLevelSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                // Save the selected activity level
                 saveData("activity_level", parent.getItemAtPosition(position).toString());
+
+                // Update the recommended water intake based on the selected activity level
                 updateRecommendedWaterIntake();
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
+                // Do nothing when nothing is selected
             }
         });
     }
+
 
     private void showBirthdayDialog() {
         final Calendar calendar = Calendar.getInstance();
@@ -265,7 +352,8 @@ public class goals extends Fragment {
 
                         String recommendedIntakeString = df.format(recommendedWaterIntake);
                         // Update the UI
-                        waterGoalEditText.setText(recommendedIntakeString + " liters");
+                       waterGoalEditText.setText(recommendedIntakeString );
+
                     }
                 }
 
@@ -370,6 +458,8 @@ public class goals extends Fragment {
         return calculatedRecommendedWaterIntake;
     }
 
+
+
     public static int calculateAgeBasedOnBirthday(String birthdayStr) {
         try {
             Date birthDate = new SimpleDateFormat("dd/MM/yyyy",
@@ -380,6 +470,8 @@ public class goals extends Fragment {
             return 0; // Default or error age
         }
     }
+
+
 
     private void updateRecommendedWaterIntake() {
         String weight = weightEditText.getText().toString();
@@ -399,11 +491,15 @@ public class goals extends Fragment {
 
         String recommendedIntakeString = df.format(recommendedWaterIntake);
         // Update the UI
-        waterGoalEditText.setText(recommendedIntakeString + " liters");
+        waterGoalEditText.setText(recommendedIntakeString );
 
         // Save the updated recommended water intake to Firebase
         saveRecommendedWaterIntake(recommendedIntakeString, recommendedWaterIntake);
     }
+
+
+
+
 
     private void saveRecommendedWaterIntake(String recommendedIntakeString,
                                             double recommendedWaterIntake) {
@@ -416,4 +512,8 @@ public class goals extends Fragment {
             FirebaseUtils.generateRecommendedIntakeData(userGoalsRef, recommendedWaterIntake);
         }
     }
+
+
+
+
 }

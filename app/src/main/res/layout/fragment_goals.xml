@@ -29,42 +29,48 @@
 
     <Spinner
         android:id="@+id/genderSpinner"
-        android:layout_width="153dp"
-        android:layout_height="56dp"
-        android:layout_marginTop="72dp"
+        android:layout_width="190dp"
+        android:layout_height="61dp"
+        android:layout_marginTop="96dp"
+        android:gravity="center"
+        android:background="@drawable/rounded_box"
         android:layout_marginEnd="28dp"
-
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.037"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/textView11"
-        app:layout_constraintTop_toBottomOf="@+id/flFragment" />
+        app:layout_constraintTop_toBottomOf="@+id/waterGoalEditText" />
 
     <TextView
         android:id="@+id/textView11"
-        android:layout_width="176dp"
-        android:layout_height="58dp"
-        android:layout_marginTop="72dp"
+        android:layout_width="190dp"
+        android:layout_height="61dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="96dp"
+
         android:drawableLeft="@drawable/ic_gender_icon"
         android:padding="16dp"
-        android:text="Gender"
+        android:text=" Gender:"
         android:textColor="@color/white"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/flFragment" />
-
+        app:layout_constraintTop_toBottomOf="@+id/waterGoalEditText" />
 
     <EditText
         android:id="@+id/birthday"
-        android:layout_width="133dp"
-        android:layout_height="63dp"
+        android:layout_width="190dp"
+        android:layout_height="61dp"
+        android:layout_marginTop="4dp"
+        android:gravity="center"
         android:clickable="true"
         android:cursorVisible="false"
         android:focusable="false"
         android:hint="Select date"
+        android:background="@drawable/rounded_box"
         android:inputType="none"
         android:textColor="@color/white"
+
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/textView12"
@@ -72,36 +78,45 @@
 
     <TextView
         android:id="@+id/textView12"
-        android:layout_width="175dp"
-        android:layout_height="63dp"
+        android:layout_width="190dp"
+        android:layout_height="61dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="4dp"
+
         android:drawableLeft="@drawable/ic_calendar_icon"
         android:padding="16dp"
-        android:text="Date of Birth"
+        android:text=" Date of Birth:"
         android:textColor="@color/white"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/genderSpinner" />
-
+        app:layout_constraintTop_toBottomOf="@+id/textView11" />
 
     <TextView
         android:id="@+id/textView15"
-        android:layout_width="179dp"
+        android:layout_width="190dp"
         android:layout_height="61dp"
+        android:layout_marginStart="4dp"
+
         android:drawableLeft="@drawable/ic_activity_icon"
         android:padding="16dp"
-        android:text="Activity Level"
+        android:text=" Activity Level:"
         android:textColor="@color/white"
         android:textSize="20sp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView14" />
+        app:layout_constraintTop_toBottomOf="@+id/textView14"
+        app:layout_constraintVertical_bias="0.015" />
 
     <Spinner
         android:id="@+id/activityLevelSpinner"
-        android:layout_width="151dp"
-        android:layout_height="65dp"
+        android:layout_width="190dp"
+        android:layout_height="61dp"
+        android:layout_marginTop="4dp"
         android:layout_marginEnd="20dp"
+        android:background="@drawable/rounded_box"
+        android:gravity="center"
         android:spinnerDropDownItemStyle="@layout/spinner_dropdown_item"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -110,11 +125,14 @@
 
     <TextView
         android:id="@+id/textView14"
-        android:layout_width="176dp"
-        android:layout_height="60dp"
+        android:layout_width="190dp"
+        android:layout_height="61dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="4dp"
+
         android:drawableLeft="@drawable/ic_weight_icon"
         android:padding="16dp"
-        android:text="Weight (Kg)"
+        android:text="Weight (Kg):"
         android:textColor="@color/white"
         android:textSize="20sp"
         android:textStyle="bold"
@@ -123,14 +141,18 @@
 
     <EditText
         android:id="@+id/weightEditText"
-        android:layout_width="49dp"
-        android:layout_height="56dp"
+        android:layout_width="190dp"
+        android:layout_height="61dp"
+        android:layout_marginTop="4dp"
+        android:gravity="center"
         android:clickable="true"
         android:cursorVisible="false"
         android:focusable="false"
         android:hint="Enter Weight(Kg)"
+        android:background="@drawable/rounded_box"
         android:inputType="number|numberDecimal"
         android:textColor="@color/white"
+
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/textView14"
@@ -138,37 +160,38 @@
 
     <TextView
         android:id="@+id/textView10"
-        android:layout_width="225dp"
-        android:layout_height="58dp"
-        android:layout_marginTop="108dp"
-
+        android:layout_width="383dp"
+        android:layout_height="63dp"
+        android:layout_marginTop="60dp"
         android:padding="16dp"
-        android:text="Recommandation (L)"
+        android:gravity="center"
+        android:text="Consumption Recommendation (L)"
         android:textColor="@color/white"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/waterGoalEditText"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView15" />
+        app:layout_constraintTop_toBottomOf="@+id/flFragment" />
 
     <EditText
         android:id="@+id/waterGoalEditText"
-        android:layout_width="104dp"
-        android:layout_height="62dp"
-
-        android:layout_marginEnd="80dp"
-        android:layout_marginBottom="248dp"
+        android:layout_width="205dp"
+        android:layout_height="67dp"
+        android:gravity="center"
         android:ems="10"
+        android:background="@drawable/rounded_box"
         android:focusable="true"
         android:focusableInTouchMode="true"
         android:hint="Consumption Goals "
+
         android:inputType="numberDecimal"
         android:textColor="@color/white"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView10" />
 
 
     =
