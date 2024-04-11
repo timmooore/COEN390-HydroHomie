@@ -75,13 +75,13 @@ public class signup extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
-                    Toast.makeText(getApplicationContext(), "Registration successful!", Toast.LENGTH_LONG).show();
+                   // Toast.makeText(getApplicationContext(), "Registration successful!", Toast.LENGTH_LONG).show();
                     Intent intent; // Navigate to GoalsSignup Activity
                     intent = new Intent(signup.this, GoalsSignup.class);
                     startActivity(intent);
                     finish();
                 } else {
-                    Toast.makeText(getApplicationContext(), "Registration failed!! Please try again later", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Registration failed!! Please try again ", Toast.LENGTH_LONG).show();
                 }
             }
         });

@@ -16,6 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -205,8 +206,14 @@ public class goals extends Fragment {
 
             // Save the formatted date as birthday
             saveData("birthday", formattedDate);
-
-            updateRecommendedWaterIntake();
+            int age = calculateAgeBasedOnBirthday(formattedDate);
+            if (age < 8) {
+                // Display toast message indicating the user is too young
+                Toast.makeText(requireContext(), "Sorry, you must be at least 8 years old to use this service.", Toast.LENGTH_LONG).show();
+                birthday.setText("");
+            } else {
+                updateRecommendedWaterIntake();
+            }
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
         datePickerDialog.show();
     }
