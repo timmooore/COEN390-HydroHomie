@@ -1,6 +1,8 @@
 package com.example.hydrohomie;
 
 
+import static android.content.ContentValues.TAG;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -128,17 +130,17 @@ private static final String TAG = "home";
         String notificationMessage;
         if (percentage < 25) {
             notificationMessage = "LOW WATER LEVEL! REFILL THE BOTTLE!";
-            notification();
+
         } else if (percentage < 75) {
             notificationMessage = "MODERATE WATER LEVEL. KEEP HYDRATING!";
-            notification();
+
         } else if (percentage <= 100) {
             notificationMessage = "GOOD WATER LEVEL. STAY HYDRATED!";
-            notification();
+
         } else {
             // Handle case where percentage exceeds 100
             notificationMessage = "WATER LEVEL EXCEEDS MAXIMUM CAPACITY!";
-            notification();
+
         }
         titleNotif.setText(notificationMessage);
     }
@@ -170,7 +172,11 @@ private static final String TAG = "home";
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 // Handle onCancelled for databaseReference
-                Toast.makeText(getContext(), "Failed to fetch data: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                if (getContext() != null) {
+                    Toast.makeText(getContext(), "Failed to fetch data: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                } else {
+                    Log.e(TAG, "Context is null");
+                }
             }
         });
     }
@@ -206,7 +212,11 @@ private static final String TAG = "home";
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 // Handle onCancelled for databaseReference
-                Toast.makeText(getContext(), "Failed to fetch data: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                if (getContext() != null) {
+                    Toast.makeText(getContext(), "Failed to fetch data: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                } else {
+                    Log.e(TAG, "Context is null");
+                }
             }
         });
     }
@@ -232,9 +242,13 @@ private static final String TAG = "home";
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Handle errors
-                Toast.makeText(getContext(), "Failed to fetch recommended water intake: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Handle onCancelled for databaseReference
+                if (getContext() != null) {
+                    Toast.makeText(getContext(), "Failed to fetch data: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                } else {
+                    Log.e(TAG, "Context is null");
+                }
             }
         });
     }

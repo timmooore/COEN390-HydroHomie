@@ -1,5 +1,6 @@
 package com.example.hydrohomie;
 
+import static android.content.ContentValues.TAG;
 import static com.example.hydrohomie.R.color.dateTextColor;
 
 import android.graphics.drawable.Drawable;
@@ -138,9 +139,13 @@ SensorReaderData.pushDummyDataToFirebase();
 
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Handle errors
-                Toast.makeText(getContext(), "Failed to fetch data: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Handle onCancelled for databaseReference
+                if (getContext() != null) {
+                    Toast.makeText(getContext(), "Failed to fetch data: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                } else {
+                    Log.e(TAG, "Context is null");
+                }
             }
         });
     }
@@ -164,12 +169,15 @@ SensorReaderData.pushDummyDataToFirebase();
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Handle errors
-                Toast.makeText(getContext(), "Failed to fetch recommended water intake: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Handle onCancelled for databaseReference
+                if (getContext() != null) {
+                    Toast.makeText(getContext(), "Failed to fetch data: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                } else {
+                    Log.e(TAG, "Context is null");
+                }
             }
         });
     }
-
 
 }
