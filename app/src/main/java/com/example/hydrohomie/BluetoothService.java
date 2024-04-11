@@ -313,8 +313,23 @@ public class BluetoothService extends Service {
     }
 
     void acknowledgeData() {
+        SharedPreferencesHelper sharedPreferencesHelper = new SharedPreferencesHelper(this, "Intake");
+        double totalIntake = Double.parseDouble(sharedPreferencesHelper.getRecommendedIntake());
+        double intakeValue = sharedPreferencesHelper.getCurrentIntake();
+
+        double percentage = (intakeValue / 1000 / totalIntake) * 100;
+        Log.d(TAG, "acknowledgeData: Percentage: " + percentage);
+
         String msg = "a";
-        // msg += "\n";
+
+        if (percentage < 50.0) {
+            msg += "r";
+        } else if (percentage < 100.0) {
+            msg += "y";
+        } else {
+            msg += "g";
+        }
+
         try {
             mmOutputStream.write(msg.getBytes());
             Log.d(TAG, "acknowledgeData: Data Sent");
