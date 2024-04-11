@@ -63,6 +63,29 @@ public class FirebaseUtils {
         });
     }
 
+    public static void resetCumulatedValue(DatabaseReference databaseRef) {
+        databaseRef.runTransaction(new Transaction.Handler() {
+            @NonNull
+            @Override
+            public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+                // Reset the cumulated value to 0
+                mutableData.child("cumulated_value").setValue(0D);
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean committed, DataSnapshot dataSnapshot) {
+                if (databaseError != null) {
+                    // Handle errors
+                    Log.e(TAG, "Error writing data to Firebase", databaseError.toException());
+                } else {
+                    // Transaction completed successfully
+                    Log.d(TAG, "Data written successfully to Firebase");
+                }
+            }
+        });
+    }
+
     // Method to accumulate values in Firebase Realtime Database
     public static void updateCumulatedValue(DatabaseReference databaseRef, final String currentTime, final double valueToAdd) {
         // Perform a transaction to accumulate values
@@ -129,6 +152,7 @@ public class FirebaseUtils {
         new Thread(() -> {
             List<SensorData> dataPoints = SensorData.generateDummyData(timestamp);
 
+            resetCumulatedValue(todayRef);
             if (dataPoints.isEmpty()) Log.d(TAG, "You fucked up");
             for (SensorData dataPoint : dataPoints) {
                 accumulateValue(todayRef, dataPoint.getTimestamp().toString(), dataPoint.getValue());
