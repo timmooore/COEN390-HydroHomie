@@ -83,11 +83,16 @@ public class BluetoothFragment extends Fragment {
 
                 if (deviceName != null) {
                     Toast.makeText(getContext(), deviceName, Toast.LENGTH_LONG).show();
-                    devicesList.add(deviceName);
-                    // Notify the adapter that the dataset has changed
-                    // This should be a member variable of your Activity/Fragment
-                    // Adapter initialization and setting to the list view should be done elsewhere
-                    adapter.notifyDataSetChanged();
+                    if(!devicesList.contains(deviceName)) {
+                        devicesList.add(deviceName);
+
+                        // Notify the adapter that the dataset has changed
+                        // This should be a member variable of your Activity/Fragment
+                        // Adapter initialization and setting to the list view should be done elsewhere
+                        adapter.notifyDataSetChanged();
+                    }
+
+
                 }
             } else if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
@@ -203,6 +208,7 @@ public class BluetoothFragment extends Fragment {
                     initiatePairing(selectedDevice);
                     SharedPreferencesHelper sharedPreferencesHelper = new SharedPreferencesHelper(requireContext(), "BluetoothAddressPreference");
                     selectedBluetoothAddress = selectedDevice.getAddress();
+                    Log.d(TAG, "onItemClick: selectedBluetoothAddress: " + selectedBluetoothAddress);
                     sharedPreferencesHelper.saveBluetoothAddress(selectedBluetoothAddress);
                 } catch (SecurityException e) {
                     throw new RuntimeException(e);
@@ -294,7 +300,7 @@ public class BluetoothFragment extends Fragment {
                 for (BluetoothDevice device : pairedDevices) {
                     String deviceName = device.getName();
                     String deviceHardwareAddress = device.getAddress(); // MAC address
-                    pairedDevicesList.add(deviceName);
+                    if (!pairedDevicesList.contains(deviceName)) pairedDevicesList.add(deviceName);
                 }
             }
             // Discover new Bluetooth devices

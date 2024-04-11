@@ -313,6 +313,7 @@ public class BluetoothService extends Service {
         double totalIntake = Double.parseDouble(sharedPreferencesHelper.getRecommendedIntake());
         double intakeValue = sharedPreferencesHelper.getCurrentIntake();
 
+        Log.d(TAG, "acknowledgeData: Total Intake: " + totalIntake + ", Intake Value: " + intakeValue);
         double percentage = (intakeValue / 1000 / totalIntake) * 100;
         Log.d(TAG, "acknowledgeData: Percentage: " + percentage);
 

@@ -185,7 +185,7 @@ private static final String TAG = "home";
                         Log.d(TAG, "getData: onDataChange: percentage: " + percentage + ", value1: " + value1 + ", recommendedWaterIntake: " + recommendedWaterIntake);
                         circularProgress1.setProgress(percentage, 100);
 
-                        DecimalFormat df = new DecimalFormat("0.00");
+                        DecimalFormat df = new DecimalFormat("0");
 
                         accumulateReading.setText("You have consumed " + df.format(value1) + " mL so far!");
                         updateNotification();
@@ -234,7 +234,7 @@ private static final String TAG = "home";
                             Log.d(TAG, "setupDataListener: onDataChange: percentage: " + percentage + ", value1: " + value1 + ", recommendedWaterIntake: " + recommendedWaterIntake);
                             circularProgress1.setProgress(percentage, 100);
 
-                            DecimalFormat df = new DecimalFormat("0.00");
+                            DecimalFormat df = new DecimalFormat("0");
 
                             accumulateReading.setText("You have consumed " + df.format(value1) + " mL so far!");
                             updateNotification();
