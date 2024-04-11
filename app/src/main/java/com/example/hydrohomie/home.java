@@ -25,6 +25,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Objects;
 
 import antonkozyriatskyi.circularprogressindicator.CircularProgressIndicator;
 
@@ -117,6 +118,11 @@ private static final String TAG = "home";
 
 
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy: called");
+    }
 
 
     // Method to update UI based on water level
@@ -193,8 +199,11 @@ private static final String TAG = "home";
                             double recommendedWaterIntake = recommendedWater;
                             double currentValue = value1 / 1000;
 
+                            SharedPreferencesHelper sharedPreferencesHelper = new SharedPreferencesHelper(requireActivity().getApplicationContext(), "Intake");
+                            sharedPreferencesHelper.saveCurrentIntake(value1);
+
                             percentage = (currentValue / recommendedWaterIntake) * 100;
-                            Log.d(TAG, "getData: onDataChange: percentage: " + percentage + ", value1: " + value1 + ", recommendedWaterIntake: " + recommendedWaterIntake);
+                            Log.d(TAG, "setupDataListener: onDataChange: percentage: " + percentage + ", value1: " + value1 + ", recommendedWaterIntake: " + recommendedWaterIntake);
                             circularProgress1.setProgress(percentage, 100);
                             accumulateReading.setText("You have consumed " + value1 + " mL so far!");
                             updateNotification();
@@ -223,6 +232,10 @@ private static final String TAG = "home";
                     // Get the recommended water intake value
                     String  recommendedWaterIntakeString1 = snapshot1.getValue(String.class);
                     if (recommendedWaterIntakeString1 != null) {
+                        SharedPreferencesHelper sharedPreferencesHelper = new SharedPreferencesHelper(requireActivity().getApplicationContext(), "Intake");
+                        sharedPreferencesHelper.saveRecommendedIntake(recommendedWaterIntakeString1);
+
+                        Log.d(TAG, "getRecommendedWaterIntake: onDataChange: Intake: " + sharedPreferencesHelper.getRecommendedIntake());
                         // Convert the String value to long
                         recommendedWater = Double.parseDouble(recommendedWaterIntakeString1);
                     }

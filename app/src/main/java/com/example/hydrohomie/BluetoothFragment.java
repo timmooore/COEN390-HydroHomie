@@ -117,7 +117,7 @@ public class BluetoothFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SharedPreferencesHelper sharedPreferencesHelper = new SharedPreferencesHelper(requireContext());
+        SharedPreferencesHelper sharedPreferencesHelper = new SharedPreferencesHelper(requireContext(), "BluetoothAddressPreference");
         selectedBluetoothAddress = sharedPreferencesHelper.getBluetoothAddress();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -201,7 +201,7 @@ public class BluetoothFragment extends Fragment {
                     Toast.makeText(requireContext(), "You selected: " + selectedDevice.getName(), Toast.LENGTH_LONG).show();
                     bluetoothAdapter.cancelDiscovery();
                     initiatePairing(selectedDevice);
-                    SharedPreferencesHelper sharedPreferencesHelper = new SharedPreferencesHelper(requireContext());
+                    SharedPreferencesHelper sharedPreferencesHelper = new SharedPreferencesHelper(requireContext(), "BluetoothAddressPreference");
                     selectedBluetoothAddress = selectedDevice.getAddress();
                     sharedPreferencesHelper.saveBluetoothAddress(selectedBluetoothAddress);
                 } catch (SecurityException e) {
