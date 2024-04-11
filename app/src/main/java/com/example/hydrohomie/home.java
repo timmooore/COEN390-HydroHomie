@@ -1,11 +1,8 @@
 package com.example.hydrohomie;
 
 
-import static android.content.ContentValues.TAG;
-
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,7 +26,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Objects;
 
 import antonkozyriatskyi.circularprogressindicator.CircularProgressIndicator;
 
@@ -37,7 +33,7 @@ public class home extends Fragment  {
 
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-    private DatabaseReference databaseReference,databaseReference1,databaseReference2;
+    private DatabaseReference databaseReference, databaseReference1, databaseReference2;
 
     private ValueEventListener valueEventListener, recommendedValueEventListener;
 private double recommendedWater, percentage;
@@ -47,14 +43,8 @@ private static final String TAG = "home";
     private Toolbar toolbar;
     private CircularProgressIndicator circularProgress1;
     private TextView titleNotif;
-
-
     private Button notiTestButton, dummyButton;
     private TextView accumulateReading;
-
-
-
-
 
     public home() {
         // require an empty public constructor
@@ -82,14 +72,8 @@ private static final String TAG = "home";
         circularProgress1 = view.findViewById(R.id.circular_progress1);
         titleNotif = view.findViewById(R.id.titleMessage);
 
-
-
-
-
-
         // TODO: Remove
         notiTest(view);
-   // Initialize last reading TextView
 
         // Fetch the recommended water intake value from Firebase
         // then fetch data and update UI in onDataChange

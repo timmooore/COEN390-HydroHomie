@@ -72,7 +72,6 @@ public class BluetoothService extends Service {
         Log.d(TAG, "BluetoothService onStartCommand()");
         String deviceAddress = intent.getStringExtra("DEVICE_ADDRESS");
 
-        // TODO: Revert
         // String deviceAddress = "00-11-22-33";
 
         if (deviceAddress == null) {
@@ -101,7 +100,6 @@ public class BluetoothService extends Service {
 
         // tester(deviceAddress);
 
-        // TODO: Revert
         // Connect to the Bluetooth device
         try {
             connectToDevice(deviceAddress);
@@ -179,7 +177,6 @@ public class BluetoothService extends Service {
     }
 
     void beginListenForData() {
-        // TODO: Test if this runs in the background
         Log.d(TAG, "beginListenForData: called");
         final Handler handler = new Handler();
         final byte delimiter = 10; //This is the ASCII code for a newline character
@@ -188,7 +185,6 @@ public class BluetoothService extends Service {
         readBufferPosition = 0;
         readBuffer = new byte[1024];
 
-        // TODO: Test
         Thread workerThread = new Thread(() -> {
             Log.d(TAG, "beginListenForData: workerThread running");
             int numReads = 0;

@@ -27,7 +27,6 @@ public class FirebaseUtils {
                 // Get the latest time slot from the database
                 Double cumulatedValue = mutableData.child("cumulated_value").getValue(Double.class);
 
-                // TODO: Handle edge case where data is updated at midnight
                 // If the cumulated value is null, set it to 0
                 if (cumulatedValue == null) {
                     mutableData.child("values").child(currentTime).setValue(value);

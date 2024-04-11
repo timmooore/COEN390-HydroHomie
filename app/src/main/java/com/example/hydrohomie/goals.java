@@ -357,7 +357,6 @@ public class goals extends Fragment {
         return years;
     }
 
-    // TODO: Ensure generateDataPoints is onChange of recommended intake
     private void retrieveAndDisplayData() {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
