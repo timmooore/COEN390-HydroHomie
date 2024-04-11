@@ -164,7 +164,7 @@ private static final String TAG = "home";
                         Log.d(TAG, "getData: onDataChange: percentage: " + percentage + ", value1: " + value1 + ", recommendedWaterIntake: " + recommendedWaterIntake);
                         circularProgress1.setProgress(percentage, 100);
                         accumulateReading.setText("You have consumed " + value1 + " mL so far!");
-                        updateNotification();
+                       // updateNotification();
                     }
                 }
             }
@@ -203,7 +203,7 @@ private static final String TAG = "home";
                             Log.d(TAG, "getData: onDataChange: percentage: " + percentage + ", value1: " + value1 + ", recommendedWaterIntake: " + recommendedWaterIntake);
                             circularProgress1.setProgress(percentage, 100);
                             accumulateReading.setText("You have consumed " + value1 + " mL so far!");
-                            updateNotification();
+                           // updateNotification();
                         }
                     }
                 }
