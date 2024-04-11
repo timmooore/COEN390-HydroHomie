@@ -4,19 +4,31 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/myBackgroundColor"
+
     tools:context=".MainActivity">
+    <FrameLayout
+        android:id="@+id/flFragment"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/thirdFragment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text=" Establishing connections to device "
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.154" />
+        app:layout_constraintTop_toBottomOf="@+id/flFragment"
+        app:layout_constraintVertical_bias="0.101" />
 
     <Button
         android:id="@+id/schedule"
@@ -27,12 +39,17 @@
         android:layout_marginTop="404dp"
         android:layout_toStartOf="@+id/imageView"
         android:layout_toLeftOf="@+id/imageView"
-        android:background="@drawable/round"
+
+        android:theme="@style/CustomButtonStyle"
+
+
+        android:backgroundTint="@color/mybuttonColor"
+        android:textColor="@android:color/white"
         android:clickable="true"
         android:onClick="on"
         android:text="Schedule"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:textColor="#FFFFFF"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView2"
@@ -46,12 +63,16 @@
         android:layout_alignBottom="@+id/schedule"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="404dp"
-        android:background="@drawable/round"
+        android:theme="@style/CustomButtonStyle"
+
+
+        android:backgroundTint="@color/mybuttonColor"
+        android:textColor="@android:color/white"
         android:onClick="visible"
         android:text="Scan for Devices"
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:textColor="#FFFFFF"
+
         android:textSize="18sp"
         app:layout_constraintEnd_toStartOf="@+id/refreshButton"
         app:layout_constraintHorizontal_bias="0.492"
@@ -64,11 +85,15 @@
         android:layout_height="66dp"
         android:layout_marginTop="404dp"
         android:layout_marginEnd="8dp"
-        android:background="@drawable/round"
+        android:theme="@style/CustomButtonStyle"
+
+
+        android:backgroundTint="@color/mybuttonColor"
+        android:textColor="@android:color/white"
         android:onClick="list"
         android:text="Refresh"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:textColor="#FFFFFF"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView2"
@@ -76,8 +101,8 @@
 
     <ListView
         android:id="@+id/pairedDevicesListView"
-        android:layout_width="410dp"
-        android:layout_height="325dp"
+        android:layout_width="412dp"
+        android:layout_height="333dp"
         android:layout_below="@+id/textView2"
         android:layout_alignStart="@+id/schedule"
         android:layout_alignLeft="@+id/schedule"
@@ -93,13 +118,14 @@
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/button4"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textStyle="bold"
         android:layout_alignStart="@+id/pairedDevicesListView"
         android:layout_alignLeft="@+id/pairedDevicesListView"
         android:layout_marginTop="40dp"
         android:text="Paired devices:"
-        android:textColor="#000000"
-        android:textSize="25dp"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.504"
@@ -107,19 +133,6 @@
         app:layout_constraintTop_toBottomOf="@+id/thirdFragment"
         app:layout_constraintVertical_bias="0.0" />
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar2"
-        android:layout_width="409dp"
-        android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
-        android:minHeight="?attr/actionBarSize"
-        android:theme="?attr/actionBarTheme"
-        app:layout_constraintBottom_toTopOf="@+id/thirdFragment"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
-        app:title="Bluetooth"
-        app:titleTextColor="#FFFFFF" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
