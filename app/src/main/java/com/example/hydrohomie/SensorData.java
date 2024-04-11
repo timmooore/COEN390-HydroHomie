@@ -62,16 +62,12 @@ public class SensorData {
         // Format double value
         DecimalFormat df = new DecimalFormat("0.00");
 
-        // TODO: Remove debug prints
-        // Log.d(TAG, "startTime: " + startTime.toString() + ", endTime: " + endTime.toString() + ", totalMinutes: " + totalMinutes + ", numPoints: " + numPoints + ", inc_intake: " + intakeIncrement);
-
         // Loop from start time to end time, adding 5 minutes each iteration
         for (LocalDateTime time = startTime; time.isBefore(endTime); time = time.plusMinutes(granularity)) {
             double roundedIntake = Double.parseDouble(df.format(cumulatedIntake));
             SensorData dataPoint = new SensorData(roundedIntake, time.toLocalTime());
             dataPoints.add(dataPoint);
 
-            // Log.d(TAG, "Timestamp: " + time + ", value: " + cumulatedIntake);
             cumulatedIntake += intakeIncrement;
         }
         return dataPoints;
@@ -113,26 +109,26 @@ public class SensorData {
 
         int i = 0;
         for (LocalTime time = startTime; time.isBefore(timestamp); time = time.plusMinutes(5)) {
-            // Format double value
-            DecimalFormat df = new DecimalFormat("0.00");
-
-            double roundedIntake = Double.parseDouble(df.format(cumulatedIntake));
-            SensorData dataPoint = new SensorData(roundedIntake, time);
-            dummyDataList.add(dataPoint);
-
             if (i == 0) {
                 // Create an instance of Random class
                 Random random = new Random();
 
                 // Generate a random double between 15.0 (inclusive) and 80.0 (exclusive)
                 double randomIntake = 15 + (120 - 15) * random.nextDouble();
-                Log.d(TAG, "Timestamp: " + time + ", value: " + cumulatedIntake);
-                cumulatedIntake += randomIntake;
-                i = 3;
-            }
-            i--;
-        }
 
+                // Format double value
+                DecimalFormat df = new DecimalFormat("0.00");
+
+                double roundedIntake = Double.parseDouble(df.format(randomIntake));
+                SensorData dataPoint = new SensorData(roundedIntake, time);
+                dummyDataList.add(dataPoint);
+
+                Log.d(TAG, "Timestamp: " + time + ", value: " + roundedIntake);
+                i = 2;
+            } else {
+                i--;
+            }
+        }
         return dummyDataList;
     }
 }

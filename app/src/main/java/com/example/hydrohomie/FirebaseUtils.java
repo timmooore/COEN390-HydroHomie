@@ -27,7 +27,6 @@ public class FirebaseUtils {
                 // Get the latest time slot from the database
                 Double cumulatedValue = mutableData.child("cumulated_value").getValue(Double.class);
 
-                // TODO: Handle edge case where data is updated at midnight
                 // If the cumulated value is null, set it to 0
                 if (cumulatedValue == null) {
                     mutableData.child("values").child(currentTime).setValue(value);
@@ -47,6 +46,29 @@ public class FirebaseUtils {
                     mutableData.child("cumulated_value").setValue(cumulatedValue);
                 }
                 // Return the updated value
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean committed, DataSnapshot dataSnapshot) {
+                if (databaseError != null) {
+                    // Handle errors
+                    Log.e(TAG, "Error writing data to Firebase", databaseError.toException());
+                } else {
+                    // Transaction completed successfully
+                    Log.d(TAG, "Data written successfully to Firebase");
+                }
+            }
+        });
+    }
+
+    public static void resetCumulatedValue(DatabaseReference databaseRef) {
+        databaseRef.runTransaction(new Transaction.Handler() {
+            @NonNull
+            @Override
+            public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+                // Reset the cumulated value to 0
+                mutableData.child("cumulated_value").setValue(0D);
                 return Transaction.success(mutableData);
             }
 
@@ -129,6 +151,7 @@ public class FirebaseUtils {
         new Thread(() -> {
             List<SensorData> dataPoints = SensorData.generateDummyData(timestamp);
 
+            resetCumulatedValue(todayRef);
             if (dataPoints.isEmpty()) Log.d(TAG, "You fucked up");
             for (SensorData dataPoint : dataPoints) {
                 accumulateValue(todayRef, dataPoint.getTimestamp().toString(), dataPoint.getValue());

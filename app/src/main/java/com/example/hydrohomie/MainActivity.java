@@ -199,7 +199,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                     // Get the token
                     String token = task.getResult();
 
-                    // TODO: Save the token to your backend (e.g., Firebase Realtime Database or Firestore)
                     Log.d(TAG, "FCM token: " + token);
                     FirebaseUser user = mAuth.getCurrentUser();
 

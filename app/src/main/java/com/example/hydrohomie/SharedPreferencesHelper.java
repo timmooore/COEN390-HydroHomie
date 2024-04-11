@@ -5,9 +5,9 @@ import android.content.SharedPreferences;
 
 public class SharedPreferencesHelper {
     private final SharedPreferences sharedPreferences;
-    public SharedPreferencesHelper(Context context)
+    public SharedPreferencesHelper(Context context, String name)
     {
-        sharedPreferences = context.getSharedPreferences("BluetoothAddressPreference",
+        sharedPreferences = context.getSharedPreferences(name,
                 Context.MODE_PRIVATE);
     }
 
@@ -21,5 +21,29 @@ public class SharedPreferencesHelper {
 
     public String getBluetoothAddress() {
         return sharedPreferences.getString("bluetoothAddress", null);
+    }
+
+    public void saveRecommendedIntake(String recommendedIntake)
+    {
+        String key = "recommendedIntake";
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(key, recommendedIntake);
+        editor.apply();
+    }
+
+    public String getRecommendedIntake() {
+        return sharedPreferences.getString("recommendedIntake", "2.7");
+    }
+
+    public void saveCurrentIntake(double currentIntake)
+    {
+        String key = "currentIntake";
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putFloat(key, (float) currentIntake);
+        editor.apply();
+    }
+
+    public double getCurrentIntake() {
+        return sharedPreferences.getFloat("currentIntake", 0);
     }
 }

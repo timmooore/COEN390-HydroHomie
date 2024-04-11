@@ -1,10 +1,8 @@
 package com.example.hydrohomie;
 
 
-import static android.content.ContentValues.TAG;
-
+import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
@@ -34,7 +33,9 @@ public class home extends Fragment  {
 
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-    private DatabaseReference databaseReference,databaseReference1,databaseReference2;
+    private DatabaseReference databaseReference, databaseReference1, databaseReference2;
+
+    private ValueEventListener valueEventListener, recommendedValueEventListener;
 private double recommendedWater, percentage;
 private static final String TAG = "home";
     private static final String CHANNEL_ID = "my_channel_id";
@@ -42,44 +43,41 @@ private static final String TAG = "home";
     private Toolbar toolbar;
     private CircularProgressIndicator circularProgress1;
     private TextView titleNotif;
-
-
     private Button notiTestButton, dummyButton;
     private TextView accumulateReading;
-
-
-
-
 
     public home() {
         // require an empty public constructor
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_home, container, false);
-        accumulateReading= view.findViewById(R.id.textView4);
-        circularProgress1 = view.findViewById(R.id.circular_progress1);
-        titleNotif = view.findViewById(R.id.titleMessage);
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
         LocalDate today = LocalDate.now();
-
-
 
         if (user != null) {
             databaseReference = FirebaseDatabase.getInstance().getReference("user_data").child(user.getUid()).child(today.toString());
             databaseReference2 = FirebaseDatabase.getInstance().getReference("user_goals").child(user.getUid()).child("recommendedWaterIntake");
             databaseReference1 = FirebaseDatabase.getInstance().getReference("user_data").child(user.getUid()).child(today.toString()).child("latest_time_slot");
         }
+        setupUserDataListener();
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        accumulateReading = view.findViewById(R.id.textView4);
+        circularProgress1 = view.findViewById(R.id.circular_progress1);
+        titleNotif = view.findViewById(R.id.titleMessage);
 
         // TODO: Remove
         notiTest(view);
-   // Initialize last reading TextView
 
         // Fetch the recommended water intake value from Firebase
         // then fetch data and update UI in onDataChange
         getRecommendedWaterIntake();
-        setupUserDataListener();
 
         return view;
     }
@@ -113,12 +111,24 @@ private static final String TAG = "home";
         }
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
 
+        Log.d(TAG, "onStop: called");
+        if (valueEventListener != null) {
+            databaseReference.removeEventListener(valueEventListener);
+        }
+        if (recommendedValueEventListener != null) {
+            databaseReference2.removeEventListener(recommendedValueEventListener);
+        }
+    }
 
-
-
-
-
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy: called");
+    }
 
 
     // Method to update UI based on water level
@@ -146,6 +156,7 @@ private static final String TAG = "home";
     }
 
     private void getData() {
+
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -182,7 +193,7 @@ private static final String TAG = "home";
     }
 
     private void setupUserDataListener() {
-        databaseReference.addValueEventListener(new ValueEventListener() {
+        valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (firstDataChange) {
@@ -199,8 +210,15 @@ private static final String TAG = "home";
                             double recommendedWaterIntake = recommendedWater;
                             double currentValue = value1 / 1000;
 
+                            Context context = getContext();
+
+                            if (context != null) {
+                                SharedPreferencesHelper sharedPreferencesHelper = new SharedPreferencesHelper(context, "Intake");
+                                sharedPreferencesHelper.saveCurrentIntake(value1);
+                            }
+
                             percentage = (currentValue / recommendedWaterIntake) * 100;
-                            Log.d(TAG, "getData: onDataChange: percentage: " + percentage + ", value1: " + value1 + ", recommendedWaterIntake: " + recommendedWaterIntake);
+                            Log.d(TAG, "setupDataListener: onDataChange: percentage: " + percentage + ", value1: " + value1 + ", recommendedWaterIntake: " + recommendedWaterIntake);
                             circularProgress1.setProgress(percentage, 100);
                             accumulateReading.setText("You have consumed " + value1 + " mL so far!");
                            // updateNotification();
@@ -218,14 +236,16 @@ private static final String TAG = "home";
                     Log.e(TAG, "Context is null");
                 }
             }
-        });
+        };
+        databaseReference.addValueEventListener(valueEventListener);
     }
 
     private void getRecommendedWaterIntake() {
         // Fetch the recommended water intake value from Firebase
 
         Log.d(TAG, "getRecommendedWaterIntake: called");
-        databaseReference2.addValueEventListener(new ValueEventListener() {
+
+        recommendedValueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot1) {
                 Log.d(TAG, "getRecommendedWaterIntake: onDataChange: called");
@@ -233,6 +253,14 @@ private static final String TAG = "home";
                     // Get the recommended water intake value
                     String  recommendedWaterIntakeString1 = snapshot1.getValue(String.class);
                     if (recommendedWaterIntakeString1 != null) {
+                        Context context = getContext();
+
+                        if (context != null) {
+                            SharedPreferencesHelper sharedPreferencesHelper = new SharedPreferencesHelper(context, "Intake");
+                            sharedPreferencesHelper.saveRecommendedIntake(recommendedWaterIntakeString1);
+                            Log.d(TAG, "getRecommendedWaterIntake: onDataChange: Intake: " + sharedPreferencesHelper.getRecommendedIntake());
+                        }
+
                         // Convert the String value to long
                         recommendedWater = Double.parseDouble(recommendedWaterIntakeString1);
                     }
@@ -250,7 +278,8 @@ private static final String TAG = "home";
                     Log.e(TAG, "Context is null");
                 }
             }
-        });
+        };
+        databaseReference2.addValueEventListener(recommendedValueEventListener);
     }
 
 

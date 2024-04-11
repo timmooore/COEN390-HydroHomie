@@ -72,7 +72,6 @@ public class BluetoothService extends Service {
         Log.d(TAG, "BluetoothService onStartCommand()");
         String deviceAddress = intent.getStringExtra("DEVICE_ADDRESS");
 
-        // TODO: Revert
         // String deviceAddress = "00-11-22-33";
 
         if (deviceAddress == null) {
@@ -101,7 +100,6 @@ public class BluetoothService extends Service {
 
         // tester(deviceAddress);
 
-        // TODO: Revert
         // Connect to the Bluetooth device
         try {
             connectToDevice(deviceAddress);
@@ -179,7 +177,6 @@ public class BluetoothService extends Service {
     }
 
     void beginListenForData() {
-        // TODO: Test if this runs in the background
         Log.d(TAG, "beginListenForData: called");
         final Handler handler = new Handler();
         final byte delimiter = 10; //This is the ASCII code for a newline character
@@ -188,7 +185,6 @@ public class BluetoothService extends Service {
         readBufferPosition = 0;
         readBuffer = new byte[1024];
 
-        // TODO: Test
         Thread workerThread = new Thread(() -> {
             Log.d(TAG, "beginListenForData: workerThread running");
             int numReads = 0;
@@ -313,8 +309,23 @@ public class BluetoothService extends Service {
     }
 
     void acknowledgeData() {
+        SharedPreferencesHelper sharedPreferencesHelper = new SharedPreferencesHelper(this, "Intake");
+        double totalIntake = Double.parseDouble(sharedPreferencesHelper.getRecommendedIntake());
+        double intakeValue = sharedPreferencesHelper.getCurrentIntake();
+
+        double percentage = (intakeValue / 1000 / totalIntake) * 100;
+        Log.d(TAG, "acknowledgeData: Percentage: " + percentage);
+
         String msg = "a";
-        // msg += "\n";
+
+        if (percentage < 50.0) {
+            msg += "r";
+        } else if (percentage < 100.0) {
+            msg += "y";
+        } else {
+            msg += "g";
+        }
+
         try {
             mmOutputStream.write(msg.getBytes());
             Log.d(TAG, "acknowledgeData: Data Sent");

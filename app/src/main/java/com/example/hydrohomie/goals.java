@@ -48,7 +48,7 @@ public class goals extends Fragment {
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
 
-    private boolean isFirstSelectionAge = true;
+    private boolean isDataFetched;
     private boolean isFirstSelectionWeight = true;
     private boolean isFirstSelectionActivity = true;
     private boolean isFirstSelectionGender = true;
@@ -71,7 +71,9 @@ public class goals extends Fragment {
         activityLevelSpinner = view.findViewById(R.id.activityLevelSpinner); // Initialize activityLevelSpinner
         genderSpinner = view.findViewById(R.id.genderSpinner);
 
-
+        isDataFetched = false;
+        isFirstSelectionActivity = true;
+        isFirstSelectionGender = true;
 
         birthday.setOnClickListener(v -> showBirthdayDialog());
         setupWeightEditText(view);
@@ -81,6 +83,26 @@ public class goals extends Fragment {
 
         retrieveAndDisplayData();
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        // Remove the OnItemSelectedListener from genderSpinner
+        if (genderSpinner != null) {
+            genderSpinner.setOnItemSelectedListener(null);
+        }
+
+        // Remove the OnItemSelectedListener from activityLevelSpinner
+        if (activityLevelSpinner != null) {
+            activityLevelSpinner.setOnItemSelectedListener(null);
+        }
+
+        // Set all UI elements to null to release references
+        weightEditText = null;
+        genderSpinner = null;
+        activityLevelSpinner = null;
     }
 
     private void setupGenderSpinner() {
@@ -127,11 +149,14 @@ public class goals extends Fragment {
         genderSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (isFirstSelectionGender) {
-                    isFirstSelectionGender = false;
-                } else {
-                    saveData("gender", parent.getItemAtPosition(position).toString());
-                    updateRecommendedWaterIntake();
+                if (isDataFetched) {
+                    if (isFirstSelectionGender) {
+                        isFirstSelectionGender = false;
+                    } else {
+                        Log.d(TAG, "setupGenderSpinner: onItemSelected: called");
+                        saveData("gender", parent.getItemAtPosition(position).toString());
+                        updateRecommendedWaterIntake();
+                    }
                 }
             }
 
@@ -187,11 +212,14 @@ public class goals extends Fragment {
         activityLevelSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (isFirstSelectionActivity) {
-                    isFirstSelectionActivity = false;
-                } else {
-                    saveData("activity_level", parent.getItemAtPosition(position).toString());
-                    updateRecommendedWaterIntake();
+                Log.d(TAG, "setupActivityLevelSpinner: onItemSelected: called");
+                if (isDataFetched) {
+                    if (isFirstSelectionActivity) {
+                        isFirstSelectionActivity = false;
+                    } else {
+                        saveData("activity_level", parent.getItemAtPosition(position).toString());
+                        updateRecommendedWaterIntake();
+                    }
                 }
             }
 
@@ -213,14 +241,18 @@ public class goals extends Fragment {
             birthday.setText(formattedDate);
 
             // Save the formatted date as birthday
-            saveData("birthday", formattedDate);
+
             int age = calculateAgeBasedOnBirthday(formattedDate);
             if (age < 8) {
                 // Display toast message indicating the user is too young
                 Toast.makeText(requireContext(), "Sorry, you must be at least 8 years old to use this service.", Toast.LENGTH_LONG).show();
                 birthday.setText("");
             } else {
-                updateRecommendedWaterIntake();
+                if (!isDataFetched) {
+                    Log.d(TAG, "showBirthdayDialog: saveData: called");
+                    saveData("birthday", formattedDate);
+                    updateRecommendedWaterIntake();
+                }
             }
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
         datePickerDialog.show();
@@ -255,7 +287,7 @@ public class goals extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (isFirstSelectionWeight) {
+                if (!isDataFetched) {
                     isFirstSelectionWeight = false;
                 } else {
                     Log.d(TAG, "setupWeightEditTextListener: afterTextChanged: called");
@@ -288,10 +320,11 @@ public class goals extends Fragment {
                     EditText weightEditText = requireView().findViewById(R.id.weightEditText);
                     String weight = weightInput.getText().toString();
                     weightEditText.setText(weight);
-                    // Save the weight immediately after input
-                    saveWeight(weight);
 
-                    updateRecommendedWaterIntake();
+                    // Save the weight immediately after input
+                    //saveWeight(weight);
+
+                    //updateRecommendedWaterIntake();
                 })
                 .setNegativeButton("Cancel", null)
                 .show();
@@ -324,7 +357,6 @@ public class goals extends Fragment {
         return years;
     }
 
-    // TODO: Ensure generateDataPoints is onChange of recommended intake
     private void retrieveAndDisplayData() {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
@@ -368,13 +400,15 @@ public class goals extends Fragment {
                         double recommendedWaterIntake = calculateRecommendedWaterIntake(activityLevel,
                                 gender, weight, age);
 
-                        DecimalFormat df = new DecimalFormat("#.##");
+                        DecimalFormat df = new DecimalFormat("0.00");
                         df.setRoundingMode(RoundingMode.HALF_UP);
 
                         String recommendedIntakeString = df.format(recommendedWaterIntake);
-                        // Update the UI
-                       waterGoalEditText.setText(recommendedIntakeString );
 
+                        // Update the UI
+                       waterGoalEditText.setText(recommendedIntakeString);
+
+                       isDataFetched = true;
                     }
                 }
 
@@ -507,20 +541,16 @@ public class goals extends Fragment {
         double recommendedWaterIntake = calculateRecommendedWaterIntake(activityLevel,
                 gender, weight, age);
 
-        DecimalFormat df = new DecimalFormat("#.##");
+        DecimalFormat df = new DecimalFormat("0.00");
         df.setRoundingMode(RoundingMode.HALF_UP);
 
         String recommendedIntakeString = df.format(recommendedWaterIntake);
         // Update the UI
-        waterGoalEditText.setText(recommendedIntakeString );
+        waterGoalEditText.setText(recommendedIntakeString);
 
         // Save the updated recommended water intake to Firebase
         saveRecommendedWaterIntake(recommendedIntakeString, recommendedWaterIntake);
     }
-
-
-
-
 
     private void saveRecommendedWaterIntake(String recommendedIntakeString,
                                             double recommendedWaterIntake) {

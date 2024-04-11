@@ -19,6 +19,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -30,6 +31,7 @@ public class GoalsSignup extends AppCompatActivity implements AdapterView.OnItem
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
 
+    // TODO: Make activity levels match goals class so they are displayed properly after signup
     private String[] genderArray = {"Select Gender", "Male", "Female", "Other"};
     private String[] activityLevelArray = {"Select Activity Level", "Not Active", "Moderately Active", "Very Active"};
 
@@ -155,32 +157,38 @@ public class GoalsSignup extends AppCompatActivity implements AdapterView.OnItem
         String weight = weightEditText.getText().toString();
 
 
-            // Creating a user map to hold the user data
-            Map<String, Object> userData = new HashMap<>();
-            userData.put("birthday", birthday);
-            userData.put("gender", gender);
-            userData.put("activity_level", activityLevel);
-            userData.put("weight", weight);
+        // Creating a user map to hold the user data
+        Map<String, Object> userData = new HashMap<>();
+        userData.put("birthday", birthday);
+        userData.put("gender", gender);
+        userData.put("activity_level", activityLevel);
+        userData.put("weight", weight);
 
-            // Saving the user data under "users" node, then under the user's UID
-            mDatabase.child("user_goals").child(userId).setValue(userData);
+        // Saving the user data under "users" node, then under the user's UID
+        mDatabase.child("user_goals").child(userId).setValue(userData);
 
-            DatabaseReference userGoalsRef;
+        DatabaseReference userGoalsRef;
 
-            // Create a reference to the user's goals in the database
-            userGoalsRef = FirebaseDatabase.getInstance().getReference("user_goals").child(userId);
+        // Create a reference to the user's goals in the database
+        userGoalsRef = FirebaseDatabase.getInstance().getReference("user_goals").child(userId);
 
-            // Save the information to the user's goals
-            userGoalsRef.child("weight").setValue(weight);
-            userGoalsRef.child("gender").setValue(gender);
-            userGoalsRef.child("birthday").setValue(birthday);
-            userGoalsRef.child("activity_level").setValue(activityLevel);
+        // Save the information to the user's goals
+        userGoalsRef.child("weight").setValue(weight);
+        userGoalsRef.child("gender").setValue(gender);
+        userGoalsRef.child("birthday").setValue(birthday);
+        userGoalsRef.child("activity_level").setValue(activityLevel);
 
-            // Generate the user's incremental_intake_data for Firebase
+        // Generate the user's incremental_intake_data for Firebase
         int age = goals.calculateAgeBasedOnBirthday(birthday);
-            double recommendedWaterIntake = goals.calculateRecommendedWaterIntake(activityLevel, gender, weight, age);
 
-            FirebaseUtils.generateRecommendedIntakeData(userGoalsRef, recommendedWaterIntake);
+
+        double recommendedWaterIntake = goals.calculateRecommendedWaterIntake(activityLevel, gender, weight, age);
+
+        // Format double value
+        DecimalFormat df = new DecimalFormat("0.00");
+
+        userGoalsRef.child("recommendedWaterIntake").setValue(df.format(recommendedWaterIntake));
+        FirebaseUtils.generateRecommendedIntakeData(userGoalsRef, recommendedWaterIntake);
 
     }
 
