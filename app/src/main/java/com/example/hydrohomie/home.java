@@ -24,6 +24,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -87,9 +88,18 @@ private static final String TAG = "home";
         dummyButton = view.findViewById(R.id.genDummyButton);
 
         notiTestButton.setOnClickListener(v -> {
-            SensorData sd = new SensorData(2.1, LocalTime.now());
-            boolean result = SensorData.isHydrated(SensorData.dataPoints, sd);
-            Log.d("NOTI_TEST", "Result is: " + result);
+            FirebaseAuth lAuth = FirebaseAuth.getInstance();
+            FirebaseUser currentUser = lAuth.getCurrentUser();
+            if (currentUser != null) {
+                String userId = currentUser.getUid();
+
+                // Generate data from 8 AM to this time
+                LocalTime latestTimeSlot = LocalTime.of(20, 0, 0);
+
+                // Create a reference to the user's goals in the database
+                DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("user_data").child(userId);
+                FirebaseUtils.generateDummyDataHistory(userRef, latestTimeSlot);
+            }
         });
 
         dummyButton.setOnClickListener(v -> dummyData());
@@ -174,8 +184,11 @@ private static final String TAG = "home";
                         percentage = (currentValue / recommendedWaterIntake) * 100;
                         Log.d(TAG, "getData: onDataChange: percentage: " + percentage + ", value1: " + value1 + ", recommendedWaterIntake: " + recommendedWaterIntake);
                         circularProgress1.setProgress(percentage, 100);
-                        accumulateReading.setText("You have consumed " + value1 + " mL so far!");
-                       // updateNotification();
+
+                        DecimalFormat df = new DecimalFormat("0.00");
+
+                        accumulateReading.setText("You have consumed " + df.format(value1) + " mL so far!");
+                        // updateNotification();
                     }
                 }
             }
@@ -220,8 +233,11 @@ private static final String TAG = "home";
                             percentage = (currentValue / recommendedWaterIntake) * 100;
                             Log.d(TAG, "setupDataListener: onDataChange: percentage: " + percentage + ", value1: " + value1 + ", recommendedWaterIntake: " + recommendedWaterIntake);
                             circularProgress1.setProgress(percentage, 100);
-                            accumulateReading.setText("You have consumed " + value1 + " mL so far!");
-                           // updateNotification();
+
+                            DecimalFormat df = new DecimalFormat("0.00");
+
+                            accumulateReading.setText("You have consumed " + df.format(value1) + " mL so far!");
+                            // updateNotification();
                         }
                     }
                 }

@@ -103,7 +103,7 @@ public class GoalsSignup extends AppCompatActivity implements AdapterView.OnItem
 
     private void setupActivityLevelSpinner() {
         Spinner activitySpinner = findViewById(R.id.activitySpinner);
-        ArrayAdapter<String> activityAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, activityLevelArray);
+        ArrayAdapter<String> activityAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.activity_level_array_prompt));
         activityAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         activitySpinner.setAdapter(activityAdapter);
         activitySpinner.setOnItemSelectedListener(this);
