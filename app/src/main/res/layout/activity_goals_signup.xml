@@ -81,7 +81,7 @@
         android:clickable="true"
         android:cursorVisible="false"
         android:focusable="false"
-        android:gravity="center"
+
         android:hint="Select date"
         android:inputType="none"
         app:layout_constraintStart_toEndOf="@+id/textView12"
@@ -112,7 +112,7 @@
 
         android:background="@drawable/rounded_box"
         android:ems="10"
-        android:gravity="center"
+
         android:hint="Enter Weight (Kg)"
         android:clickable="true"
         android:cursorVisible="false"

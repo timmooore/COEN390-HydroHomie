@@ -1,5 +1,7 @@
 package com.example.hydrohomie;
 
+import static androidx.core.content.ContentProviderCompat.requireContext;
+
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Intent;
@@ -50,6 +52,34 @@ public class GoalsSignup extends AppCompatActivity implements AdapterView.OnItem
     private void setupContinueButton() {
         Button continueButton = findViewById(R.id.button2);
         continueButton.setOnClickListener(v -> {
+            // Check if all parameters have values
+            EditText birthdayEditText = findViewById(R.id.birthday);
+            Spinner genderSpinner = findViewById(R.id.genderSpinner2);
+            Spinner activitySpinner = findViewById(R.id.activitySpinner);
+            EditText weightEditText = findViewById(R.id.weight);
+
+            String birthday = birthdayEditText.getText().toString();
+            String gender = genderSpinner.getSelectedItem().toString();
+            String activityLevel = activitySpinner.getSelectedItem().toString();
+            String weight = weightEditText.getText().toString();
+
+            // Validate if any field is empty
+            if (birthday.isEmpty() || gender.equals("Select Gender") || activityLevel.equals("Select Activity Level") || weight.isEmpty()) {
+                Toast.makeText(this, "Please fill in all fields.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Calculate age based on birthday
+            int age = goals.calculateAgeBasedOnBirthday(birthday);
+
+            // Validate age (optional)
+            if (age < 8) {
+                Toast.makeText(this, "Sorry, you must be at least 8 years old to use this service.", Toast.LENGTH_SHORT).show();
+                birthdayEditText.setText("");
+                return;
+            }
+
+            // If all parameters have values and age is above 8, save user data and proceed
             saveUserData();
             Intent intent = new Intent(GoalsSignup.this, MainActivity.class);
             startActivity(intent);
@@ -91,7 +121,6 @@ public class GoalsSignup extends AppCompatActivity implements AdapterView.OnItem
 
         datePickerDialog.show();
     }
-
     private String formatDate(int year, int month, int day) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
         Calendar calendar = Calendar.getInstance();
@@ -125,39 +154,40 @@ public class GoalsSignup extends AppCompatActivity implements AdapterView.OnItem
         String activityLevel = activitySpinner.getSelectedItem().toString();
         String weight = weightEditText.getText().toString();
 
-        // Creating a user map to hold the user data
-        Map<String, Object> userData = new HashMap<>();
-        userData.put("birthday", birthday);
-        userData.put("gender", gender);
-        userData.put("activity_level", activityLevel);
-        userData.put("weight", weight);
 
-        // Saving the user data under "users" node, then under the user's UID
-        mDatabase.child("user_goals").child(userId).setValue(userData);
+            // Creating a user map to hold the user data
+            Map<String, Object> userData = new HashMap<>();
+            userData.put("birthday", birthday);
+            userData.put("gender", gender);
+            userData.put("activity_level", activityLevel);
+            userData.put("weight", weight);
 
-        DatabaseReference userGoalsRef;
+            // Saving the user data under "users" node, then under the user's UID
+            mDatabase.child("user_goals").child(userId).setValue(userData);
 
-        // Create a reference to the user's goals in the database
-        userGoalsRef = FirebaseDatabase.getInstance().getReference("user_goals").child(userId);
+            DatabaseReference userGoalsRef;
 
-        // Save the information to the user's goals
-        userGoalsRef.child("weight").setValue(weight);
-        userGoalsRef.child("gender").setValue(gender);
-        userGoalsRef.child("birthday").setValue(birthday);
-        userGoalsRef.child("activity_level").setValue(activityLevel);
+            // Create a reference to the user's goals in the database
+            userGoalsRef = FirebaseDatabase.getInstance().getReference("user_goals").child(userId);
 
-        // Generate the user's incremental_intake_data for Firebase
+            // Save the information to the user's goals
+            userGoalsRef.child("weight").setValue(weight);
+            userGoalsRef.child("gender").setValue(gender);
+            userGoalsRef.child("birthday").setValue(birthday);
+            userGoalsRef.child("activity_level").setValue(activityLevel);
+
+            // Generate the user's incremental_intake_data for Firebase
         int age = goals.calculateAgeBasedOnBirthday(birthday);
-        double recommendedWaterIntake = goals.calculateRecommendedWaterIntake(activityLevel, gender, weight, age);
+            double recommendedWaterIntake = goals.calculateRecommendedWaterIntake(activityLevel, gender, weight, age);
 
-        FirebaseUtils.generateRecommendedIntakeData(userGoalsRef, recommendedWaterIntake);
+            FirebaseUtils.generateRecommendedIntakeData(userGoalsRef, recommendedWaterIntake);
 
     }
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         // Implement your selection handling logic here
-        Toast.makeText(parent.getContext(), "Selected: " + parent.getItemAtPosition(position).toString(), Toast.LENGTH_LONG).show();
+       // Toast.makeText(parent.getContext(), "Selected: " + parent.getItemAtPosition(position).toString(), Toast.LENGTH_LONG).show();
     }
 
     @Override
