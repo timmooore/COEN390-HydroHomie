@@ -25,6 +25,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -48,7 +49,7 @@ public class WaterConsumptionHistory extends Fragment {
         selectDateButton = view.findViewById(R.id.selectDateButton);
 
         circularProgress = view.findViewById(R.id.circular_progress);
-SensorReaderData.pushDummyDataToFirebase();
+
         // Set click listener for the select date button
         selectDateButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,7 +61,7 @@ SensorReaderData.pushDummyDataToFirebase();
         // Initialize Firebase database reference
 
         if (user != null) {
-            databaseReference = FirebaseDatabase.getInstance().getReference("user_goals").child(user.getUid()).child("water_consumption_history");
+            databaseReference = FirebaseDatabase.getInstance().getReference("user_data").child(user.getUid());
 
             databaseReference1 = FirebaseDatabase.getInstance().getReference("user_goals").child(user.getUid()).child("recommendedWaterIntake");
         }
@@ -76,7 +77,7 @@ SensorReaderData.pushDummyDataToFirebase();
         DatePickerDialogFragment1 datePickerDialogFragment = new DatePickerDialogFragment1();
         datePickerDialogFragment.setOnDateSetListener((view, year, month, dayOfMonth) -> {
             // Fetch data from Firebase based on the selected date
-            fetchDataFromFirebase(year, month, dayOfMonth);
+            fetchDataFromFirebase(year, month + 1, dayOfMonth);
         });
         datePickerDialogFragment.show(getFragmentManager(), "datePicker");
     }
@@ -100,35 +101,36 @@ SensorReaderData.pushDummyDataToFirebase();
 
     private void fetchDataFromFirebase(int year, int month, int dayOfMonth) {
         // Construct the date string in the format "YYYY-MM-DD"
-        String dateString = String.format(Locale.getDefault(), "%04d-%02d-%02d", year, month + 1, dayOfMonth); // Note: Month starts from 0 in Java Calendar API
-
+        String dateString = String.format(Locale.getDefault(), "%04d-%02d-%02d", year, month, dayOfMonth); // Note: Month starts from 0 in Java Calendar API
+        Log.d("WaterConsumptionHistory", "dataString: " + dateString);
         // Get the reference to the Firebase database node corresponding to the selected date
-        DatabaseReference dateRef = databaseReference.child(dateString);
+        DatabaseReference dateRef = databaseReference.child(dateString).child("cumulated_value");
 
         // Listen for a single data change event
         dateRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Log.d("WaterConsumptionHistory", "onDataChange: called");
                 if (dataSnapshot.exists()) {
+                    Log.d("WaterConsumptionHistory", "onDataChange: snapshot exists");
                     // Clear previous data
                     historyTextView.setText("Hydration Intake: ");
-                    int totalWaterConsumption = 0;
+                    double totalWaterConsumption = 0;
                     // Iterate through child nodes (if any)
                     Object value = dataSnapshot.getValue();
                     if (value != null) {
                         // Append the data to the historyTextView
-                        historyTextView.append(value.toString() +" L" +"\n");
-                        Long waterConsumptionLong = (Long) value;
-                        int waterConsumption = waterConsumptionLong != null ? waterConsumptionLong.intValue() : 0;
-                        totalWaterConsumption += waterConsumption;
-                        //  historyTextView.setText("1000");
+                        totalWaterConsumption = (Double) value;
 
+                        DecimalFormat df = new DecimalFormat("0");
+
+                        historyTextView.append(df.format(totalWaterConsumption) +" mL" +"\n");
+
+                        //  historyTextView.setText("1000");
+                        getRecommendedWaterIntake(totalWaterConsumption);
                     } else {
                         Log.d("DataSnapshot", "Found null value");
                     }
-
-
-                    getRecommendedWaterIntake(totalWaterConsumption);
                 } else {
                     // If no data exists for the selected date
                     historyTextView.setText("No Water Consumed Today");
@@ -149,7 +151,7 @@ SensorReaderData.pushDummyDataToFirebase();
             }
         });
     }
-    private void getRecommendedWaterIntake(int totalWaterConsumption) {
+    private void getRecommendedWaterIntake(double totalWaterConsumption) {
         // Fetch the recommended water intake value from Firebase
         databaseReference1.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -160,9 +162,9 @@ SensorReaderData.pushDummyDataToFirebase();
                     if (recommendedWaterIntakeString != null) {
                         // Convert the String value to long
                         double recommendedWaterIntake = Double.parseDouble(recommendedWaterIntakeString);
-                        double currentValue = totalWaterConsumption;
 
-                        double percentage = (currentValue / recommendedWaterIntake) * 100;
+                        double percentage = ((double) totalWaterConsumption / 1000 / recommendedWaterIntake) * 100;
+
                         circularProgress.setProgress(percentage, 100);
                     }
                 }

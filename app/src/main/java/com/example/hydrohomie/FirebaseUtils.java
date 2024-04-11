@@ -164,4 +164,33 @@ public class FirebaseUtils {
 //                    .setValue(dataPoint.getValue());
 
     }
+
+    public static void generateDummyDataHistory(DatabaseReference databaseRef, LocalTime timestamp) {
+        // Get today's date
+        LocalDate endDate = LocalDate.now();
+        endDate.minusDays(1);
+
+        // Calculate the start date (7 days ago)
+        LocalDate startDate = endDate.minusDays(6); // 7 days ago (inclusive)
+
+        // Iterate over each date from startDate to endDate
+        for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+            DatabaseReference todayRef = databaseRef.child(date.toString());
+            new Thread(() -> {
+                List<SensorData> dataPoints = SensorData.generateDummyData(timestamp);
+
+                resetCumulatedValue(todayRef);
+                if (dataPoints.isEmpty()) Log.d(TAG, "You fucked up");
+                for (SensorData dataPoint : dataPoints) {
+                    accumulateValue(todayRef, dataPoint.getTimestamp().toString(), dataPoint.getValue());
+                }
+            }).start();
+        }
+//            // Log.d(TAG, "dataPoint: timestamp: " + dataPoint.getTimestamp().toString() + "value: " + dataPoint.getValue());
+//            databaseRef.child(today.toString())
+//                    .child("values")
+//                    .child(dataPoint.getTimestamp().toString())
+//                    .setValue(dataPoint.getValue());
+
+    }
 }
