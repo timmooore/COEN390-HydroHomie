@@ -1,5 +1,8 @@
 package com.example.hydrohomie;
 
+import static com.example.hydrohomie.R.color.dateTextColor;
+
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -42,6 +45,7 @@ public class WaterConsumptionHistory extends Fragment {
 
         historyTextView = view.findViewById(R.id.historyTextView);
         selectDateButton = view.findViewById(R.id.selectDateButton);
+
         circularProgress = view.findViewById(R.id.circular_progress);
 SensorReaderData.pushDummyDataToFirebase();
         // Set click listener for the select date button
@@ -106,7 +110,7 @@ SensorReaderData.pushDummyDataToFirebase();
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     // Clear previous data
-                    historyTextView.setText("Water Consummed:");
+                    historyTextView.setText("Hydration Intake: ");
                     int totalWaterConsumption = 0;
                     // Iterate through child nodes (if any)
                     Object value = dataSnapshot.getValue();
@@ -126,7 +130,7 @@ SensorReaderData.pushDummyDataToFirebase();
                     getRecommendedWaterIntake(totalWaterConsumption);
                 } else {
                     // If no data exists for the selected date
-                    historyTextView.setText("No water consummed that day");
+                    historyTextView.setText("No Water Consumed Today");
                     double percentage = 0;
                     circularProgress.setProgress(percentage, 100);
                 }

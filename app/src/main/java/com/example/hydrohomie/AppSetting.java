@@ -9,9 +9,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Switch;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -20,11 +23,9 @@ import id.yuana.itemsettingview.ItemSettingView;
 
 public class AppSetting extends Fragment {
     private FirebaseAuth mAuth;
-    private ItemSettingView itemNotif1;
-    private ItemSettingView itemNotif2;
-    private ItemSettingView itemNotif3;
-    private ItemSettingView itemNotif4;
-    private ItemSettingView itemNotif5;
+    private ItemSettingView itemNotif1,itemNotif2,itemNotif3,itemNotif4,itemNotif5;
+
+
     private Button logout;
 
     @Override
@@ -37,6 +38,7 @@ public class AppSetting extends Fragment {
         itemNotif3 = view.findViewById(R.id.itemNotif3);
         itemNotif4 = view.findViewById(R.id.itemNotif4);
         itemNotif5 = view.findViewById(R.id.itemNotif5);
+
         mAuth = FirebaseAuth.getInstance();
         initItemNotif1();
         initItemNotif2();
@@ -112,4 +114,9 @@ public class AppSetting extends Fragment {
         }
 
     }
+
+
+
+
+
 }

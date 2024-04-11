@@ -4,7 +4,10 @@
         <item name="colorPrimary">#1da2d8</item>
 
 </style>
-
+    <style name="CustomButtonStyle" parent="Widget.AppCompat.Button">
+        <item name="android:background">@drawable/round</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
     <!-- Theme used for your activities. -->
     <style name="Theme.HydroHomie" parent="Base.Theme.HydroHomie">
         <!-- Customize specific attributes for Theme.HydroHomie if needed. -->

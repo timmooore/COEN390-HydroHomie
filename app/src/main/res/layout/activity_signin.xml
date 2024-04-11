@@ -9,12 +9,12 @@
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar4"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:layout_marginTop="4dp"
+        android:layout_width="417dp"
+        android:layout_height="68dp"
+        android:layout_marginTop="0dp"
         android:background="?attr/colorPrimary"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:title="Login"
@@ -26,6 +26,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Welcome Back !"
+        android:layout_marginTop="8dp"
         android:textColor="#FFFFFF"
         android:textSize="24sp"
         android:textStyle="bold|italic"
@@ -38,11 +39,12 @@
 
     <EditText
         android:id="@+id/emailSignin"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_width="350dp"
+        android:layout_height="40dp"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="104dp"
+        android:layout_marginTop="124dp"
         android:layout_marginEnd="32dp"
+        android:background="@drawable/rounded_box"
         android:drawableLeft="@drawable/email"
         android:ems="10"
         android:hint="Email Address"
@@ -56,8 +58,9 @@
 
     <EditText
         android:id="@+id/Passwordsignin"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_width="350dp"
+        android:layout_height="40dp"
+        android:background="@drawable/rounded_box"
         android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="32dp"
@@ -71,6 +74,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <ImageView
+        android:id="@+id/iconImageView"
+        android:layout_width="85dp"
+        android:layout_height="63dp"
+        android:layout_marginBottom="16dp"
+
+        android:contentDescription="Icon"
+        android:src="@drawable/ic_lock_icon"
+        app:layout_constraintBottom_toTopOf="@+id/emailSignin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView3"
+        app:layout_constraintVertical_bias="0.608" />
+
     <Button
         android:id="@+id/Signin"
         android:layout_width="0dp"
@@ -78,8 +95,10 @@
         android:layout_marginStart="32dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="32dp"
-        android:background="@drawable/round"
+        android:theme="@style/CustomButtonStyle"
+
         android:text="Sign In"
+        android:backgroundTint="@color/mybuttonColor"
         android:textColor="@android:color/white"
         app:layout_constraintTop_toBottomOf="@id/Passwordsignin"
         app:layout_constraintStart_toStartOf="parent"

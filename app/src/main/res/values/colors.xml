@@ -5,7 +5,7 @@
     <color name="mybuttonColor">#064273</color>
     <color name="mybuttonSecondColor">#7fcdff</color>
     <color name="myBackgroundColor">#76b6c4</color>
-
+    <color name="myBackgroundColor2">#4a8b9a</color>
     <!-- Text Colors -->
     <color name="dateTextColor">#003366</color> <!-- Dark Blue -->
     <color name="monthTextColor">#003366</color> <!-- Dark Blue -->
