@@ -104,7 +104,7 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/circular_progress1"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.41"
+        app:layout_constraintHorizontal_bias="0.44"
         app:layout_constraintStart_toStartOf="@+id/circular_progress1"
         app:layout_constraintTop_toTopOf="@+id/circular_progress1" />
 
