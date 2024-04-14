@@ -138,7 +138,14 @@ public class GoalsSignup extends AppCompatActivity implements AdapterView.OnItem
                 .setView(weightInput)
                 .setPositiveButton("OK", (dialog, which) -> {
                     EditText weightEditText = findViewById(R.id.weight);
-                    weightEditText.setText(weightInput.getText().toString());
+                    String weight = weightInput.getText().toString();
+
+                    // Validate weight
+                    if (weight.isEmpty() || Double.parseDouble(weight) < 10 || Double.parseDouble(weight) > 250) {
+                        Toast.makeText(this, "Please enter a valid weight.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    weightEditText.setText(weight);
                 })
                 .setNegativeButton("Cancel", null)
                 .show();

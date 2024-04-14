@@ -64,7 +64,7 @@ public class BluetoothService extends Service {
 
         createNotificationChannel();
 
-        Toast.makeText(this, "Service Started", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Sensor Measurement Started", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -106,7 +106,7 @@ public class BluetoothService extends Service {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        stopSelf();
+        // stopSelf();
 
         // Return START_NOT_STICKY, no need to restart if service is killed
         return START_NOT_STICKY;
@@ -134,7 +134,7 @@ public class BluetoothService extends Service {
             Toast.makeText(this, "Permissions required for Bluetooth functionality are disabled", Toast.LENGTH_SHORT).show();
             stopSelf();
         }
-        Toast.makeText(this, "Trying to connect to Bluetooth address: " + deviceAddress, Toast.LENGTH_SHORT).show();
+        // Toast.makeText(this, "Trying to connect to Bluetooth address: " + deviceAddress, Toast.LENGTH_SHORT).show();
         Log.d(TAG, "Trying to connect to Bluetooth address: " + deviceAddress);
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         BluetoothDevice selectedDevice = bluetoothAdapter.getRemoteDevice(deviceAddress);
@@ -143,14 +143,14 @@ public class BluetoothService extends Service {
             // Device with the provided address not found
             Toast.makeText(this, "Device not found with address: " + deviceAddress, Toast.LENGTH_SHORT).show();
             Log.e(TAG, "connectToDevice: Device not found with address: " + deviceAddress);
-            stopSelf(); // Stop the service
+            // stopSelf(); // Stop the service
             return;
         }
 
         UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); //Standard SerialPortService ID\
         try (BluetoothSocket socket = selectedDevice.createRfcommSocketToServiceRecord(uuid)) {
             Log.d(TAG, "Selected device " + selectedDevice.getName());
-            Toast.makeText(this, "Selected device " + selectedDevice.getName(), Toast.LENGTH_SHORT).show();
+            // Toast.makeText(this, "Selected device " + selectedDevice.getName(), Toast.LENGTH_SHORT).show();
             socket.connect();
 
             mmOutputStream = socket.getOutputStream();
@@ -172,7 +172,7 @@ public class BluetoothService extends Service {
             // Error occurred while connecting to the device
             Toast.makeText(this, "Error connecting to device: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             Log.e(TAG, "connectToDevice: Error connecting to device: ", e);
-            stopSelf(); // Stop the service
+            // stopSelf(); // Stop the service
         }
     }
 
@@ -227,7 +227,7 @@ public class BluetoothService extends Service {
                                                         .child(today.toString());
                                         FirebaseUtils.accumulateValue(databaseReference, currentTime, value);
                                     });
-                                    if (value != 0D) acknowledgeData();
+                                    acknowledgeData(value);
 
                                 } else {
                                     Log.d("ParsedValue", "No double value found in the text.");
@@ -308,15 +308,20 @@ public class BluetoothService extends Service {
         startForeground(1, notification);
     }
 
-    void acknowledgeData() {
+    void acknowledgeData(double value) {
         SharedPreferencesHelper sharedPreferencesHelper = new SharedPreferencesHelper(this, "Intake");
         double totalIntake = Double.parseDouble(sharedPreferencesHelper.getRecommendedIntake());
         double intakeValue = sharedPreferencesHelper.getCurrentIntake();
 
+        Log.d(TAG, "acknowledgeData: Total Intake: " + totalIntake + ", Intake Value: " + intakeValue);
         double percentage = (intakeValue / 1000 / totalIntake) * 100;
         Log.d(TAG, "acknowledgeData: Percentage: " + percentage);
-
-        String msg = "a";
+        String msg;
+        if (value != 0) {
+            msg = "a";
+        } else {
+            msg = "x";
+        }
 
         if (percentage < 50.0) {
             msg += "r";

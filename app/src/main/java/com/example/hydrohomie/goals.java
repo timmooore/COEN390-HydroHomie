@@ -319,6 +319,12 @@ public class goals extends Fragment {
                 .setPositiveButton("OK", (dialog, which) -> {
                     EditText weightEditText = requireView().findViewById(R.id.weightEditText);
                     String weight = weightInput.getText().toString();
+
+                    if (Double.parseDouble(weight) < 10 || Double.parseDouble(weight) > 250) {
+                        Toast.makeText(getContext(), "Please enter a valid weight", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
                     weightEditText.setText(weight);
 
                     // Save the weight immediately after input
