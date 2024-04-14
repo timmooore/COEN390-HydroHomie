@@ -82,7 +82,7 @@ public class BluetoothFragment extends Fragment {
                 }
 
                 if (deviceName != null) {
-                    Toast.makeText(getContext(), deviceName, Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getContext(), deviceName, Toast.LENGTH_LONG).show();
                     if(!devicesList.contains(deviceName)) {
                         devicesList.add(deviceName);
 
@@ -140,7 +140,7 @@ public class BluetoothFragment extends Fragment {
                                 areAllGranted = areAllGranted && b;
                             }
                             if (areAllGranted) {
-                                Toast.makeText(getContext(), "We have permissions", Toast.LENGTH_SHORT).show();
+                                // Toast.makeText(getContext(), "We have permissions", Toast.LENGTH_SHORT).show();
                                 initializeBluetoothPairing();
                             }
                         });
@@ -152,7 +152,7 @@ public class BluetoothFragment extends Fragment {
                         Manifest.permission.BLUETOOTH_CONNECT,
                         Manifest.permission.BLUETOOTH_SCAN
                 };
-                Toast.makeText(getContext(), "This got exec", Toast.LENGTH_SHORT).show();
+                // Toast.makeText(getContext(), "This got exec", Toast.LENGTH_SHORT).show();
                 requestPermissionLauncher.launch(appPerms);
                 enableBluetooth();
             } else {
@@ -242,7 +242,7 @@ public class BluetoothFragment extends Fragment {
         });
 
         b1.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "Schedule button clicked", Toast.LENGTH_SHORT).show();
+            // Toast.makeText(getContext(), "Schedule button clicked", Toast.LENGTH_SHORT).show();
             SensorDataScheduler.scheduleSensorDataReading(requireContext(), selectedBluetoothAddress);
         });
         return rootView;
@@ -320,7 +320,7 @@ public class BluetoothFragment extends Fragment {
             pairedDevices = bluetoothAdapter.getBondedDevices();
 
             if (!pairedDevices.isEmpty()) {
-                Toast.makeText(getContext(), "pairedDevices is not empty", Toast.LENGTH_SHORT).show();
+                // Toast.makeText(getContext(), "pairedDevices is not empty", Toast.LENGTH_SHORT).show();
                 for (BluetoothDevice device : pairedDevices) {
                     if (device.getName().equals(deviceName)) {
                         selectedDevice = device;
@@ -330,7 +330,7 @@ public class BluetoothFragment extends Fragment {
                 UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); //Standard SerialPortService ID\
                 assert selectedDevice != null;
                 BluetoothSocket socket = selectedDevice.createRfcommSocketToServiceRecord(uuid);
-                Toast.makeText(getContext(), "Selected device" + selectedDevice.getName(), Toast.LENGTH_SHORT).show();
+                // Toast.makeText(getContext(), "Selected device" + selectedDevice.getName(), Toast.LENGTH_SHORT).show();
                 socket.connect();
 
                 mmOutputStream = socket.getOutputStream();
