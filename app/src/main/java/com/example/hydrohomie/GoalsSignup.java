@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -118,9 +119,24 @@ public class GoalsSignup extends AppCompatActivity implements AdapterView.OnItem
         final Calendar calendar = Calendar.getInstance();
         DatePickerDialog datePickerDialog = new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
             EditText editText = findViewById(R.id.birthday);
+
+            // Format the date
+            String formattedDate = formatDate(year, month, dayOfMonth);
+
+            int age = goals.calculateAgeBasedOnBirthday(formattedDate);
+            if (age < 8) {
+                // Display toast message indicating the user is too young
+                Toast.makeText(this, "Sorry, you must be at least 8 years old to use this service.", Toast.LENGTH_LONG).show();
+                return;
+            } else {
+                    // Log.d(TAG, "showBirthdayDialog: saveData: called");
+
+                    // Set the formatted date text to birthday EditText
+                    editText.setText(formattedDate);
+            }
+
             editText.setText(formatDate(year, month, dayOfMonth));
         }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
-
         datePickerDialog.show();
     }
     private String formatDate(int year, int month, int day) {

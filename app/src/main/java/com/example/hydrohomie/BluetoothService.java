@@ -64,12 +64,14 @@ public class BluetoothService extends Service {
 
         createNotificationChannel();
 
-        Toast.makeText(this, "Sensor Measurement Started", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "BluetoothService onStartCommand()");
+        Toast.makeText(this, "Sensor Measurement Started", Toast.LENGTH_LONG).show();
+
+        dataCollectionComplete = false;
         String deviceAddress = intent.getStringExtra("DEVICE_ADDRESS");
 
         // String deviceAddress = "00-11-22-33";
@@ -168,6 +170,8 @@ public class BluetoothService extends Service {
                     }
                 }
             }
+            Log.d(TAG, "Data collection complete");
+
         } catch (IOException | SecurityException e) {
             // Error occurred while connecting to the device
             Toast.makeText(this, "Error connecting to device: " + e.getMessage(), Toast.LENGTH_SHORT).show();

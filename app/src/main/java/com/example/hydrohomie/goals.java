@@ -237,19 +237,20 @@ public class goals extends Fragment {
             // Format the date
             String formattedDate = formatDate(year, monthOfYear, dayOfMonth);
 
-            // Set the formatted date text to birthday EditText
-            birthday.setText(formattedDate);
-
             // Save the formatted date as birthday
 
             int age = calculateAgeBasedOnBirthday(formattedDate);
             if (age < 8) {
                 // Display toast message indicating the user is too young
                 Toast.makeText(requireContext(), "Sorry, you must be at least 8 years old to use this service.", Toast.LENGTH_LONG).show();
-                birthday.setText("");
+                return;
             } else {
                 if (!isDataFetched) {
                     Log.d(TAG, "showBirthdayDialog: saveData: called");
+
+                    // Set the formatted date text to birthday EditText
+                    birthday.setText(formattedDate);
+
                     saveData("birthday", formattedDate);
                     updateRecommendedWaterIntake();
                 }

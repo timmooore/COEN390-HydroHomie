@@ -16,7 +16,7 @@ import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
 public class SensorDataScheduler {
-    private static final boolean useWorker = true;
+    private static final boolean useWorker = false;
     private static final String TAG = "SensorDataScheduler";
 
     // Schedule alarms to trigger the SensorDataService every hour at 00 and 30 minutes

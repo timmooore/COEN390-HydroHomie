@@ -2,6 +2,7 @@ package com.example.hydrohomie;
 
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -86,6 +87,11 @@ private static final String TAG = "home";
     private void notiTest(View view) {
         notiTestButton = view.findViewById(R.id.notiTestButton);
         dummyButton = view.findViewById(R.id.genDummyButton);
+        dummyButton.setBackgroundColor(Color.TRANSPARENT);
+        dummyButton.setTextColor(Color.TRANSPARENT);
+
+        notiTestButton.setBackgroundColor(Color.TRANSPARENT);
+        notiTestButton.setTextColor(Color.TRANSPARENT);
 
         notiTestButton.setOnClickListener(v -> {
             FirebaseAuth lAuth = FirebaseAuth.getInstance();
@@ -197,7 +203,7 @@ private static final String TAG = "home";
             public void onCancelled(@NonNull DatabaseError error) {
                 // Handle onCancelled for databaseReference
                 if (getContext() != null) {
-                    Toast.makeText(getContext(), "Failed to fetch data: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                    // Toast.makeText(getContext(), "Failed to fetch data: " + error.getMessage(), Toast.LENGTH_SHORT).show();
                 } else {
                     Log.e(TAG, "Context is null");
                 }
@@ -247,7 +253,7 @@ private static final String TAG = "home";
             public void onCancelled(@NonNull DatabaseError error) {
                 // Handle onCancelled for databaseReference
                 if (getContext() != null) {
-                    Toast.makeText(getContext(), "Failed to fetch data: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                    // Toast.makeText(getContext(), "Failed to fetch data: " + error.getMessage(), Toast.LENGTH_SHORT).show();
                 } else {
                     Log.e(TAG, "Context is null");
                 }
@@ -289,7 +295,7 @@ private static final String TAG = "home";
             public void onCancelled(@NonNull DatabaseError error) {
                 // Handle onCancelled for databaseReference
                 if (getContext() != null) {
-                    Toast.makeText(getContext(), "Failed to fetch data: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                    // Toast.makeText(getContext(), "Failed to fetch data: " + error.getMessage(), Toast.LENGTH_SHORT).show();
                 } else {
                     Log.e(TAG, "Context is null");
                 }
