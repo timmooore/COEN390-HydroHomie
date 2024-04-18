@@ -12,15 +12,13 @@ Are you looking to track your water consumption? Here is a designated app connec
 
 ### Database
 
-- **MySQL 🪣:** An open-source relational database management system providing reliability and scalability.
-
 ### Third-Party Services
 
 ## Project Approach
 
 ### Development Methodology
 
-The project follows an adapted Agile methodology, with 10 weeks divided into four sprints, allowing for iterative progress.
+The project follows an adapted Agile methodology.
 
 ### Project Timeline
 
@@ -34,24 +32,14 @@ The project follows an adapted Agile methodology, with 10 weeks divided into fou
 
 ## Team Roles
 
-- **Daniel 🧑‍💻:** Codes the backend of the website, primarily focusing on the reservation system. 
-- **Anthony 👩‍💻:** Works on the database for the cars and backend code to ensure the website's functionality.
-- **Yasser 👩‍💻:** Codes the backend of the website, primarily focusing on the user data.
-- **Timothy 🧑‍💻:** Ensures that the system admin has access to all relevant information.
-- **Ba Nam 🧑‍💻:** Focuses on the frontend of the website to create an appealing appearance and ensure a pleasant user experience.
+- **Daniel 🧑‍💻:**
+- **Anthony 👩‍💻:**
+- **Yasser 👩‍💻:**
+- **Timothy 🧑‍💻:**
+- **Ba Nam 🧑‍💻:**
 
 ## Issues Naming Conventions
 **User stories:**
-User stories issues names will start with US, then followed by the User Storie number, and then the name. 
-
-Example: US-1: Browse Vehicles
-
-**Tasks:**
-Tasks issues names will start with TASK, then followed by the User Storie number that it is derived from, then the Task number, and the task name. 
-
-Example: TASK-1.2: Create SQL Database
-
-This would stand for the second task of the user story 1.
 
 ## Tags
 **Priority Levels**
@@ -88,8 +76,4 @@ This would stand for the second task of the user story 1.
 4. **Documentation:**
    - Keep the README and documentation up-to-date.
    - Document any changes to the Git workflow for team reference.
-
-5. **Issue Tracking:**
-   - Reference relevant issues in commit messages and pull requests.
-   - Use issues to discuss and plan new features or bug fixes.
 
