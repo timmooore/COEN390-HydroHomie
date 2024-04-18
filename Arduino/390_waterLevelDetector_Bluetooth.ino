@@ -53,7 +53,7 @@ const long interval = 1000;         // interval at which to publish sensor readi
 void setup() {
   Serial.begin(9600); // Initialize serial communication with a baud rate of 9600 bits per second
 
-  SerialBT.begin("ESP32test"); //Bluetooth device name
+  SerialBT.begin("HydroHomieBottle"); //Bluetooth device name
   Serial.println("The device started, now you can pair it with bluetooth!");
 
   // Specify that LED pins will be used as output pins
@@ -65,7 +65,7 @@ void setup() {
   // Set LED pins to low voltage level
   digitalWrite(GREEN_LED, LOW);
   digitalWrite(YELLOW_LED, LOW);
-  digitalWrite(RED_LED, LOW);
+  digitalWrite(RED_LED, HIGH);
   digitalWrite(BLUE_LED, LOW);
 
   // Specify input/output pins of US sensor
@@ -90,27 +90,8 @@ void setup() {
 }
 
 void loop() {
-  // Read command from bluetooth serial terminal
-  if (SerialBT.available()) {
-    Serial.println("SerialBT.available() == true");
-    cmd = SerialBT.read();
-    if (cmd != -1) {
-      if (cmd == 'a') {
-        acknowledged = true;
-        Serial.println("ACK received");
-      }
-      else {
-        // call updateLED()
-        Serial.println("ACK not received properly");
-      }
-    }
+  receiveAcknowledgement();
 
-    // Flush the input buffer by reading and discarding any remaining bytes
-    while (SerialBT.available()) {
-      SerialBT.read(); // Read and discard the remaining bytes in the input buffer
-    }
-  }
-  
   if (verticallyOriented()) {
 
     calculateWaterLevel();
@@ -152,33 +133,33 @@ void loop() {
     if (currWaterHeight <= WH_MAX && currWaterHeight >= (WH_MAX/2)) // bottle is 50-100 % full
     {
       // turn on red LED
-      digitalWrite(GREEN_LED, LOW);
-      digitalWrite(YELLOW_LED, LOW);
+      // digitalWrite(GREEN_LED, LOW);
+      // digitalWrite(YELLOW_LED, LOW);
       digitalWrite(BLUE_LED,LOW);
-      digitalWrite(RED_LED, HIGH);
-      Serial.println("Keep hydrating! You've drank less than half of the water bottle!");
+      // digitalWrite(RED_LED, HIGH);
+      // Serial.println("Keep hydrating! You've drank less than half of the water bottle!");
     }
     else if (currWaterHeight < (WH_MAX/2) && currWaterHeight > 1) // bottle is less than 50% full, but not empty
     {
       // turn on yellow LED
-      digitalWrite(GREEN_LED, LOW);
-      digitalWrite(YELLOW_LED, HIGH);
-      digitalWrite(RED_LED, LOW);
+      // digitalWrite(GREEN_LED, LOW);
+      // digitalWrite(YELLOW_LED, HIGH);
+      // digitalWrite(RED_LED, LOW);
       digitalWrite(BLUE_LED,LOW);
       Serial.println("Keep hydrating. You've drank more than half of the water bottle!");
     }
     else if (currWaterHeight >= 0 && currWaterHeight <=1)
     {
       // turn on green LED
-      digitalWrite(GREEN_LED, HIGH);
-      digitalWrite(YELLOW_LED, LOW);
-      digitalWrite(RED_LED, LOW);
+      // digitalWrite(GREEN_LED, HIGH);
+      // digitalWrite(YELLOW_LED, LOW);
+      // digitalWrite(RED_LED, LOW);
       digitalWrite(BLUE_LED,LOW);
       Serial.println("Congrats! You drank a full water bottle!");
       Serial.println("Please refill the water bottle");
     }
 // TODO: REVERT
-    delay(10000);
+    delay(1000);
 
   } // end if vertically oriented
   else {
@@ -244,6 +225,7 @@ void calculateWaterLevel() {
   currWaterHeight = (WH_MAX+WH_OFFSET) - medianDistance; // get the water height in cm
 
   if (currWaterHeight < prevWaterHeight) { // water is consumed from the bottle
+  
     if (acknowledged == false) {
       waterConsumption += calculateWaterConsumption(prevWaterHeight, currWaterHeight); // get amount of water consumed (in mL)
     } else {
@@ -440,13 +422,9 @@ bool verticallyOriented() {
 
 /* LED helper functions */
 
-void updateLEDs() {
-  // Read command from bluetooth serial terminal
-  if (SerialBT.available()){
-    cmd = SerialBT.read();
-  }
+void updateLEDs(char color) {
 
-  if (cmd == 'r') {
+  if (color == 'r') {
     // turn on red LED
     digitalWrite(GREEN_LED, LOW);
     digitalWrite(YELLOW_LED, LOW);
@@ -454,7 +432,7 @@ void updateLEDs() {
     digitalWrite(RED_LED, HIGH);
     Serial.println("Keep hydrating! You have not yet reached half of your hydration goal!");
   }
-  else if (cmd == 'y') {
+  else if (color == 'y') {
     // turn on yellow LED
     digitalWrite(GREEN_LED, LOW);
     digitalWrite(YELLOW_LED, HIGH);
@@ -462,7 +440,7 @@ void updateLEDs() {
     digitalWrite(BLUE_LED,LOW);
     Serial.println("Keep hydrating. You've drank more than half of the water bottle!");
   }
-  else if (cmd == 'g') {
+  else if (color == 'g') {
     // turn on green LED
     digitalWrite(GREEN_LED, HIGH);
     digitalWrite(YELLOW_LED, LOW);
@@ -471,4 +449,34 @@ void updateLEDs() {
     Serial.println("Congrats! You have met your hydration goal");
   }
 
+}
+
+void receiveAcknowledgement() {
+  // Read command from bluetooth serial terminal
+  if (SerialBT.available()) {
+    Serial.println("SerialBT.available() == true");
+    cmd = SerialBT.read();
+    if (cmd != -1) {
+      if (cmd == 'a') {
+        acknowledged = true;
+        Serial.println("ACK received");
+      }
+      else {
+        // call updateLED()
+        Serial.println("ACK not received");
+      }
+    }
+
+    bool updateLED = true;
+
+    // Flush the input buffer by reading and discarding any remaining bytes
+    while (SerialBT.available()) {
+    
+      char c = SerialBT.read(); // Read and discard the remaining bytes in the input buffer
+      if (updateLED) {
+        updateLEDs(c);
+        updateLED = false;
+      }
+    }
+  }
 }
